@@ -45,7 +45,9 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 	var employees []employee.Employee
 	var total int64
 
-	db := r.db.WithContext(ctx).Model(&employee.Employee{}).Where("name = ?", name)
+	db := r.db.WithContext(ctx).
+		Model(&employee.Employee{}).
+		Where("name = ?", name)
 
 	err := db.Count(&total).Error
 	if err != nil {
@@ -53,11 +55,26 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 	}
 
 	offset := (page - 1) * pageSize
-	err = db.Offset(offset).Limit(pageSize).Find(&employees).Error
+	err = db.Offset(offset).
+		Limit(pageSize).
+		Find(&employees).Error
+
 	if err != nil {
 		return 0, nil, err
 	}
 
 	return total, employees, nil
+
+}
+
+func (r *EmployeeRepository) UpdateStatusByID(ctx context.Context,
+	status int, id int64) error {
+
+	db := r.db.WithContext(ctx).
+		Model(&employee.Employee{}).
+		Where("id = ?", id).
+		Update("status", status)
+
+	return db.Error
 
 }

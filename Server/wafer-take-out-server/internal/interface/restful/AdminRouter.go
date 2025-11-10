@@ -17,6 +17,7 @@ func NewRouter(h *handler.EmployeeHandler) *gin.Engine {
 	protected.Use(middleware.JWTAuthMiddleware())
 	protected.POST("", h.AddEmployee)
 	protected.GET("/page", h.Page)
+	protected.POST("/status/:status", h.StatusFlip)
 
 	return r
 }
