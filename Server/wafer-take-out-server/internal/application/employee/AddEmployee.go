@@ -7,6 +7,15 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/domain/employee"
 )
 
+type AddEmployeeDTO struct {
+	ID       int64  `json:"id"`
+	IDNumber string `json:"idNumber"`
+	Name     string `json:"name"`
+	Phone    string `json:"phone"`
+	Sex      string `json:"sex"`
+	UserName string `json:"username"`
+}
+
 func (svc *EmployeeService) AddEmployee(ctx context.Context, dto *AddEmployeeDTO, id int64) error {
 
 	entity := &employee.Employee{

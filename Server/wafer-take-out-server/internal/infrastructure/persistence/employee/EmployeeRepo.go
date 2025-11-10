@@ -78,3 +78,30 @@ func (r *EmployeeRepository) UpdateStatusByID(ctx context.Context,
 	return db.Error
 
 }
+
+func (r *EmployeeRepository) GetById(ctx context.Context,
+	id int64) (*employee.Employee, error) {
+
+	var entity employee.Employee
+
+	err := r.db.WithContext(ctx).
+		Model(&employee.Employee{}).
+		First(&entity, "id = ?", id).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return &entity, nil
+}
+
+func (r *EmployeeRepository) UpdateById(ctx context.Context,
+	employee *employee.Employee) error {
+
+	err := r.db.WithContext(ctx).
+		Model(&employee).
+		Where("id = ?", employee.Id).
+		Updates(employee).Error
+
+	return err
+
+}
