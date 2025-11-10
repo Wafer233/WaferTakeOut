@@ -6,6 +6,3 @@ type LoginVO struct {
 	Name     string `json:"name"`     // 姓名
 	Token    string `json:"token"`    // JWT令牌
 }
-
-//type AddEmployeeVO struct {
-//}

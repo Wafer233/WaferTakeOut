@@ -95,3 +95,21 @@ func (h *EmployeeHandler) AddEmployee(c *gin.Context) {
 	c.JSON(http.StatusOK, result.Success())
 
 }
+
+func (h *EmployeeHandler) Page(c *gin.Context) {
+	var dto *employeeApp.PageDTO
+
+	err := c.ShouldBindQuery(&dto)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, result.Error("invalid request"))
+	}
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
+	defer cancel()
+	vo, err := h.svc.PageQuery(ctx, dto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error(err.Error()))
+	}
+
+	c.JSON(http.StatusOK, result.SuccessData(vo))
+
+}

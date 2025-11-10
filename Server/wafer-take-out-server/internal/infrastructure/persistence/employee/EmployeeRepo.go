@@ -38,3 +38,26 @@ func (r *EmployeeRepository) Insert(ctx context.Context, model *employee.Employe
 	}
 	return nil
 }
+
+func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
+	name string, page int, pageSize int) (int64, []employee.Employee, error) {
+
+	var employees []employee.Employee
+	var total int64
+
+	db := r.db.WithContext(ctx).Model(&employee.Employee{}).Where("name = ?", name)
+
+	err := db.Count(&total).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	offset := (page - 1) * pageSize
+	err = db.Offset(offset).Limit(pageSize).Find(&employees).Error
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return total, employees, nil
+
+}

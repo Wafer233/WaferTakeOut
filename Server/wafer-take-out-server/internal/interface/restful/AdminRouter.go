@@ -16,6 +16,7 @@ func NewRouter(h *handler.EmployeeHandler) *gin.Engine {
 	protected := r.Group("/admin/employee")
 	protected.Use(middleware.JWTAuthMiddleware())
 	protected.POST("", h.AddEmployee)
+	protected.GET("/page", h.Page)
 
 	return r
 }
