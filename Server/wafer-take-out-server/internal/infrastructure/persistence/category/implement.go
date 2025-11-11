@@ -75,3 +75,15 @@ func (repo *CategoryRepository) UpdateById(ctx context.Context, entity *category
 	}
 	return nil
 }
+
+func (repo *CategoryRepository) UpdateStatusById(ctx context.Context, id int64, status int) error {
+
+	db := repo.db.WithContext(ctx).
+		Model(&category.Category{}).
+		Where("id = ?", id).
+		Update("status", status)
+
+	err := db.Error
+
+	return err
+}
