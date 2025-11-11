@@ -7,28 +7,26 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/domain/category"
 )
 
-// 这里我都要骂人了，json绑定一直失败，前端文档说传进来的是int实际上是string！！
-type AddCategoryDTO struct {
+type EditCategoryDTO struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	Sort int    `json:"sort,string"`
 	Type int    `json:"type,string"`
 }
 
-func (svc *CategoryService) AddCategory(ctx context.Context, dto *AddCategoryDTO, curId int64) error {
+func (svc *CategoryService) EditCategory(ctx context.Context, dto *EditCategoryDTO, curId int64) error {
 
 	entity := category.Category{
 		ID:         dto.ID,
+		Type:       dto.Type,
 		Name:       dto.Name,
 		Sort:       dto.Sort,
-		Type:       dto.Type,
-		Status:     1,
-		CreateTime: time.Now(),
 		UpdateTime: time.Now(),
-		CreateUser: curId,
 		UpdateUser: curId,
 	}
-
-	err := svc.repo.Insert(ctx, &entity)
-	return err
+	err := svc.repo.UpdateById(ctx, &entity)
+	if err != nil {
+		return err
+	}
+	return nil
 }

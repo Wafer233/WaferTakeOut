@@ -19,7 +19,7 @@ func (h *CategoryHandler) GetCategories(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, result.Error("输入错误"))
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	vo, err := h.svc.PageQuery(ctx, &dto)

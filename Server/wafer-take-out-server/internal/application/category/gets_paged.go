@@ -2,13 +2,12 @@ package categoryApp
 
 import (
 	"context"
-	"strconv"
 )
 
 type PageDTO struct {
 	Name     string `form:"name"`
-	Page     string `form:"page"`
-	PageSize string `form:"pageSize"`
+	Page     int    `form:"page"`
+	PageSize int    `form:"pageSize"`
 	Type     int    `form:"type"`
 }
 
@@ -29,17 +28,13 @@ type Record struct {
 }
 
 func (svc *CategoryService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, error) {
-	name := dto.Name
-	page, err := strconv.Atoi(dto.Page)
-	if err != nil {
-		return PageVO{}, err
-	}
-	pageSize, err := strconv.Atoi(dto.PageSize)
-	if err != nil {
-		return PageVO{}, err
-	}
 
-	entities, total, err := svc.repo.GetsByNamePaged(ctx, name, page, pageSize)
+	curName := dto.Name
+	page := dto.Page
+	pageSize := dto.PageSize
+	curType := dto.Type
+
+	entities, total, err := svc.repo.GetsByPaged(ctx, curName, curType, page, pageSize)
 	if err != nil {
 		return PageVO{}, err
 	}

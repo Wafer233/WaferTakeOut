@@ -28,6 +28,7 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	category.Use(middleware.JWTAuthMiddleware())
 	category.POST("", h1.AddCategory)
 	category.GET("page", h1.GetCategories)
+	category.PUT("", h1.EditCategory)
 
 	return r
 }

@@ -26,25 +26,30 @@ func (repo *CategoryRepository) Insert(ctx context.Context, entity *category.Cat
 	return err
 }
 
-func (repo *CategoryRepository) GetsByNamePaged(ctx context.Context, name string,
-	page, pageSize int) ([]*category.Category, int64, error) {
+func (repo *CategoryRepository) GetsByPaged(ctx context.Context, name string,
+	curType int, page, pageSize int) ([]*category.Category, int64, error) {
 
 	offset := (page - 1) * pageSize
 	total := int64(0)
 	records := make([]*category.Category, 0)
 
-	err := repo.db.WithContext(ctx).
-		Model(&category.Category{}).
-		Where("name = ?", name).
-		Count(&total).Error
+	db := repo.db.WithContext(ctx).Model(&category.Category{})
+
+	if name != "" {
+		db = db.Where("name = ?", name)
+	}
+
+	if curType > 0 {
+		db = db.Where("type = ?", curType)
+	}
+
+	err := db.Count(&total).Error
 
 	if err != nil {
 		return nil, 0, err
 	}
 
-	err = repo.db.WithContext(ctx).
-		Model(&category.Category{}).
-		Where("name = ?", name).
+	err = db.
 		Offset(offset).
 		Limit(pageSize).
 		Find(&records).
@@ -55,4 +60,17 @@ func (repo *CategoryRepository) GetsByNamePaged(ctx context.Context, name string
 	}
 	return records, total, nil
 
+}
+
+func (repo *CategoryRepository) UpdateById(ctx context.Context, entity *category.Category) error {
+
+	err := repo.db.WithContext(ctx).
+		Model(&category.Category{}).
+		Where("id = ?", entity.ID).
+		Select("type", "name", "sort", "update_time", "update_user").
+		Updates(entity).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
