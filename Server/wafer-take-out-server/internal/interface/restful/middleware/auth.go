@@ -12,14 +12,14 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("token")
 		if err != nil || token == "" {
-			c.JSON(http.StatusUnauthorized, result.Error("未携带Token"))
+			c.JSON(http.StatusUnauthorized, result.Error("未授权"))
 			c.Abort()
 			return
 		}
 
 		claims, err := auth.ParseToken(token)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, result.Error("Token无效或过期"))
+			c.JSON(http.StatusUnauthorized, result.Error("未授权"))
 			c.Abort()
 			return
 		}
