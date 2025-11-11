@@ -24,7 +24,7 @@ func (h *CategoryHandler) EditCategory(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权，获取当前id失败"))
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	err = h.svc.EditCategory(ctx, &dto, curId.(int64))

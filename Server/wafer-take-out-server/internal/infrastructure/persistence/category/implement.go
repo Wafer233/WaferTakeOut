@@ -64,11 +64,12 @@ func (repo *CategoryRepository) GetsByPaged(ctx context.Context, name string,
 
 func (repo *CategoryRepository) UpdateById(ctx context.Context, entity *category.Category) error {
 
-	err := repo.db.WithContext(ctx).
+	db := repo.db.WithContext(ctx).
 		Model(&category.Category{}).
 		Where("id = ?", entity.ID).
-		Select("type", "name", "sort", "update_time", "update_user").
-		Updates(entity).Error
+		Select("name", "sort", "update_time", "update_user").
+		Updates(entity)
+	err := db.Error
 	if err != nil {
 		return err
 	}
