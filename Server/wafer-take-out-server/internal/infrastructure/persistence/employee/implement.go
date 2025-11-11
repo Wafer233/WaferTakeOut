@@ -18,7 +18,10 @@ func NewEmployeeRepository(db *gorm.DB) *EmployeeRepository {
 func (r *EmployeeRepository) GetByUsername(ctx context.Context, username string) (*employee.Employee, error) {
 	var model employee.Employee
 
-	err := r.db.WithContext(ctx).Where("username = ?", username).First(&model).Error
+	err := r.db.
+		WithContext(ctx).
+		Where("username = ?", username).
+		First(&model).Error
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +35,9 @@ func (r *EmployeeRepository) GetByUsername(ctx context.Context, username string)
 }
 
 func (r *EmployeeRepository) Insert(ctx context.Context, model *employee.Employee) error {
-	err := r.db.WithContext(ctx).Create(&model).Error
+	err := r.db.
+		WithContext(ctx).
+		Create(&model).Error
 	if err != nil {
 		return err
 	}
@@ -45,7 +50,8 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 	var employees []employee.Employee
 	var total int64
 
-	db := r.db.WithContext(ctx).
+	db := r.db.
+		WithContext(ctx).
 		Model(&employee.Employee{}).
 		Where("name = ?", name)
 
@@ -55,7 +61,8 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 	}
 
 	offset := (page - 1) * pageSize
-	err = db.Offset(offset).
+	err = db.
+		Offset(offset).
 		Limit(pageSize).
 		Find(&employees).Error
 

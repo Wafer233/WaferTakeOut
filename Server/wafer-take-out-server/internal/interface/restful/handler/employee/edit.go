@@ -10,25 +10,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *EmployeeHandler) AddEmployee(c *gin.Context) {
-	var dto *employeeApp.AddEmployeeDTO
+func (h *EmployeeHandler) EditEmployee(c *gin.Context) {
 
+	dto := &employeeApp.AddEmployeeDTO{}
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, result.Error("invalid request"))
+		c.JSON(http.StatusBadRequest, result.Error("请求错误"))
 		return
 	}
-
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 	defer cancel()
 
-	id, _ := c.Get("CurId")
+	id, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	err = h.svc.UpdateEmployee(ctx, dto, id.(int64))
 
-	err = h.svc.AddEmployee(ctx, dto, id.(int64))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, result.Error(err.Error()))
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
 	}
 
 	c.JSON(http.StatusOK, result.Success())
+
 }

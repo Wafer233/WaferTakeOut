@@ -16,13 +16,13 @@ func (h *EmployeeHandler) StatusFlip(c *gin.Context) {
 	statusStr := c.Param("status")
 	status, err := strconv.Atoi(statusStr)
 	if err != nil || (status != 1 && status != 0) {
-		c.JSON(http.StatusBadRequest, result.Error("status参数错误"))
+		c.JSON(http.StatusBadRequest, result.Error("错误请求"))
 		return
 	}
 
 	err = c.ShouldBindQuery(&dto)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, result.Error("id参数错误"))
+		c.JSON(http.StatusBadRequest, result.Error("错误请求"))
 		return
 	}
 
@@ -31,7 +31,7 @@ func (h *EmployeeHandler) StatusFlip(c *gin.Context) {
 
 	err = h.svc.StatusFlips(ctx, status, dto.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, result.Error(err.Error()))
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 	}
 	c.JSON(http.StatusOK, result.Success)
 }

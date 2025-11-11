@@ -15,7 +15,7 @@ func (h *EmployeeHandler) GetEmployee(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, result.Error(err.Error()))
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
 	}
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
@@ -23,7 +23,7 @@ func (h *EmployeeHandler) GetEmployee(c *gin.Context) {
 
 	vo, err := h.svc.GetEmployee(ctx, int64(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, result.Error(err.Error()))
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
 	}
 	c.JSON(http.StatusOK, result.SuccessData(vo))

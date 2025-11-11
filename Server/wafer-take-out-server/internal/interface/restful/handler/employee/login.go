@@ -17,7 +17,7 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, result.Error("invalid request"))
+		c.JSON(http.StatusBadRequest, result.Error("请求错误"))
 		return
 	}
 
@@ -25,13 +25,13 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 	defer cancel()
 	vo, err = h.svc.Login(ctx, &dto)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, result.Error(err.Error()))
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
 	}
 
 	token, err := auth.GenerateToken(vo.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, result.Error("生成Token失败"))
+		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
 		return
 	}
 
