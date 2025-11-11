@@ -8,4 +8,5 @@ type CategoryRepo interface {
 	UpdateById(context.Context, *Category) error
 	UpdateStatusById(context.Context, int64, int) error
 	DeleteById(context.Context, int64) error
+	GetsByType(context.Context, int) ([]*Category, error)
 }

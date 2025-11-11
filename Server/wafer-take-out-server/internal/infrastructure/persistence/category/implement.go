@@ -96,3 +96,18 @@ func (repo *CategoryRepository) DeleteById(ctx context.Context, id int64) error 
 
 	return db.Error
 }
+
+func (repo *CategoryRepository) GetsByType(ctx context.Context, curType int) ([]*category.Category, error) {
+
+	entity := make([]*category.Category, 0)
+	db := repo.db.WithContext(ctx).
+		Model(&category.Category{}).
+		Where("type = ?", curType).
+		Find(&entity)
+	err := db.Error
+	if err != nil {
+		return nil, err
+	}
+	return entity, nil
+
+}
