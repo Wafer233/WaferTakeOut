@@ -87,3 +87,12 @@ func (repo *CategoryRepository) UpdateStatusById(ctx context.Context, id int64, 
 
 	return err
 }
+
+func (repo *CategoryRepository) DeleteById(ctx context.Context, id int64) error {
+	db := repo.db.WithContext(ctx).
+		Model(&category.Category{}).
+		Where("id = ?", id).
+		Delete(&category.Category{})
+
+	return db.Error
+}

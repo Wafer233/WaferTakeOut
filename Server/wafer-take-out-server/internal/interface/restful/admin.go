@@ -30,6 +30,7 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	category.GET("page", h1.GetCategories)
 	category.PUT("", h1.EditCategory)
 	category.POST("status/:status", h1.EditCategoryStatus)
+	category.DELETE("", h1.DeleteCategory)
 
 	return r
 }
