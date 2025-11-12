@@ -8,4 +8,5 @@ type SetMealRepository interface {
 	UpdateStatusById(context.Context, *SetMeal) error
 	DeletesByIds(context.Context, []int64) error
 	GetById(context.Context, int64) (*SetMeal, error)
+	UpdateById(context.Context, *SetMeal) error
 }

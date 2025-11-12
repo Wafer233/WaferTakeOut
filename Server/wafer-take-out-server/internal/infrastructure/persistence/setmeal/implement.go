@@ -113,3 +113,18 @@ func (repo *DefaultSetMealRepository) GetById(ctx context.Context,
 	return &set, nil
 
 }
+
+func (repo *DefaultSetMealRepository) UpdateById(ctx context.Context,
+	set *setmeal.SetMeal) error {
+
+	err := repo.db.WithContext(ctx).
+		Model(&setmeal.SetMeal{}).
+		Where("id = ?", set.Id).
+		Omit("id", "status", "create_time", "create_user").
+		Updates(set).Error
+
+	if err != nil {
+		return err
+	}
+	return nil
+}

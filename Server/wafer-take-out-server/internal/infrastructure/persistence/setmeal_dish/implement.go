@@ -44,3 +44,29 @@ func (repo *DefaultSetMealDishRepository) GetsBySetMealId(ctx context.Context,
 	}
 	return dishes, nil
 }
+
+func (repo *DefaultSetMealDishRepository) UpdatesBySetMealId(ctx context.Context,
+	dishes []*setmeal_dish.SetMealDish) error {
+
+	tx := repo.db.WithContext(ctx).
+		Model(&setmeal_dish.SetMealDish{}).
+		Begin()
+
+	if err := tx.Where("setmeal_id = ?", dishes[0].SetMealId).
+		Delete(&setmeal_dish.SetMealDish{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Create(&dishes).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err := tx.Commit().Error
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
