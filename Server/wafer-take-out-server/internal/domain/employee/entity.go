@@ -4,8 +4,8 @@ import "time"
 
 type Employee struct {
 	Id         int64     `gorm:"column:id;primaryKey;autoIncrement"`
-	Name       string    `gorm:"column:name;type:varchar(32);not null"`
-	Username   string    `gorm:"column:username;type:varchar(32);not null"`
+	Name       string    `gorm:"column:name;varchar(32);not null"`
+	Username   string    `gorm:"column:username;varchar(32);not null"`
 	Password   string    `gorm:"column:password;type:varchar(64);not null"`
 	Phone      string    `gorm:"column:phone;type:varchar(11);not null"`
 	Sex        string    `gorm:"column:sex;type:varchar(2);not null"`

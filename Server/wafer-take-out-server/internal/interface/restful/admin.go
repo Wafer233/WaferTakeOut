@@ -3,6 +3,7 @@ package restful
 import (
 	categoryHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/category"
 	commonHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/common"
+	dishHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/dish"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/employee"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/middleware"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,8 @@ import (
 
 func NewRouter(h *employeeHandler.EmployeeHandler,
 	h1 *categoryHandler.CategoryHandler,
-	h3 *commonHandler.CommonHandler,
+	h2 *commonHandler.CommonHandler,
+	h3 *dishHandler.DishHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -37,6 +39,10 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 
 	common := r.Group("/admin/common")
 	common.Use(middleware.JWTAuthMiddleware())
-	common.POST("upload", h3.Upload)
+	common.POST("upload", h2.Upload)
+
+	dish := r.Group("/admin/dish")
+	dish.Use(middleware.JWTAuthMiddleware())
+	dish.GET("page", h3.GetDishedPaged)
 	return r
 }

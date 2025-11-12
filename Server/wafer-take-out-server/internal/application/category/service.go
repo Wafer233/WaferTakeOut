@@ -1,12 +1,14 @@
 package categoryApp
 
-import categoryImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/category"
+import (
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/domain/category"
+)
 
 type CategoryService struct {
-	repo *categoryImpl.CategoryRepository
+	repo category.CategoryRepository
 }
 
-func NewCategoryService(repo *categoryImpl.CategoryRepository) *CategoryService {
+func NewCategoryService(repo category.CategoryRepository) *CategoryService {
 	return &CategoryService{
 		repo: repo,
 	}

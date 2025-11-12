@@ -11,7 +11,7 @@ type CategoryRepository struct {
 	db *gorm.DB
 }
 
-func NewCategoryRepository(db *gorm.DB) *CategoryRepository {
+func NewCategoryRepository(db *gorm.DB) category.CategoryRepository {
 	return &CategoryRepository{
 		db: db,
 	}
@@ -109,5 +109,21 @@ func (repo *CategoryRepository) GetsByType(ctx context.Context, curType int) ([]
 		return nil, err
 	}
 	return entity, nil
+
+}
+
+func (repo *CategoryRepository) GetById(ctx context.Context, id int64) (*category.Category, error) {
+	entity := category.Category{}
+	db := repo.db.WithContext(ctx).
+		Model(&category.Category{}).
+		Where("id = ?", id).
+		First(&entity)
+
+	err := db.Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity, nil
 
 }

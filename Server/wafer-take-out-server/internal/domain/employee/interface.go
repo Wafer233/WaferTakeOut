@@ -5,8 +5,8 @@ import "context"
 type EmployeeRepo interface {
 	GetByUsername(context.Context, string) (*Employee, error)
 	Insert(context.Context, *Employee) error
-	GetByUsernamePaged(ctx context.Context, name string, page int, pageSize int) (int64, []Employee, error)
-	UpdateStatusByID(ctx context.Context, status int, id int64) error
-	GetById(ctx context.Context, id int64) (*Employee, error)
-	UpdateById(ctx context.Context, employee *Employee) error
+	GetByUsernamePaged(context.Context, string, int, int) (int64, []Employee, error)
+	UpdateStatusByID(context.Context, int, int64) error
+	GetById(context.Context, int64) (*Employee, error)
+	UpdateById(context.Context, *Employee) error
 }
