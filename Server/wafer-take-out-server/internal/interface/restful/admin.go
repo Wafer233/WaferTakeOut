@@ -6,6 +6,7 @@ import (
 	dishHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/dish"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/employee"
 	setmealHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/setmeal"
+	shopHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/shop"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,7 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	h2 *commonHandler.CommonHandler,
 	h3 *dishHandler.DishHandler,
 	h4 *setmealHandler.SetMealHandler,
+	h5 *shopHandler.ShopHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -61,6 +63,11 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	setMeal.DELETE("", h4.DeleteSetMeal)
 	setMeal.POST("", h4.AddSetMeal)
 	setMeal.GET(":id", h4.GetSetMeal)
+
+	shop := r.Group("/admin/shop")
+	shop.Use(middleware.JWTAuthMiddleware())
+	shop.PUT(":status", h5.EditStatus)
+	shop.GET("status", h5.GetStatus)
 
 	return r
 }
