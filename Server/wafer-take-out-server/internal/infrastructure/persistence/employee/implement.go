@@ -78,12 +78,14 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 }
 
 func (r *EmployeeRepository) UpdateStatusByID(ctx context.Context,
-	status int, id int64) error {
+	emp *employee.Employee) error {
 
+	id := emp.Id
 	db := r.db.WithContext(ctx).
 		Model(&employee.Employee{}).
 		Where("id = ?", id).
-		Update("status", status)
+		Select("update_time", "update_user", "status").
+		Updates(emp)
 
 	return db.Error
 

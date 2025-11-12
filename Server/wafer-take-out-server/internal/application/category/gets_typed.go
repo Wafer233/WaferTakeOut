@@ -18,8 +18,8 @@ func (svc *CategoryService) TypeQuery(ctx context.Context, curType int) (GetsTyp
 		record.Name = entities[index].Name
 		record.Sort = entities[index].Sort
 		record.Status = entities[index].Status
-		record.CreateTime = entities[index].CreateTime.Format("2006-01-02 15:04:05")
-		record.UpdateTime = entities[index].UpdateTime.Format("2006-01-02 15:04:05")
+		record.CreateTime = entities[index].CreateTime.Format("2006-01-02 15:04")
+		record.UpdateTime = entities[index].UpdateTime.Format("2006-01-02 15:04")
 		record.CreateUser = entities[index].CreateUser
 		record.UpdateUser = entities[index].UpdateUser
 		vo[index] = record

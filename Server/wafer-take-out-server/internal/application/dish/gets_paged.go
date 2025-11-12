@@ -63,7 +63,7 @@ func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, er
 		record.Image = dishes[index].Image
 		record.Description = dishes[index].Description
 		record.Status = dishes[index].Status
-		record.UpdateTime = dishes[index].UpdateTime.Format("2006-01-02 15:04:05")
+		record.UpdateTime = dishes[index].UpdateTime.Format("2006-01-02 15:04")
 		record.CategoryName = categoryNames[index]
 
 		records[index] = record

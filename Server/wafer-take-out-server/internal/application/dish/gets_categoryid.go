@@ -27,7 +27,7 @@ func (svc *DishService) GetDishCategory(ctx context.Context, id int64) ([]*Recor
 			Image:        d.Image,
 			Description:  d.Description,
 			Status:       d.Status,
-			UpdateTime:   d.UpdateTime.Format("2006-01-02 15:04:05"),
+			UpdateTime:   d.UpdateTime.Format("2006-01-02 15:04"),
 			CategoryName: category.Name,
 		}
 	}

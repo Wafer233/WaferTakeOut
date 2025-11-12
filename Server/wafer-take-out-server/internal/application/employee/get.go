@@ -2,8 +2,6 @@ package employeeApp
 
 import (
 	"context"
-
-	"github.com/jinzhu/copier"
 )
 
 func (svc *EmployeeService) GetEmployee(ctx context.Context, id int64) (*Employee, error) {
@@ -13,10 +11,20 @@ func (svc *EmployeeService) GetEmployee(ctx context.Context, id int64) (*Employe
 		return nil, err
 	}
 
-	var employeeVO Employee
-	err = copier.Copy(&employeeVO, employee)
-	if err != nil {
-		return nil, err
+	employeeVO := Employee{
+		Id:         employee.Id,
+		Name:       employee.Name,
+		Username:   employee.Username,
+		Password:   employee.Password,
+		Phone:      employee.Phone,
+		Sex:        employee.Sex,
+		IDNumber:   employee.IDNumber,
+		Status:     employee.Status,
+		CreateTime: employee.UpdateTime.Format("2006-01-02 15:04"),
+		UpdateTime: employee.UpdateTime.Format("2006-01-02 15:04"),
+		CreateUser: employee.CreateUser,
+		UpdateUser: employee.UpdateUser,
 	}
+
 	return &employeeVO, nil
 }

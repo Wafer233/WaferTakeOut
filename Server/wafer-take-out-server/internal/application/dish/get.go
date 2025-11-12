@@ -51,7 +51,7 @@ func (svc *DishService) GetDishId(ctx context.Context, id int64) (DishVO, error)
 		Name:         dish.Name,
 		Price:        dish.Price,
 		Status:       dish.Status,
-		UpdateTime:   dish.UpdateTime.Format("2006-01-02 15:04:05"),
+		UpdateTime:   dish.UpdateTime.Format("2006-01-02 15:04"),
 	}
 	return vo, nil
 }

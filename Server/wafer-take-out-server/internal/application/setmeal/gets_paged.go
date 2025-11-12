@@ -63,7 +63,7 @@ func (svc *SetMealService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO,
 			Status:       strconv.Itoa(value.Status),
 			Description:  value.Description,
 			Image:        value.Image,
-			UpdateTime:   value.UpdateTime.Format("2006-01-02 15:04:05"),
+			UpdateTime:   value.UpdateTime.Format("2006-01-02 15:04"),
 			CategoryName: catNames[index],
 		}
 	}
