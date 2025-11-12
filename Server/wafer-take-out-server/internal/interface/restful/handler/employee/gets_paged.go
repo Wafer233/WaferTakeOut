@@ -11,7 +11,7 @@ import (
 )
 
 func (h *EmployeeHandler) Page(c *gin.Context) {
-	var dto *employeeApp.PageDTO
+	var dto employeeApp.PageDTO
 
 	err := c.ShouldBindQuery(&dto)
 	if err != nil {
@@ -20,7 +20,8 @@ func (h *EmployeeHandler) Page(c *gin.Context) {
 	}
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 	defer cancel()
-	vo, err := h.svc.PageQuery(ctx, dto)
+
+	vo, err := h.svc.PageQuery(ctx, &dto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return

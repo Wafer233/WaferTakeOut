@@ -52,8 +52,11 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 
 	db := r.db.
 		WithContext(ctx).
-		Model(&employee.Employee{}).
-		Where("name = ?", name)
+		Model(&employee.Employee{})
+
+	if name != "" {
+		db = db.Where("name = ?", name)
+	}
 
 	err := db.Count(&total).Error
 	if err != nil {
