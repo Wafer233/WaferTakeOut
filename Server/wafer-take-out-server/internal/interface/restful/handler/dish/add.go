@@ -24,7 +24,7 @@ func (h *DishHandler) AddDish(c *gin.Context) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30000*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	err = h.svc.Insert(ctx, &dto, curId.(int64))

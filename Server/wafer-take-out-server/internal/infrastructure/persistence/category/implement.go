@@ -76,12 +76,13 @@ func (repo *DefaultCategoryRepository) UpdateById(ctx context.Context, entity *c
 	return nil
 }
 
-func (repo *DefaultCategoryRepository) UpdateStatusById(ctx context.Context, id int64, status int) error {
+func (repo *DefaultCategoryRepository) UpdateStatusById(ctx context.Context, entity *category.Category) error {
 
 	db := repo.db.WithContext(ctx).
 		Model(&category.Category{}).
-		Where("id = ?", id).
-		Update("status", status)
+		Where("id = ?", entity.ID).
+		Select("status", "update_time", "update_user").
+		Updates(entity)
 
 	err := db.Error
 

@@ -79,6 +79,19 @@ func (repo *DefaultDishRepository) Insert(ctx context.Context, entity *dish.Dish
 	return err
 }
 
+func (repo *DefaultDishRepository) UpdateStatusById(ctx context.Context,
+	entity *dish.Dish) error {
+
+	db := repo.db.WithContext(ctx).
+		Model(&dish.Dish{}).
+		Where("id = ?", entity.Id).
+		Select("status", "update_time", "update_user").
+		Updates(entity)
+
+	return db.Error
+
+}
+
 //func (repo *DishRepository) Insert(ctx context.Context, entity *dish.Dish) error {
 //
 //	db := repo.db.WithContext(ctx).
