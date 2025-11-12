@@ -8,6 +8,7 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/domain/setmeal_dish"
 )
 
+// 这里的price又是string
 type AddSetMealDTO struct {
 	CategoryId    int64         `json:"categoryId"`
 	Description   string        `json:"description"`
