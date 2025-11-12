@@ -35,16 +35,12 @@ func (svc *SetMealService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO,
 	name := dto.Name
 	page := dto.Page
 	pageSize := dto.PageSize
-	status := dto.Status
-	statusInt := 0
-	if status == "" {
-		statusInt = 2
-	} else {
-		statusInt, _ = strconv.Atoi(status)
+	status, _ := strconv.Atoi(dto.Status)
+	if dto.Status == "" {
+		status = -1
 	}
-
-	records, total, err := svc.setRepo.GetsPaged(ctx, categoryId, name, page, pageSize, statusInt)
-	if total == 0 || err != nil {
+	records, total, err := svc.setRepo.GetsPaged(ctx, categoryId, name, page, pageSize, status)
+	if err != nil {
 		return PageVO{}, err
 	}
 

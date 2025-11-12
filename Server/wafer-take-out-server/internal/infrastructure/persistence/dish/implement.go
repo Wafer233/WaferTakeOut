@@ -23,6 +23,7 @@ func (repo *DefaultDishRepository) GetsPaged(ctx context.Context, name string, c
 
 	dishes := make([]*dish.Dish, 0)
 	total := int64(0)
+
 	db := repo.db.WithContext(ctx).
 		Model(&dish.Dish{})
 

@@ -56,6 +56,7 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	setMeal := r.Group("/admin/setmeal")
 	setMeal.Use(middleware.JWTAuthMiddleware())
 	setMeal.GET("page", h4.GetSetMealsPaged)
+	setMeal.POST("status/:status", h4.EditSetMealStatus)
 	setMeal.POST("", h4.AddSetMeal)
 
 	return r

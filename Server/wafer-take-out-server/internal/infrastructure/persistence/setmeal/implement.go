@@ -18,18 +18,18 @@ func NewSetMealRepository(db *gorm.DB) *DefaultSetMealRepository {
 func (repo *DefaultSetMealRepository) GetsPaged(ctx context.Context, categoryID int64,
 	name string, page, pageSize, status int) ([]*setmeal.SetMeal, int64, error) {
 
-	total := int64(0)
 	records := make([]*setmeal.SetMeal, 0)
+	total := int64(0)
 
 	db := repo.db.WithContext(ctx).
 		Model(&setmeal.SetMeal{})
 
-	if categoryID != 0 {
-		db = db.Where("category_id = ?", categoryID)
-	}
-
 	if name != "" {
 		db = db.Where("name = ?", name)
+	}
+
+	if categoryID != 0 {
+		db = db.Where("category_id = ?", categoryID)
 	}
 
 	if status == 0 || status == 1 {
@@ -65,6 +65,21 @@ func (repo *DefaultSetMealRepository) Insert(ctx context.Context, set *setmeal.S
 
 	if db.Error != nil {
 		return db.Error
+	}
+	return nil
+}
+
+func (repo *DefaultSetMealRepository) UpdateStatusById(ctx context.Context,
+	set *setmeal.SetMeal) error {
+
+	db := repo.db.WithContext(ctx).Model(&setmeal.SetMeal{}).
+		Where("id = ?", set.Id).
+		Select("status", "update_time", "update_user").
+		Updates(set)
+
+	err := db.Error
+	if err != nil {
+		return err
 	}
 	return nil
 }

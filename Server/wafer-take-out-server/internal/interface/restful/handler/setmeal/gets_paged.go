@@ -17,7 +17,7 @@ func (h *SetMealHandler) GetSetMealsPaged(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, result.Error("输入有误"))
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10000*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	vo, err := h.svc.PageQuery(ctx, &dto)
