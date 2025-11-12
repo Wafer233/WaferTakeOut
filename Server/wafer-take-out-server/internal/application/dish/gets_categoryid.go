@@ -18,16 +18,18 @@ func (svc *DishService) GetDishCategory(ctx context.Context, id int64) ([]*Recor
 		return nil, err
 	}
 
-	for index, record := range records {
-		record.ID = dishes[index].Id
-		record.Name = dishes[index].Name
-		record.CategoryId = dishes[index].CategoryId
-		record.Price = dishes[index].Price
-		record.Image = dishes[index].Image
-		record.Description = dishes[index].Description
-		record.Status = dishes[index].Status
-		record.UpdateTime = dishes[index].UpdateTime.Format("2006-01-02 15:04:05")
-		record.CategoryName = category.Name
+	for index, d := range dishes {
+		records[index] = &Record{
+			ID:           d.Id,
+			Name:         d.Name,
+			CategoryId:   d.CategoryId,
+			Price:        d.Price,
+			Image:        d.Image,
+			Description:  d.Description,
+			Status:       d.Status,
+			UpdateTime:   d.UpdateTime.Format("2006-01-02 15:04:05"),
+			CategoryName: category.Name,
+		}
 	}
 	return records, nil
 }

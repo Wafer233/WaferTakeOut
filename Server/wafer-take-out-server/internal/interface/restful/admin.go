@@ -5,6 +5,7 @@ import (
 	commonHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/common"
 	dishHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/dish"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/employee"
+	setmealHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/setmeal"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +14,7 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	h1 *categoryHandler.CategoryHandler,
 	h2 *commonHandler.CommonHandler,
 	h3 *dishHandler.DishHandler,
+	h4 *setmealHandler.SetMealHandler,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -47,9 +49,14 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	dish.DELETE("", h3.DeleteDishes)
 	dish.POST("", h3.AddDish)
 	dish.GET(":id", h3.GetDishId)
-	dish.GET("", h3.GetDishesCategory)
+	dish.GET("list", h3.GetDishesCategory)
 	dish.GET("page", h3.GetDishesPaged)
 	dish.POST("status/:status", h3.EditDishStatus)
+
+	setMeal := r.Group("/admin/setmeal")
+	setMeal.Use(middleware.JWTAuthMiddleware())
+	setMeal.GET("page", h4.GetSetMealsPaged)
+	setMeal.POST("", h4.AddSetMeal)
 
 	return r
 }

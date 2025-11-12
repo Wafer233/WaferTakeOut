@@ -15,7 +15,7 @@ func NewFlavorRepository(db *gorm.DB) flavor.FlavorRepository {
 	return &DefaultFlavorRepository{db: db}
 }
 
-func (repo *DefaultFlavorRepository) Insert(ctx context.Context, flavors []*flavor.Flavor) error {
+func (repo *DefaultFlavorRepository) Inserts(ctx context.Context, flavors []*flavor.Flavor) error {
 
 	if len(flavors) == 0 {
 		return nil

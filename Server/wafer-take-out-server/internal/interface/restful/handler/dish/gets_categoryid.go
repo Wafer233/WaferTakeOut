@@ -19,7 +19,7 @@ func (h *DishHandler) GetDishesCategory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, result.Error("获取categoryId失败"))
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30000*time.Second)
 	defer cancel()
 
 	records, err := h.svc.GetDishCategory(ctx, int64(categoryIdInt))

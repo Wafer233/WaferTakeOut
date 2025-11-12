@@ -56,7 +56,7 @@ func (svc *DishService) Insert(ctx context.Context, dto *DishDTO, curId int64) e
 			entities[index] = value
 		}
 
-		err = svc.flavRepo.Insert(ctx, entities)
+		err = svc.flavRepo.Inserts(ctx, entities)
 		if err != nil {
 			return err
 		}

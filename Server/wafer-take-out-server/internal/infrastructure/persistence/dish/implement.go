@@ -95,6 +95,7 @@ func (repo *DefaultDishRepository) UpdateStatusById(ctx context.Context,
 func (repo *DefaultDishRepository) GetsByCategoryId(ctx context.Context, id int64) ([]*dish.Dish, error) {
 
 	dishes := make([]*dish.Dish, 0)
+
 	db := repo.db.WithContext(ctx).
 		Model(&dish.Dish{}).
 		Where("category_id = ?", id).
