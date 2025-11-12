@@ -28,3 +28,19 @@ func (repo *DefaultSetMealDishRepository) Inserts(ctx context.Context,
 	}
 	return nil
 }
+
+func (repo *DefaultSetMealDishRepository) GetsBySetMealId(ctx context.Context,
+	id int64) ([]*setmeal_dish.SetMealDish, error) {
+
+	dishes := make([]*setmeal_dish.SetMealDish, 0)
+
+	err := repo.db.WithContext(ctx).
+		Model(&setmeal_dish.SetMealDish{}).
+		Where("setmeal_id = ?", id).
+		Find(&dishes).Error
+
+	if err != nil || len(dishes) == 0 {
+		return nil, err
+	}
+	return dishes, nil
+}

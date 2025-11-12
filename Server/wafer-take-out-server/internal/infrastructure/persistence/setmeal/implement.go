@@ -97,3 +97,19 @@ func (repo *DefaultSetMealRepository) DeletesByIds(ctx context.Context, ids []in
 	}
 	return nil
 }
+
+func (repo *DefaultSetMealRepository) GetById(ctx context.Context,
+	id int64) (*setmeal.SetMeal, error) {
+
+	var set setmeal.SetMeal
+	err := repo.db.WithContext(ctx).
+		Model(&setmeal.SetMeal{}).
+		Where("id = ?", id).
+		First(&set).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return &set, nil
+
+}

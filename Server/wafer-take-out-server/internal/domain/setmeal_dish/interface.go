@@ -4,4 +4,5 @@ import "context"
 
 type SetMealDishRepository interface {
 	Inserts(context.Context, []*SetMealDish) error
+	GetsBySetMealId(context.Context, int64) ([]*SetMealDish, error)
 }

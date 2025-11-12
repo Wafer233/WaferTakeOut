@@ -44,22 +44,23 @@ func (svc *SetMealService) AddSetMeal(ctx context.Context, dto *AddSetMealDTO, c
 		CreateUser:  curId,
 		UpdateUser:  curId,
 	}
+
 	mealDishes := make([]*setmeal_dish.SetMealDish, len(dto.SetMealDishes))
+
+	err := svc.setRepo.Insert(ctx, set)
+	if err != nil {
+		return err
+	}
 
 	for index, value := range dto.SetMealDishes {
 		mealDishes[index] = &setmeal_dish.SetMealDish{
 			Id:        value.ID,
-			SetMealId: value.SetmealId,
+			SetMealId: set.Id,
 			DishId:    value.DishId,
 			Name:      value.Name,
 			Price:     value.Price,
 			Copies:    value.Copies,
 		}
-	}
-
-	err := svc.setRepo.Insert(ctx, set)
-	if err != nil {
-		return err
 	}
 
 	err = svc.dishRepo.Inserts(ctx, mealDishes)

@@ -59,6 +59,7 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	setMeal.POST("status/:status", h4.EditSetMealStatus)
 	setMeal.DELETE("", h4.DeleteSetMeal)
 	setMeal.POST("", h4.AddSetMeal)
+	setMeal.GET(":id", h4.GetSetMeal)
 
 	return r
 }
