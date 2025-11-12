@@ -36,7 +36,6 @@ func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, er
 	page := dto.Page
 	pageSize := dto.PageSize
 	status, _ := strconv.Atoi(dto.Status)
-
 	if dto.Status == "" {
 		status = -1
 	}
@@ -46,12 +45,13 @@ func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, er
 		return PageVO{}, err
 	}
 
-	categoryName := ""
-	category, err := svc.cateRepo.GetById(ctx, categoryId)
-	if err != nil || category == nil {
-		categoryName = ""
-	} else {
-		categoryName = category.Name
+	categoryNames := make([]string, 0)
+	for index, _ := range dishes {
+		category, er := svc.cateRepo.GetById(ctx, dishes[index].CategoryId)
+		if er != nil {
+			return PageVO{}, er
+		}
+		categoryNames = append(categoryNames, category.Name)
 	}
 
 	records := make([]Record, len(dishes))
@@ -64,21 +64,9 @@ func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, er
 		record.Description = dishes[index].Description
 		record.Status = dishes[index].Status
 		record.UpdateTime = dishes[index].UpdateTime.Format("2006-01-02 15:04:05")
-		records[index].CategoryName = categoryName
-		records[index] = record
-	}
+		record.CategoryName = categoryNames[index]
 
-	if dto.CategoryId == 0 {
-		for index, record := range records {
-			category, err = svc.cateRepo.GetById(ctx, record.CategoryId)
-			if err != nil || category == nil {
-				categoryName = ""
-			} else {
-				categoryName = category.Name
-			}
-			record.CategoryName = categoryName
-			records[index] = record
-		}
+		records[index] = record
 	}
 
 	vo := PageVO{
