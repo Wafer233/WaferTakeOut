@@ -65,6 +65,20 @@ func (repo *DefaultDishRepository) DeletesById(ctx context.Context, ids []int64)
 	return nil
 }
 
+func (repo *DefaultDishRepository) Insert(ctx context.Context, entity *dish.Dish) error {
+
+	db := repo.db.WithContext(ctx).
+		Model(&dish.Dish{}).
+		Create(&entity)
+
+	err := db.Error
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 //func (repo *DishRepository) Insert(ctx context.Context, entity *dish.Dish) error {
 //
 //	db := repo.db.WithContext(ctx).

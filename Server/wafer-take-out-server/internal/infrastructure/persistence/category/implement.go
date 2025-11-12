@@ -7,17 +7,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type CategoryRepository struct {
+type DefaultCategoryRepository struct {
 	db *gorm.DB
 }
 
 func NewCategoryRepository(db *gorm.DB) category.CategoryRepository {
-	return &CategoryRepository{
+	return &DefaultCategoryRepository{
 		db: db,
 	}
 }
 
-func (repo *CategoryRepository) Insert(ctx context.Context, entity *category.Category) error {
+func (repo *DefaultCategoryRepository) Insert(ctx context.Context, entity *category.Category) error {
 
 	err := repo.db.WithContext(ctx).
 		Model(&category.Category{}).
@@ -26,7 +26,7 @@ func (repo *CategoryRepository) Insert(ctx context.Context, entity *category.Cat
 	return err
 }
 
-func (repo *CategoryRepository) GetsByPaged(ctx context.Context, name string,
+func (repo *DefaultCategoryRepository) GetsByPaged(ctx context.Context, name string,
 	curType int, page, pageSize int) ([]*category.Category, int64, error) {
 
 	offset := (page - 1) * pageSize
@@ -62,7 +62,7 @@ func (repo *CategoryRepository) GetsByPaged(ctx context.Context, name string,
 
 }
 
-func (repo *CategoryRepository) UpdateById(ctx context.Context, entity *category.Category) error {
+func (repo *DefaultCategoryRepository) UpdateById(ctx context.Context, entity *category.Category) error {
 
 	db := repo.db.WithContext(ctx).
 		Model(&category.Category{}).
@@ -76,7 +76,7 @@ func (repo *CategoryRepository) UpdateById(ctx context.Context, entity *category
 	return nil
 }
 
-func (repo *CategoryRepository) UpdateStatusById(ctx context.Context, id int64, status int) error {
+func (repo *DefaultCategoryRepository) UpdateStatusById(ctx context.Context, id int64, status int) error {
 
 	db := repo.db.WithContext(ctx).
 		Model(&category.Category{}).
@@ -88,7 +88,7 @@ func (repo *CategoryRepository) UpdateStatusById(ctx context.Context, id int64, 
 	return err
 }
 
-func (repo *CategoryRepository) DeleteById(ctx context.Context, id int64) error {
+func (repo *DefaultCategoryRepository) DeleteById(ctx context.Context, id int64) error {
 	db := repo.db.WithContext(ctx).
 		Model(&category.Category{}).
 		Where("id = ?", id).
@@ -97,7 +97,7 @@ func (repo *CategoryRepository) DeleteById(ctx context.Context, id int64) error 
 	return db.Error
 }
 
-func (repo *CategoryRepository) GetsByType(ctx context.Context, curType int) ([]*category.Category, error) {
+func (repo *DefaultCategoryRepository) GetsByType(ctx context.Context, curType int) ([]*category.Category, error) {
 
 	entity := make([]*category.Category, 0)
 	db := repo.db.WithContext(ctx).
@@ -112,7 +112,7 @@ func (repo *CategoryRepository) GetsByType(ctx context.Context, curType int) ([]
 
 }
 
-func (repo *CategoryRepository) GetById(ctx context.Context, id int64) (*category.Category, error) {
+func (repo *DefaultCategoryRepository) GetById(ctx context.Context, id int64) (*category.Category, error) {
 	entity := category.Category{}
 	db := repo.db.WithContext(ctx).
 		Model(&category.Category{}).

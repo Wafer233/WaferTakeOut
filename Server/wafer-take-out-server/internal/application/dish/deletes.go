@@ -8,5 +8,6 @@ func (svc *DishService) DeleteDishes(ctx context.Context, idArr []int64) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

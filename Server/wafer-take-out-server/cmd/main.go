@@ -12,6 +12,7 @@ import (
 	commonImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/common"
 	dishImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/dish"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/employee"
+	flavorImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/flavor"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful"
 	categoryHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/category"
 	commonHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/common"
@@ -26,10 +27,11 @@ func main() {
 	repo1 := categoryImpl.NewCategoryRepository(db)
 	repo2 := commonImpl.NewCommonRepository(db)
 	repo3 := dishImpl.NewDishRepository(db)
+	repo4 := flavorImpl.NewFlavorRepository(db)
 	svc := employeeApp.NewEmployeeService(repo)
 	svc1 := categoryApp.NewCategoryService(repo1)
 	svc2 := commonApp.NewCommonService(repo2)
-	svc3 := dishApp.NewDishService(repo3, repo1)
+	svc3 := dishApp.NewDishService(repo3, repo1, repo4)
 	h := employeeHandler.NewEmployeeHandler(svc)
 	h1 := categoryHandler.NewCategoryHandler(svc1)
 	h2 := commonHandler.NewCommonHandler(svc2)

@@ -3,7 +3,7 @@ package category
 import "time"
 
 type Category struct {
-	ID         int64     `gorm:"column:id;primaryKey;type:bigint;not null"`
+	ID         int64     `gorm:"column:id;primaryKey;type:bigint,autoIncrement"`
 	Type       int       `gorm:"column:type;type:int"`
 	Name       string    `gorm:"column:name;type:varchar(32);not null"`
 	Sort       int       `gorm:"column:sort;type:int;not null"`

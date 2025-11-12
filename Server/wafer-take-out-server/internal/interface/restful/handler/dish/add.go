@@ -10,22 +10,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *DishHandler) GetDishesPaged(c *gin.Context) {
+func (h *DishHandler) AddDish(c *gin.Context) {
 
-	dto := dishApp.PageDTO{}
-	err := c.ShouldBindQuery(&dto)
+	dto := dishApp.DishDTO{}
+	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("输入错误"))
 		return
 	}
+	curId, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		return
+	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30000*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.PageQuery(ctx, &dto)
+	err = h.svc.Insert(ctx, &dto, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return
 	}
-	c.JSON(http.StatusOK, result.SuccessData(vo))
+	c.JSON(http.StatusOK, result.Success())
 }

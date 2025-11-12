@@ -3,7 +3,7 @@ package dish
 import "time"
 
 type Dish struct {
-	Id          int64     `gorm:"column:id;primaryKey;type:bigint"`
+	Id          int64     `gorm:"column:id;primaryKey;type:bigint,autoIncrement"`
 	Name        string    `gorm:"column:name;type:varchar(32)"`
 	CategoryId  int64     `gorm:"column:category_id;type:bigint"`
 	Price       float64   `gorm:"column:price;type:decimal(10,2)"`
