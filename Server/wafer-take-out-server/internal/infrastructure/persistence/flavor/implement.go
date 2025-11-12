@@ -21,25 +21,47 @@ func (repo *DefaultFlavorRepository) Inserts(ctx context.Context, flavors []*fla
 		return nil
 	}
 
-	db := repo.db.WithContext(ctx).
+	err := repo.db.WithContext(ctx).
 		Model(&flavor.Flavor{}).
-		Create(&flavors)
+		Create(&flavors).Error
 
-	err := db.Error
 	return err
 }
 
 func (repo *DefaultFlavorRepository) GetsByDishId(ctx context.Context, id int64) ([]*flavor.Flavor, error) {
 
 	fal := make([]*flavor.Flavor, 0)
-	db := repo.db.WithContext(ctx).
+	err := repo.db.WithContext(ctx).
 		Model(&flavor.Flavor{}).
 		Where("dish_id = ?", id).
-		Find(&fal)
+		Find(&fal).Error
 
-	err := db.Error
 	if err != nil {
 		return nil, err
 	}
+
 	return fal, nil
+}
+
+func (repo *DefaultFlavorRepository) UpdatesByDishId(ctx context.Context, flavors []*flavor.Flavor) error {
+
+	dishID := flavors[0].DishId
+
+	tx := repo.db.WithContext(ctx).
+		Model(&flavor.Flavor{}).
+		Begin()
+
+	err := tx.Where("dish_id = ?", dishID).Delete(&flavor.Flavor{}).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Create(flavors).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }
