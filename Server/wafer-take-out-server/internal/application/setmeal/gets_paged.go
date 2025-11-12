@@ -29,8 +29,7 @@ type Record struct {
 	CategoryName string  `json:"categoryName"`
 }
 
-func (svc *SetMealService) PageQuery(ctx context.Context,
-	dto *PageDTO) (PageVO, error) {
+func (svc *SetMealService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, error) {
 
 	categoryId := dto.CategoryId
 	name := dto.Name
@@ -45,7 +44,9 @@ func (svc *SetMealService) PageQuery(ctx context.Context,
 	}
 
 	records, total, err := svc.setRepo.GetsPaged(ctx, categoryId, name, page, pageSize, statusInt)
-	recordVOs := make([]Record, len(records))
+	if total == 0 || err != nil {
+		return PageVO{}, err
+	}
 
 	catNames := make([]string, len(records))
 	for index, value := range records {
@@ -56,16 +57,19 @@ func (svc *SetMealService) PageQuery(ctx context.Context,
 		catNames[index] = cat.Name
 	}
 
-	for index, vo := range recordVOs {
-		vo.Id = records[index].Id
-		vo.CategoryId = records[index].CategoryId
-		vo.Name = records[index].Name
-		vo.Price = records[index].Price
-		vo.Status = strconv.Itoa(records[index].Status)
-		vo.Description = records[index].Description
-		vo.Image = records[index].Image
-		vo.UpdateTime = records[index].UpdateTime.Format("2006-01-02 15:04:05")
-		vo.CategoryName = catNames[index]
+	recordVOs := make([]Record, len(records))
+	for index, value := range records {
+		recordVOs[index] = Record{
+			Id:           value.Id,
+			CategoryId:   value.CategoryId,
+			Name:         value.Name,
+			Price:        value.Price,
+			Status:       strconv.Itoa(value.Status),
+			Description:  value.Description,
+			Image:        value.Image,
+			UpdateTime:   value.UpdateTime.Format("2006-01-02 15:04:05"),
+			CategoryName: catNames[index],
+		}
 	}
 
 	vo := PageVO{

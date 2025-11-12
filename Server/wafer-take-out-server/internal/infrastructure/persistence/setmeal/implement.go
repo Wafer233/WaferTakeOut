@@ -41,11 +41,13 @@ func (repo *DefaultSetMealRepository) GetsPaged(ctx context.Context, categoryID 
 		return nil, 0, err
 	}
 
+	// record一定要给指针啊
 	offset := (page - 1) * pageSize
-	err = db.Offset(offset).
+	db = db.Offset(offset).
 		Limit(pageSize).
-		Find(records).Error
+		Find(&records)
 
+	err = db.Error
 	if err != nil {
 		return nil, 0, err
 	}
