@@ -92,16 +92,34 @@ func (repo *DefaultDishRepository) UpdateStatusById(ctx context.Context,
 
 }
 
-//func (repo *DishRepository) Insert(ctx context.Context, entity *dish.Dish) error {
-//
-//	db := repo.db.WithContext(ctx).
-//		Model(&dish.Dish{}).
-//		Updates(&entity)
-//
-//	err := db.Error
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//
-//}
+func (repo *DefaultDishRepository) GetsByCategoryId(ctx context.Context, id int64) ([]*dish.Dish, error) {
+
+	dishes := make([]*dish.Dish, 0)
+	db := repo.db.WithContext(ctx).
+		Model(&dish.Dish{}).
+		Where("category_id = ?", id).
+		Find(&dishes)
+
+	err := db.Error
+	if err != nil || len(dishes) == 0 {
+		return nil, err
+	}
+
+	return dishes, nil
+}
+
+func (repo *DefaultDishRepository) GetById(ctx context.Context, id int64) (*dish.Dish, error) {
+
+	entity := &dish.Dish{}
+	db := repo.db.WithContext(ctx).
+		Model(&dish.Dish{}).
+		Where("id = ?", id).
+		First(entity)
+
+	err := db.Error
+	if err != nil {
+		return nil, err
+	}
+	return entity, nil
+
+}

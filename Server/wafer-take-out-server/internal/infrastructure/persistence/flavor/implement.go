@@ -28,3 +28,18 @@ func (repo *DefaultFlavorRepository) Insert(ctx context.Context, flavors []*flav
 	err := db.Error
 	return err
 }
+
+func (repo *DefaultFlavorRepository) GetsByDishId(ctx context.Context, id int64) ([]*flavor.Flavor, error) {
+
+	fal := make([]*flavor.Flavor, 0)
+	db := repo.db.WithContext(ctx).
+		Model(&flavor.Flavor{}).
+		Where("dish_id = ?", id).
+		Find(&fal)
+
+	err := db.Error
+	if err != nil {
+		return nil, err
+	}
+	return fal, nil
+}

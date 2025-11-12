@@ -47,6 +47,8 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 	dish.DELETE("", h3.DeleteDishes)
 	dish.POST("", h3.AddDish)
 	dish.POST("status/:status", h3.EditDishStatus)
+	dish.GET("", h3.GetDishesCategory)
+	dish.GET(":id", h3.GetDishId)
 
 	return r
 }
