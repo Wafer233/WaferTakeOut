@@ -52,6 +52,19 @@ func (repo *DefaultDishRepository) GetsPaged(ctx context.Context, name string, c
 
 }
 
+func (repo *DefaultDishRepository) DeletesById(ctx context.Context, ids []int64) error {
+	db := repo.db.WithContext(ctx).
+		Model(&dish.Dish{}).
+		Where("id in (?)", ids).
+		Delete(&dish.Dish{})
+
+	err := db.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 //func (repo *DishRepository) Insert(ctx context.Context, entity *dish.Dish) error {
 //
 //	db := repo.db.WithContext(ctx).

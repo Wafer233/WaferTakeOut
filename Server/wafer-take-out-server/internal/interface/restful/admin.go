@@ -43,6 +43,8 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 
 	dish := r.Group("/admin/dish")
 	dish.Use(middleware.JWTAuthMiddleware())
-	dish.GET("page", h3.GetDishedPaged)
+	dish.GET("page", h3.GetDishesPaged)
+	//dish.PUT("", h3.EditDish)
+	dish.DELETE("", h3.DeleteDishes)
 	return r
 }

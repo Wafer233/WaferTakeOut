@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *DishHandler) GetDishedPaged(c *gin.Context) {
+func (h *DishHandler) GetDishesPaged(c *gin.Context) {
 
 	dto := dishApp.PageDTO{}
 	err := c.ShouldBindQuery(&dto)

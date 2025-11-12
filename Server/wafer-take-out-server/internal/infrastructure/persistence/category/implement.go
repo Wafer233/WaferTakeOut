@@ -118,12 +118,9 @@ func (repo *CategoryRepository) GetById(ctx context.Context, id int64) (*categor
 		Model(&category.Category{}).
 		Where("id = ?", id).
 		First(&entity)
-
 	err := db.Error
 	if err != nil {
 		return nil, err
 	}
-
 	return &entity, nil
-
 }
