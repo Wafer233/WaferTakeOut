@@ -83,3 +83,17 @@ func (repo *DefaultSetMealRepository) UpdateStatusById(ctx context.Context,
 	}
 	return nil
 }
+
+func (repo *DefaultSetMealRepository) DeletesByIds(ctx context.Context, ids []int64) error {
+
+	db := repo.db.WithContext(ctx).
+		Model(&setmeal.SetMeal{}).
+		Where("id in (?)", ids).
+		Delete(&setmeal.SetMeal{})
+
+	err := db.Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

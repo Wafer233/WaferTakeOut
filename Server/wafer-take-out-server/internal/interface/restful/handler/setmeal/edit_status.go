@@ -14,6 +14,7 @@ func (h *SetMealHandler) EditSetMealStatus(c *gin.Context) {
 
 	// 这个地方前端有问题，无论怎么样他是0， 例如
 	// "0?id=35"
+	// 后端测试没问题
 	statusStr := c.Param("status")
 	status, err := strconv.Atoi(statusStr)
 	if err != nil {
