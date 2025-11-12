@@ -123,3 +123,17 @@ func (repo *DefaultDishRepository) GetById(ctx context.Context, id int64) (*dish
 	return entity, nil
 
 }
+
+func (repo *DefaultDishRepository) UpdateById(ctx context.Context, entity *dish.Dish) error {
+	db := repo.db.WithContext(ctx).
+		Model(&dish.Dish{}).
+		Where("id = ?", entity.Id).
+		Omit("id", "status", "create_time", "create_user").
+		Updates(entity)
+
+	err := db.Error
+	if err != nil {
+		return err
+	}
+	return err
+}

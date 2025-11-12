@@ -10,4 +10,5 @@ type DishRepository interface {
 	GetsByCategoryId(context.Context, int64) ([]*Dish, error)
 	GetsPaged(context.Context, string, int64, int, int, int) ([]*Dish, int64, error)
 	UpdateStatusById(context.Context, *Dish) error
+	UpdateById(context.Context, *Dish) error
 }
