@@ -129,11 +129,16 @@ func (svc *DishService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, err
 	return vo, nil
 }
 
-func (svc *DishService) FindByCategoryId(ctx context.Context, cid int64) ([]*Record, error) {
+func (svc *DishService) FindByCategoryId(ctx context.Context, cid int64) ([]Record, error) {
 
 	dishes, err := svc.repo.FindByCategoryId(ctx, cid)
 
-	records := make([]*Record, len(dishes))
+	// 防止溢出
+	if len(dishes) == 0 {
+		return []Record{}, nil
+	}
+
+	records := make([]Record, len(dishes))
 
 	category, err := svc.cateRepo.FindById(ctx, dishes[0].CategoryId)
 	if err != nil {
@@ -141,7 +146,7 @@ func (svc *DishService) FindByCategoryId(ctx context.Context, cid int64) ([]*Rec
 	}
 
 	for index, d := range dishes {
-		records[index] = &Record{
+		records[index] = Record{
 			ID:           d.Id,
 			Name:         d.Name,
 			CategoryId:   d.CategoryId,

@@ -17,7 +17,7 @@ func NewRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
 	admin.GET("list", h.ListByType)
 
 	user := r.Group("/user/category")
-	user.Use(middleware.JWTAuthMiddleware())
+	//user.Use(middleware.JWTAuthMiddleware())
 	user.GET("list", h.ListByType)
 	return r
 }

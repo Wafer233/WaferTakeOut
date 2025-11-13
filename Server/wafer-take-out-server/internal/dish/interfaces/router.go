@@ -7,15 +7,19 @@ import (
 
 func NewRouter(r *gin.Engine, h *DishHandler) *gin.Engine {
 
-	dish := r.Group("/admin/dish")
+	admin := r.Group("/admin/dish")
 
-	dish.Use(middleware.JWTAuthMiddleware())
-	dish.PUT("", h.Update)
-	dish.DELETE("", h.Delete)
-	dish.POST("", h.Create)
-	dish.GET(":id", h.GetById)
-	dish.GET("list", h.ListByCategory)
-	dish.GET("page", h.Page)
-	dish.POST("status/:status", h.UpdateStatus)
+	admin.Use(middleware.JWTAuthMiddleware())
+	admin.PUT("", h.Update)
+	admin.DELETE("", h.Delete)
+	admin.POST("", h.Create)
+	admin.GET(":id", h.GetById)
+	admin.GET("list", h.ListByCategory)
+	admin.GET("page", h.Page)
+	admin.POST("status/:status", h.UpdateStatus)
+
+	user := r.Group("/user/dish")
+	//user.Use(middleware.JWTAuthMiddleware())
+	user.GET("list", h.ListByCategory)
 	return r
 }
