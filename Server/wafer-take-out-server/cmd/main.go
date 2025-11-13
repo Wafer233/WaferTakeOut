@@ -10,7 +10,6 @@ import (
 	dishImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/infrastructure"
 	employeeApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/application"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/infrastructure"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence"
 	commonImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/common"
 	flavorImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/flavor"
 	setmealDishImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/infrastructure/persistence/setmeal_dish"
@@ -24,13 +23,14 @@ import (
 	setmealImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/infrastructure"
 	shopApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/application"
 	shopImpl "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/infrastructure"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/database"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-	db, _ := persistence.NewMysqlDatabase()
-	rdb, _ := persistence.NewRedisDatabase()
+	db, _ := database.NewMysqlDatabase()
+	rdb, _ := database.NewRedisDatabase()
 	repo := infrastructure.employeeImpl.NewEmployeeRepository(db)
 	repo1 := categoryImpl.NewCategoryRepository(db)
 	repo2 := commonImpl.NewCommonRepository(db)

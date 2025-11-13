@@ -3,11 +3,11 @@ package domain
 import "context"
 
 type CategoryRepository interface {
-	Insert(context.Context, *Category) error
-	GetsByPaged(context.Context, string, int, int, int) ([]*Category, int64, error)
-	UpdateById(context.Context, *Category) error
-	UpdateStatusById(context.Context, *Category) error
-	DeleteById(context.Context, int64) error
-	GetsByType(context.Context, int) ([]*Category, error)
-	GetById(context.Context, int64) (*Category, error)
+	Create(context.Context, *Category) error
+	FindPage(context.Context, string, int, int, int) ([]*Category, int64, error)
+	Update(context.Context, *Category) error
+	UpdateStatus(context.Context, *Category) error
+	Delete(context.Context, int64) error
+	FindByType(context.Context, int) ([]*Category, error)
+	FindById(context.Context, int64) (*Category, error)
 }

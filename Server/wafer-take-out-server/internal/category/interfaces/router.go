@@ -5,10 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewAdminRouter(
-	r *gin.Engine,
-	h *CategoryHandler,
-) *gin.Engine {
+func NewRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
+
 	category := r.Group("/admin/category")
 	category.Use(middleware.JWTAuthMiddleware())
 	category.POST("", h.Create)

@@ -1,4 +1,4 @@
-package handler
+package interfaces
 
 import (
 	"fmt"
@@ -6,17 +6,15 @@ import (
 	"path/filepath"
 	"time"
 
-	commonApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/application/common"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
 type CommonHandler struct {
-	svc *commonApp.CommonService
 }
 
-func NewCommonHandler(svc *commonApp.CommonService) *CommonHandler {
-	return &CommonHandler{svc: svc}
+func NewCommonHandler() *CommonHandler {
+	return &CommonHandler{}
 }
 
 func (h *CommonHandler) Upload(c *gin.Context) {

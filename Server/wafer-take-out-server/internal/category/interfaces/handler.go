@@ -37,7 +37,7 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, result.Error("获取curId失败"))
 		return
 	}
-	err = h.svc.AddCategory(ctx, &dto, id.(int64))
+	err = h.svc.Create(ctx, &dto, id.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -56,7 +56,7 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	err = h.svc.DeleteCategory(ctx, int64(idInt))
+	err = h.svc.Delete(ctx, int64(idInt))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务失败"))
@@ -82,7 +82,7 @@ func (h *CategoryHandler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	err = h.svc.EditCategory(ctx, &dto, curId.(int64))
+	err = h.svc.Update(ctx, &dto, curId.(int64))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务失败"))
@@ -115,7 +115,7 @@ func (h *CategoryHandler) UpdateStatus(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
 		return
 	}
-	err = h.svc.FlipStatus(ctx, int64(idInt), statusInt, curId.(int64))
+	err = h.svc.UpdateStatus(ctx, int64(idInt), statusInt, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 	}
@@ -134,7 +134,7 @@ func (h *CategoryHandler) Page(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.PageQuery(ctx, &dto)
+	vo, err := h.svc.FindPage(ctx, &dto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -154,7 +154,7 @@ func (h *CategoryHandler) ListByType(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.TypeQuery(ctx, curTypeInt)
+	vo, err := h.svc.FindByType(ctx, curTypeInt)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))

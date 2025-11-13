@@ -13,7 +13,7 @@ type DefaultShopCache struct {
 	rbd *redis.Client
 }
 
-func NewDefaultShopCache(rbd *redis.Client) domian.ShopCache {
+func NewDefaultShopCache(rbd *redis.Client) domian.ShopRepository {
 	return &DefaultShopCache{rbd: rbd}
 }
 

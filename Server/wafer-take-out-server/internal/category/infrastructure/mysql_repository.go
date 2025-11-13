@@ -17,7 +17,7 @@ func NewCategoryRepository(db *gorm.DB) domain.CategoryRepository {
 	}
 }
 
-func (repo *DefaultCategoryRepository) Insert(ctx context.Context, entity *domain.Category) error {
+func (repo *DefaultCategoryRepository) Create(ctx context.Context, entity *domain.Category) error {
 
 	err := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).
@@ -26,7 +26,7 @@ func (repo *DefaultCategoryRepository) Insert(ctx context.Context, entity *domai
 	return err
 }
 
-func (repo *DefaultCategoryRepository) GetsByPaged(ctx context.Context, name string,
+func (repo *DefaultCategoryRepository) FindPage(ctx context.Context, name string,
 	curType int, page, pageSize int) ([]*domain.Category, int64, error) {
 
 	offset := (page - 1) * pageSize
@@ -62,7 +62,7 @@ func (repo *DefaultCategoryRepository) GetsByPaged(ctx context.Context, name str
 
 }
 
-func (repo *DefaultCategoryRepository) UpdateById(ctx context.Context, entity *domain.Category) error {
+func (repo *DefaultCategoryRepository) Update(ctx context.Context, entity *domain.Category) error {
 
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).
@@ -76,7 +76,7 @@ func (repo *DefaultCategoryRepository) UpdateById(ctx context.Context, entity *d
 	return nil
 }
 
-func (repo *DefaultCategoryRepository) UpdateStatusById(ctx context.Context, entity *domain.Category) error {
+func (repo *DefaultCategoryRepository) UpdateStatus(ctx context.Context, entity *domain.Category) error {
 
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).
@@ -89,7 +89,7 @@ func (repo *DefaultCategoryRepository) UpdateStatusById(ctx context.Context, ent
 	return err
 }
 
-func (repo *DefaultCategoryRepository) DeleteById(ctx context.Context, id int64) error {
+func (repo *DefaultCategoryRepository) Delete(ctx context.Context, id int64) error {
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).
 		Where("id = ?", id).
@@ -98,7 +98,7 @@ func (repo *DefaultCategoryRepository) DeleteById(ctx context.Context, id int64)
 	return db.Error
 }
 
-func (repo *DefaultCategoryRepository) GetsByType(ctx context.Context, curType int) ([]*domain.Category, error) {
+func (repo *DefaultCategoryRepository) FindByType(ctx context.Context, curType int) ([]*domain.Category, error) {
 
 	entity := make([]*domain.Category, 0)
 	db := repo.db.WithContext(ctx).
@@ -113,7 +113,7 @@ func (repo *DefaultCategoryRepository) GetsByType(ctx context.Context, curType i
 
 }
 
-func (repo *DefaultCategoryRepository) GetById(ctx context.Context, id int64) (*domain.Category, error) {
+func (repo *DefaultCategoryRepository) FindById(ctx context.Context, id int64) (*domain.Category, error) {
 	entity := domain.Category{}
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).

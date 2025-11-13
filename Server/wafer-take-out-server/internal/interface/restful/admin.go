@@ -1,6 +1,7 @@
 package restful
 
 import (
+	interfaces5 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/common/interfaces"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/interfaces"
 	interfaces2 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/interfaces"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler"
@@ -14,7 +15,7 @@ func NewAdminRouter(
 	r *gin.Engine,
 	h *interfaces2.EmployeeHandler,
 	h1 *handler.CategoryHandler,
-	h2 *handler.CommonHandler,
+	h2 *interfaces5.CommonHandler,
 	h3 *interfaces.DishHandler,
 	h4 *interfaces3.SetMealHandler,
 	h5 *interfaces4.ShopHandler,
@@ -44,16 +45,6 @@ func NewAdminRouter(
 	common := r.Group("/admin/common")
 	common.Use(middleware.JWTAuthMiddleware())
 	common.POST("upload", h2.Upload)
-
-	dish := r.Group("/admin/dish")
-	dish.Use(middleware.JWTAuthMiddleware())
-	dish.PUT("", h3.Update)
-	dish.DELETE("", h3.Delete)
-	dish.POST("", h3.Create)
-	dish.GET(":id", h3.GetById)
-	dish.GET("list", h3.ListByCategory)
-	dish.GET("page", h3.Page)
-	dish.POST("status/:status", h3.UpdateStatus)
 
 	setMeal := r.Group("/admin/setmeal")
 	setMeal.Use(middleware.JWTAuthMiddleware())

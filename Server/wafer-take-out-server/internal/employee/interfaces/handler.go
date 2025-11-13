@@ -21,6 +21,7 @@ func NewEmployeeHandler(svc *application.EmployeeService) *EmployeeHandler {
 		svc: svc,
 	}
 }
+
 func (h *EmployeeHandler) Login(c *gin.Context) {
 	var dto application.LoginDTO
 	var vo *application.LoginVO

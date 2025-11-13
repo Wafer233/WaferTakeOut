@@ -1,0 +1,31 @@
+package application
+
+type PageVO struct {
+	Total   int64    `json:"total"`
+	Records []Record `json:"records"`
+}
+
+type Record struct {
+	ID           int64   `json:"id"`
+	Name         string  `json:"name"`
+	CategoryId   int64   `json:"categoryId"`
+	Price        float64 `json:"price"`
+	Image        string  `json:"image"`
+	Description  string  `json:"description"`
+	Status       int     `json:"status"`
+	UpdateTime   string  `json:"updateTime"`
+	CategoryName string  `json:"categoryName"`
+}
+
+type DishVO struct {
+	CategoryId   int64    `json:"categoryId"`
+	CategoryName string   `json:"categoryName"`
+	Description  string   `json:"description"`
+	Flavors      []Flavor `json:"flavors"`
+	ID           int64    `json:"id"`
+	Image        string   `json:"image"`
+	Name         string   `json:"name"`
+	Price        float64  `json:"price,string"`
+	Status       int      `json:"status"`
+	UpdateTime   string   `json:"updateTime"`
+}

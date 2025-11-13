@@ -17,7 +17,7 @@ func NewCategoryService(repo domain.CategoryRepository) *CategoryService {
 	}
 }
 
-func (svc *CategoryService) AddCategory(ctx context.Context, dto *AddCategoryDTO, curId int64) error {
+func (svc *CategoryService) Create(ctx context.Context, dto *AddCategoryDTO, curId int64) error {
 
 	entity := domain.Category{
 		ID:         dto.ID,
@@ -31,16 +31,16 @@ func (svc *CategoryService) AddCategory(ctx context.Context, dto *AddCategoryDTO
 		UpdateUser: curId,
 	}
 
-	err := svc.repo.Insert(ctx, &entity)
+	err := svc.repo.Create(ctx, &entity)
 	return err
 }
 
-func (svc *CategoryService) DeleteCategory(ctx context.Context, id int64) error {
-	err := svc.repo.DeleteById(ctx, id)
+func (svc *CategoryService) Delete(ctx context.Context, id int64) error {
+	err := svc.repo.Delete(ctx, id)
 	return err
 }
 
-func (svc *CategoryService) EditCategory(ctx context.Context, dto *EditCategoryDTO, curId int64) error {
+func (svc *CategoryService) Update(ctx context.Context, dto *EditCategoryDTO, curId int64) error {
 
 	entity := domain.Category{
 		ID:         dto.ID,
@@ -49,14 +49,14 @@ func (svc *CategoryService) EditCategory(ctx context.Context, dto *EditCategoryD
 		UpdateTime: time.Now(),
 		UpdateUser: curId,
 	}
-	err := svc.repo.UpdateById(ctx, &entity)
+	err := svc.repo.Update(ctx, &entity)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *CategoryService) FlipStatus(ctx context.Context, id int64, status int, curId int64) error {
+func (svc *CategoryService) UpdateStatus(ctx context.Context, id int64, status int, curId int64) error {
 
 	entity := &domain.Category{
 		ID:         id,
@@ -64,18 +64,18 @@ func (svc *CategoryService) FlipStatus(ctx context.Context, id int64, status int
 		UpdateTime: time.Now(),
 		UpdateUser: curId,
 	}
-	err := svc.repo.UpdateStatusById(ctx, entity)
+	err := svc.repo.UpdateStatus(ctx, entity)
 	return err
 }
 
-func (svc *CategoryService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, error) {
+func (svc *CategoryService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, error) {
 
 	curName := dto.Name
 	page := dto.Page
 	pageSize := dto.PageSize
 	curType := dto.Type
 
-	entities, total, err := svc.repo.GetsByPaged(ctx, curName, curType, page, pageSize)
+	entities, total, err := svc.repo.FindPage(ctx, curName, curType, page, pageSize)
 	if err != nil {
 		return PageVO{}, err
 	}
@@ -102,9 +102,9 @@ func (svc *CategoryService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO
 
 }
 
-func (svc *CategoryService) TypeQuery(ctx context.Context, curType int) (GetsTypedVO, error) {
+func (svc *CategoryService) FindByType(ctx context.Context, curType int) (GetsTypedVO, error) {
 
-	entities, err := svc.repo.GetsByType(ctx, curType)
+	entities, err := svc.repo.FindByType(ctx, curType)
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,7 @@ package domian
 
 import "context"
 
-type ShopCache interface {
+type ShopRepository interface {
 	Set(context.Context, int) error
 	Get(context.Context) (int, error)
 }

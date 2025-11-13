@@ -3,7 +3,7 @@ package domain
 import "context"
 
 type DishRepository interface {
-	//UpdateById(context.Context, *Dish) error
+	//Update(context.Context, *Dish) error
 	DeletesById(context.Context, []int64) error
 	Insert(context.Context, *Dish) error
 	GetById(context.Context, int64) (*Dish, error)

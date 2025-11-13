@@ -1,4 +1,4 @@
-package persistence
+package database
 
 import (
 	"gorm.io/driver/mysql"
