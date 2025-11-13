@@ -9,4 +9,5 @@ type SetMealRepository interface {
 	Delete(context.Context, []int64) error
 	FindById(context.Context, int64) (*SetMeal, []*SetMealDish, error)
 	Update(context.Context, *SetMeal, []*SetMealDish) error
+	FindByCategoryId(context.Context, int64) ([]*SetMeal, error)
 }

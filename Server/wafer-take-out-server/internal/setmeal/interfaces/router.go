@@ -7,14 +7,17 @@ import (
 
 func NewRouter(r *gin.Engine, h *SetMealHandler) *gin.Engine {
 
-	setMeal := r.Group("/admin/setmeal")
-	setMeal.Use(middleware.JWTAuthMiddleware())
-	setMeal.PUT("", h.Update)
-	setMeal.GET("page", h.Page)
-	setMeal.POST("status/:status", h.UpdateStatus)
-	setMeal.DELETE("", h.Delete)
-	setMeal.POST("", h.Create)
-	setMeal.GET(":id", h.GetById)
+	admin := r.Group("/admin/setmeal")
+	admin.Use(middleware.JWTAuthMiddleware())
+	admin.PUT("", h.Update)
+	admin.GET("page", h.ListPage)
+	admin.POST("status/:status", h.UpdateStatus)
+	admin.DELETE("", h.Delete)
+	admin.POST("", h.Create)
+	admin.GET(":id", h.ListById)
 
+	user := r.Group("/user/setmeal")
+	//user.Use(middleware.JWTAuthMiddleware())
+	user.GET("list", h.ListByCategoryId)
 	return r
 }

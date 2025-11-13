@@ -200,3 +200,30 @@ func (svc *SetMealService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, 
 
 	return vo, err
 }
+
+func (svc *SetMealService) FindByCategoryId(ctx context.Context, cid int64) ([]FindByCategoryVO, error) {
+
+	setmealEntity, err := svc.setRepo.FindByCategoryId(ctx, cid)
+	if err != nil {
+		return []FindByCategoryVO{}, err
+	}
+
+	vo := make([]FindByCategoryVO, len(setmealEntity))
+	for index, value := range setmealEntity {
+		vo[index] = FindByCategoryVO{
+			CategoryId:  value.CategoryId,
+			CreateTime:  value.CreateTime.Format("2006-01-02 15:04"),
+			CreateUser:  value.CreateUser,
+			Description: value.Description,
+			ID:          value.Id,
+			Image:       value.Image,
+			Name:        value.Name,
+			Price:       value.Price,
+			Status:      value.Status,
+			UpdateTime:  value.UpdateTime.Format("2006-01-02 15:04"),
+			UpdateUser:  value.UpdateUser,
+		}
+	}
+	return vo, nil
+
+}

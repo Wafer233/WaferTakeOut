@@ -175,3 +175,18 @@ func (repo *DefaultSetMealRepository) Update(ctx context.Context,
 	return tx.Commit().Error
 
 }
+
+func (repo *DefaultSetMealRepository) FindByCategoryId(ctx context.Context, cid int64) ([]*domain.SetMeal, error) {
+
+	var sets []*domain.SetMeal
+
+	err := repo.db.WithContext(ctx).
+		Model(&domain.SetMeal{}).
+		Where("category_id = ?", cid).
+		Find(&sets).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return sets, nil
+}

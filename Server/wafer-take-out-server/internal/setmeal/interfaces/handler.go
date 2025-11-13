@@ -22,7 +22,7 @@ func NewSetMealHandler(svc *application.SetMealService) *SetMealHandler {
 	}
 }
 
-func (h *SetMealHandler) Page(c *gin.Context) {
+func (h *SetMealHandler) ListPage(c *gin.Context) {
 	dto := application.PageDTO{}
 	err := c.ShouldBindQuery(&dto)
 	if err != nil {
@@ -42,7 +42,7 @@ func (h *SetMealHandler) Page(c *gin.Context) {
 
 }
 
-func (h *SetMealHandler) GetById(c *gin.Context) {
+func (h *SetMealHandler) ListById(c *gin.Context) {
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -177,4 +177,19 @@ func (h *SetMealHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result.Success())
+}
+
+func (h *SetMealHandler) ListByCategoryId(c *gin.Context) {
+	categoryIdStr := c.Query("categoryId")
+	categoryId, _ := strconv.Atoi(categoryIdStr)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	vo, err := h.svc.FindByCategoryId(ctx, int64(categoryId))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	c.JSON(http.StatusOK, result.SuccessData(vo))
 }
