@@ -1,45 +1,45 @@
 package restful
 
 import (
-	categoryHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/category"
-	commonHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/common"
-	dishHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/dish"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/employee"
-	setmealHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/setmeal"
-	shopHandler "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler/shop"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/interfaces"
+	interfaces2 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/interfaces"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/handler"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/interface/restful/middleware"
+	interfaces3 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/interfaces"
+	interfaces4 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/interfaces"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(h *employeeHandler.EmployeeHandler,
-	h1 *categoryHandler.CategoryHandler,
-	h2 *commonHandler.CommonHandler,
-	h3 *dishHandler.DishHandler,
-	h4 *setmealHandler.SetMealHandler,
-	h5 *shopHandler.ShopHandler,
+func NewAdminRouter(
+	r *gin.Engine,
+	h *interfaces2.EmployeeHandler,
+	h1 *handler.CategoryHandler,
+	h2 *handler.CommonHandler,
+	h3 *interfaces.DishHandler,
+	h4 *interfaces3.SetMealHandler,
+	h5 *interfaces4.ShopHandler,
 ) *gin.Engine {
-	r := gin.Default()
+
+	unprotected := r.Group("/admin/employee")
+	unprotected.POST("/login", h.Login)
+	unprotected.POST("/logout", h.Logout)
 
 	employee := r.Group("/admin/employee")
-	employee.POST("/login", h.Login)
-	employee.POST("/logout", h.Logout)
-
-	protected := r.Group("/admin/employee")
-	protected.Use(middleware.JWTAuthMiddleware())
-	protected.POST("", h.AddEmployee)
-	protected.GET("/page", h.Page)
-	protected.POST("/status/:status", h.StatusFlip)
-	protected.GET("/:id", h.GetEmployee)
-	protected.PUT("", h.EditEmployee)
+	employee.Use(middleware.JWTAuthMiddleware())
+	employee.POST("", h.Create)
+	employee.GET("/page", h.Page)
+	employee.POST("/status/:status", h.UpdateStatus)
+	employee.GET("/:id", h.GetById)
+	employee.PUT("", h.Update)
 
 	category := r.Group("/admin/category")
 	category.Use(middleware.JWTAuthMiddleware())
-	category.POST("", h1.AddCategory)
-	category.GET("page", h1.GetCategories)
-	category.PUT("", h1.EditCategory)
-	category.POST("status/:status", h1.EditCategoryStatus)
-	category.DELETE("", h1.DeleteCategory)
-	category.GET("list", h1.GetCategoriesTyped)
+	category.POST("", h1.Create)
+	category.GET("page", h1.Page)
+	category.PUT("", h1.Update)
+	category.POST("status/:status", h1.UpdateStatus)
+	category.DELETE("", h1.Delete)
+	category.GET("list", h1.ListByType)
 
 	common := r.Group("/admin/common")
 	common.Use(middleware.JWTAuthMiddleware())
@@ -47,27 +47,27 @@ func NewRouter(h *employeeHandler.EmployeeHandler,
 
 	dish := r.Group("/admin/dish")
 	dish.Use(middleware.JWTAuthMiddleware())
-	dish.PUT("", h3.EditDish)
-	dish.DELETE("", h3.DeleteDishes)
-	dish.POST("", h3.AddDish)
-	dish.GET(":id", h3.GetDishId)
-	dish.GET("list", h3.GetDishesCategory)
-	dish.GET("page", h3.GetDishesPaged)
-	dish.POST("status/:status", h3.EditDishStatus)
+	dish.PUT("", h3.Update)
+	dish.DELETE("", h3.Delete)
+	dish.POST("", h3.Create)
+	dish.GET(":id", h3.GetById)
+	dish.GET("list", h3.ListByCategory)
+	dish.GET("page", h3.Page)
+	dish.POST("status/:status", h3.UpdateStatus)
 
 	setMeal := r.Group("/admin/setmeal")
 	setMeal.Use(middleware.JWTAuthMiddleware())
-	setMeal.PUT("", h4.EditSetMeal)
-	setMeal.GET("page", h4.GetSetMealsPaged)
-	setMeal.POST("status/:status", h4.EditSetMealStatus)
-	setMeal.DELETE("", h4.DeleteSetMeal)
-	setMeal.POST("", h4.AddSetMeal)
-	setMeal.GET(":id", h4.GetSetMeal)
+	setMeal.PUT("", h4.Update)
+	setMeal.GET("page", h4.Page)
+	setMeal.POST("status/:status", h4.UpdateStatus)
+	setMeal.DELETE("", h4.Delete)
+	setMeal.POST("", h4.Create)
+	setMeal.GET(":id", h4.GetById)
 
 	shop := r.Group("/admin/shop")
 	shop.Use(middleware.JWTAuthMiddleware())
-	shop.PUT(":status", h5.EditStatus)
-	shop.GET("status", h5.GetStatus)
+	shop.PUT(":status", h5.Update)
+	shop.GET("status", h5.Get)
 
 	return r
 }
