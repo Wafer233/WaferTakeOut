@@ -73,7 +73,7 @@ func (h *EmployeeHandler) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, result.Success())
 }
 
-func (h *EmployeeHandler) Page(c *gin.Context) {
+func (h *EmployeeHandler) ListPage(c *gin.Context) {
 	var dto application.PageDTO
 
 	err := c.ShouldBindQuery(&dto)
@@ -84,7 +84,7 @@ func (h *EmployeeHandler) Page(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.PageQuery(ctx, &dto)
+	vo, err := h.svc.FindPage(ctx, &dto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -92,7 +92,7 @@ func (h *EmployeeHandler) Page(c *gin.Context) {
 	c.JSON(http.StatusOK, result.SuccessData(vo))
 }
 
-func (h *EmployeeHandler) GetById(c *gin.Context) {
+func (h *EmployeeHandler) List(c *gin.Context) {
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -103,7 +103,7 @@ func (h *EmployeeHandler) GetById(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.GetEmployee(ctx, int64(id))
+	vo, err := h.svc.FindById(ctx, int64(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -136,7 +136,7 @@ func (h *EmployeeHandler) UpdateStatus(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 	defer cancel()
 
-	err = h.svc.StatusFlips(ctx, status, dto.ID, curId.(int64))
+	err = h.svc.UpdateStatus(ctx, status, dto.ID, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 	}
@@ -159,7 +159,7 @@ func (h *EmployeeHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
 	}
-	err = h.svc.UpdateEmployee(ctx, dto, id.(int64))
+	err = h.svc.Update(ctx, dto, id.(int64))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
@@ -188,7 +188,7 @@ func (h *EmployeeHandler) Create(c *gin.Context) {
 		return
 	}
 
-	err = h.svc.AddEmployee(ctx, dto, id.(int64))
+	err = h.svc.Create(ctx, dto, id.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return

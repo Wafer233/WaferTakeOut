@@ -32,7 +32,7 @@ func (h *SetMealHandler) Page(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.PageQuery(ctx, &dto)
+	vo, err := h.svc.FindPage(ctx, &dto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return
@@ -53,7 +53,7 @@ func (h *SetMealHandler) GetById(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.IdQuery(ctx, int64(id))
+	vo, err := h.svc.FindById(ctx, int64(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -91,7 +91,7 @@ func (h *SetMealHandler) UpdateStatus(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	err = h.svc.StatusFlip(ctx, int64(id), curId.(int64), status)
+	err = h.svc.UpdateStatus(ctx, int64(id), curId.(int64), status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -119,7 +119,7 @@ func (h *SetMealHandler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10000*time.Second)
 	defer cancel()
 
-	err := h.svc.Edit(ctx, &dto, curId.(int64))
+	err := h.svc.Update(ctx, &dto, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -170,7 +170,7 @@ func (h *SetMealHandler) Create(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	err = h.svc.AddSetMeal(ctx, &dto, curId.(int64))
+	err = h.svc.Create(ctx, &dto, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return

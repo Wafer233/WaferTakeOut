@@ -1,4 +1,4 @@
-package flavor
+package domain
 
 type Flavor struct {
 	Id     int64  `gorm:"column:id;primaryKey;type:bigint,autoIncrement"`

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewAdminRouter(r *gin.Engine, h *CommonHandler) *gin.Engine {
+func NewRouter(r *gin.Engine, h *CommonHandler) *gin.Engine {
 
 	common := r.Group("/admin/common")
 	common.Use(middleware.JWTAuthMiddleware())

@@ -3,10 +3,10 @@ package domain
 import "context"
 
 type SetMealRepository interface {
-	GetsPaged(context.Context, int64, string, int, int, int) ([]*SetMeal, int64, error)
-	Insert(context.Context, *SetMeal) error
-	UpdateStatusById(context.Context, *SetMeal) error
-	DeletesByIds(context.Context, []int64) error
-	GetById(context.Context, int64) (*SetMeal, error)
-	UpdateById(context.Context, *SetMeal) error
+	FindPage(context.Context, int64, string, int, int, int) ([]*SetMeal, int64, error)
+	Create(context.Context, *SetMeal, []*SetMealDish) error
+	UpdateStatus(context.Context, *SetMeal) error
+	Delete(context.Context, []int64) error
+	FindById(context.Context, int64) (*SetMeal, []*SetMealDish, error)
+	Update(context.Context, *SetMeal, []*SetMealDish) error
 }

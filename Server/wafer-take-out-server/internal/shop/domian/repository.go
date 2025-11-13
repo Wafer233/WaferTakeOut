@@ -3,6 +3,6 @@ package domian
 import "context"
 
 type ShopRepository interface {
-	Set(context.Context, int) error
-	Get(context.Context) (int, error)
+	Update(context.Context, int) error
+	Find(context.Context) (int, error)
 }

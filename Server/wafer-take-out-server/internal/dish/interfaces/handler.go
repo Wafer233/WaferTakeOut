@@ -32,7 +32,7 @@ func (h *DishHandler) Page(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.PageQuery(ctx, &dto)
+	vo, err := h.svc.FindPage(ctx, &dto)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return
@@ -52,7 +52,7 @@ func (h *DishHandler) ListByCategory(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30000*time.Second)
 	defer cancel()
 
-	records, err := h.svc.GetDishCategory(ctx, int64(categoryIdInt))
+	records, err := h.svc.FindByCategoryId(ctx, int64(categoryIdInt))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return
@@ -72,7 +72,7 @@ func (h *DishHandler) GetById(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	data, err := h.svc.GetDishId(ctx, int64(idInt))
+	data, err := h.svc.FindById(ctx, int64(idInt))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用内部服务错误"))
 		return
@@ -105,7 +105,7 @@ func (h *DishHandler) UpdateStatus(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权无法获取id"))
 		return
 	}
-	err = h.svc.StatusFlip(ctx, int64(idInt), statusInt, curId.(int64))
+	err = h.svc.UpdateStatus(ctx, int64(idInt), statusInt, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务失败"))
 		return
@@ -133,7 +133,7 @@ func (h *DishHandler) Update(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	err = h.svc.UpdateDish(ctx, &dto, curId.(int64))
+	err = h.svc.Update(ctx, &dto, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
@@ -160,7 +160,7 @@ func (h *DishHandler) Delete(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	err := h.svc.DeleteDishes(ctx, idArr)
+	err := h.svc.Delete(ctx, idArr)
 	if err != nil {
 		c.JSON(http.StatusOK, result.Error("调用服务失败"))
 		return
@@ -187,7 +187,7 @@ func (h *DishHandler) Create(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	err = h.svc.Insert(ctx, &dto, curId.(int64))
+	err = h.svc.Create(ctx, &dto, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return

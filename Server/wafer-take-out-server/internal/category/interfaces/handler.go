@@ -122,7 +122,7 @@ func (h *CategoryHandler) UpdateStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, result.Success())
 }
 
-func (h *CategoryHandler) Page(c *gin.Context) {
+func (h *CategoryHandler) ListPage(c *gin.Context) {
 
 	dto := application.PageDTO{}
 

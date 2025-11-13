@@ -2,33 +2,30 @@ package application
 
 import (
 	"context"
+	"strconv"
+	"time"
+
 	cate "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
 	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/domain/flavor"
-	"strconv"
-	"time"
 )
 
 type DishService struct {
-	dishRepo dish.DishRepository
+	repo     dish.DishRepository
 	cateRepo cate.CategoryRepository
-	flavRepo flavor.FlavorRepository
 }
 
-func NewDishService(dishRepo dish.DishRepository,
-	cateRepo cate.CategoryRepository,
-	flavRepo flavor.FlavorRepository) *DishService {
+func NewDishService(dishRepo dish.DishRepository, cateRepo cate.CategoryRepository) *DishService {
 	return &DishService{
-		dishRepo: dishRepo,
+		repo:     dishRepo,
 		cateRepo: cateRepo,
-		flavRepo: flavRepo,
 	}
 }
 
-func (svc *DishService) Insert(ctx context.Context, dto *DishDTO, curId int64) error {
+func (svc *DishService) Create(ctx context.Context, dto *DishDTO, curId int64) error {
 
-	entity := &domain.Dish{
+	dishEntity := &domain.Dish{
+		Id:          dto.ID, // 现在还没有值
 		Name:        dto.Name,
 		CategoryId:  dto.CategoryId,
 		Price:       dto.Price,
@@ -40,35 +37,26 @@ func (svc *DishService) Insert(ctx context.Context, dto *DishDTO, curId int64) e
 		CreateUser:  curId,
 		UpdateUser:  curId,
 	}
-	err := svc.dishRepo.Insert(ctx, entity)
-	if err != nil {
-		return err
-	}
 
-	if len(dto.Flavors) != 0 {
-		entities := make([]*flavor.Flavor, len(dto.Flavors))
-		for index, value := range entities {
-			value = &flavor.Flavor{}
-			value.DishId = entity.Id
-			value.Name = dto.Flavors[index].Name
-			value.Value = dto.Flavors[index].Value
-
-			entities[index] = value
-		}
-
-		err = svc.flavRepo.Inserts(ctx, entities)
-		if err != nil {
-			return err
+	flavorEntities := make([]*domain.Flavor, len(dto.Flavors))
+	for index, value := range dto.Flavors {
+		flavorEntities[index] = &domain.Flavor{
+			Id:     value.Id,     //现在还没有值
+			DishId: value.DishId, //现在还没有值
+			Name:   value.Name,
+			Value:  value.Value,
 		}
 	}
-	return nil
+
+	err := svc.repo.Create(ctx, dishEntity, flavorEntities)
+
+	return err
 }
 
-func (svc *DishService) UpdateDish(ctx context.Context,
-	dto *DishDTO, curID int64) error {
+func (svc *DishService) Update(ctx context.Context, dto *DishDTO, curID int64) error {
 
-	entity := &domain.Dish{
-		Id:          dto.ID,
+	dishEntity := &domain.Dish{
+		Id:          dto.ID, // 这个是必须的
 		Name:        dto.Name,
 		CategoryId:  dto.CategoryId,
 		Price:       dto.Price,
@@ -78,31 +66,23 @@ func (svc *DishService) UpdateDish(ctx context.Context,
 		UpdateTime:  time.Now(),
 		UpdateUser:  curID,
 	}
-	err := svc.dishRepo.UpdateById(ctx, entity)
-	if err != nil {
-		return err
-	}
 
-	if len(dto.Flavors) == 0 {
-		return nil
-	}
-
-	flavorsDTO := dto.Flavors
-
-	flavors := make([]*flavor.Flavor, len(flavorsDTO))
-	for i, f := range flavorsDTO {
-		flavors[i] = &flavor.Flavor{
-			Id:     f.Id,
-			DishId: entity.Id,
-			Name:   f.Name,
-			Value:  f.Value,
+	flavors := make([]*domain.Flavor, len(dto.Flavors))
+	for index, value := range dto.Flavors {
+		flavors[index] = &domain.Flavor{
+			Id:     value.Id,
+			DishId: dishEntity.Id,
+			Name:   value.Name,
+			Value:  value.Value,
 		}
 	}
-	err = svc.flavRepo.UpdatesByDishId(ctx, flavors)
-	return nil
+
+	err := svc.repo.Update(ctx, dishEntity, flavors)
+
+	return err
 }
 
-func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, error) {
+func (svc *DishService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, error) {
 
 	name := dto.Name
 	categoryId := dto.CategoryId
@@ -113,7 +93,7 @@ func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, er
 		status = -1
 	}
 
-	dishes, total, err := svc.dishRepo.GetsPaged(ctx, name, categoryId, status, page, pageSize)
+	dishes, total, err := svc.repo.FindPage(ctx, name, categoryId, status, page, pageSize)
 	if err != nil {
 		return PageVO{}, err
 	}
@@ -149,12 +129,9 @@ func (svc *DishService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, er
 	return vo, nil
 }
 
-func (svc *DishService) GetDishCategory(ctx context.Context, id int64) ([]*Record, error) {
+func (svc *DishService) FindByCategoryId(ctx context.Context, cid int64) ([]*Record, error) {
 
-	dishes, err := svc.dishRepo.GetsByCategoryId(ctx, id)
-	if err != nil || len(dishes) == 0 {
-		return nil, err
-	}
+	dishes, err := svc.repo.FindByCategoryId(ctx, cid)
 
 	records := make([]*Record, len(dishes))
 
@@ -179,46 +156,44 @@ func (svc *DishService) GetDishCategory(ctx context.Context, id int64) ([]*Recor
 	return records, nil
 }
 
-func (svc *DishService) GetDishId(ctx context.Context, id int64) (DishVO, error) {
+func (svc *DishService) FindById(ctx context.Context, id int64) (DishVO, error) {
 
-	dish, err := svc.dishRepo.GetById(ctx, id)
-	if err != nil {
-		return DishVO{}, err
-	}
-	category, err := svc.cateRepo.FindById(ctx, dish.CategoryId)
-	if err != nil {
-		return DishVO{}, err
-	}
-
-	flavors, err := svc.flavRepo.GetsByDishId(ctx, dish.Id)
+	dishEntity, flavors, err := svc.repo.FindById(ctx, id)
 	if err != nil {
 		return DishVO{}, err
 	}
 
 	flavorVOs := make([]Flavor, len(flavors))
 	for index, flavor := range flavors {
-		flavorVOs[index].DishId = flavor.DishId
-		flavorVOs[index].Value = flavor.Value
-		flavorVOs[index].Name = flavor.Name
-		flavorVOs[index].Id = flavor.Id
+		flavorVOs[index] = Flavor{
+			Id:     flavor.Id,
+			Name:   flavor.Name,
+			DishId: flavor.DishId,
+			Value:  flavor.Value,
+		}
+	}
+
+	category, err := svc.cateRepo.FindById(ctx, dishEntity.CategoryId)
+	if err != nil {
+		return DishVO{}, err
 	}
 
 	vo := DishVO{
-		CategoryId:   dish.CategoryId,
+		CategoryId:   dishEntity.CategoryId,
 		CategoryName: category.Name,
-		Description:  dish.Description,
+		Description:  dishEntity.Description,
 		Flavors:      flavorVOs,
-		ID:           dish.Id,
-		Image:        dish.Image,
-		Name:         dish.Name,
-		Price:        dish.Price,
-		Status:       dish.Status,
-		UpdateTime:   dish.UpdateTime.Format("2006-01-02 15:04"),
+		ID:           dishEntity.Id,
+		Image:        dishEntity.Image,
+		Name:         dishEntity.Name,
+		Price:        dishEntity.Price,
+		Status:       dishEntity.Status,
+		UpdateTime:   dishEntity.UpdateTime.Format("2006-01-02 15:04"),
 	}
 	return vo, nil
 }
 
-func (svc *DishService) StatusFlip(ctx context.Context, id int64, status int, curId int64) error {
+func (svc *DishService) UpdateStatus(ctx context.Context, id int64, status int, curId int64) error {
 
 	entity := &domain.Dish{
 		Id:         id,
@@ -226,16 +201,16 @@ func (svc *DishService) StatusFlip(ctx context.Context, id int64, status int, cu
 		UpdateTime: time.Now(),
 		UpdateUser: curId,
 	}
-	err := svc.dishRepo.UpdateStatusById(ctx, entity)
+	err := svc.repo.UpdateStatus(ctx, entity)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *DishService) DeleteDishes(ctx context.Context, idArr []int64) error {
+func (svc *DishService) Delete(ctx context.Context, idArr []int64) error {
 
-	err := svc.dishRepo.DeletesById(ctx, idArr)
+	err := svc.repo.Delete(ctx, idArr)
 	if err != nil {
 		return err
 	}

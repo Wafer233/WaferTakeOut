@@ -15,7 +15,7 @@ func NewEmployeeRepository(db *gorm.DB) *EmployeeRepository {
 	return &EmployeeRepository{db: db}
 }
 
-func (r *EmployeeRepository) GetByUsername(ctx context.Context, username string) (*domain.Employee, error) {
+func (r *EmployeeRepository) FindByUsername(ctx context.Context, username string) (*domain.Employee, error) {
 	var model domain.Employee
 
 	err := r.db.
@@ -34,7 +34,7 @@ func (r *EmployeeRepository) GetByUsername(ctx context.Context, username string)
 	}, nil
 }
 
-func (r *EmployeeRepository) Insert(ctx context.Context, model *domain.Employee) error {
+func (r *EmployeeRepository) Create(ctx context.Context, model *domain.Employee) error {
 	err := r.db.
 		WithContext(ctx).
 		Create(&model).Error
@@ -44,7 +44,7 @@ func (r *EmployeeRepository) Insert(ctx context.Context, model *domain.Employee)
 	return nil
 }
 
-func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
+func (r *EmployeeRepository) FindPage(ctx context.Context,
 	name string, page int, pageSize int) (int64, []domain.Employee, error) {
 
 	var employees []domain.Employee
@@ -77,7 +77,7 @@ func (r *EmployeeRepository) GetByUsernamePaged(ctx context.Context,
 
 }
 
-func (r *EmployeeRepository) UpdateStatusByID(ctx context.Context,
+func (r *EmployeeRepository) UpdateStatus(ctx context.Context,
 	emp *domain.Employee) error {
 
 	id := emp.Id
@@ -91,7 +91,7 @@ func (r *EmployeeRepository) UpdateStatusByID(ctx context.Context,
 
 }
 
-func (r *EmployeeRepository) GetById(ctx context.Context,
+func (r *EmployeeRepository) FindById(ctx context.Context,
 	id int64) (*domain.Employee, error) {
 
 	var entity domain.Employee
@@ -106,7 +106,7 @@ func (r *EmployeeRepository) GetById(ctx context.Context,
 	return &entity, nil
 }
 
-func (r *EmployeeRepository) UpdateById(ctx context.Context,
+func (r *EmployeeRepository) Update(ctx context.Context,
 	employee *domain.Employee) error {
 
 	err := r.db.WithContext(ctx).

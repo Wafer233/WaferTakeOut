@@ -5,31 +5,27 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/domain/setmeal_dish"
+	category "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
 	setmeal "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
 )
 
 type SetMealService struct {
 	setRepo  setmeal.SetMealRepository
-	dishRepo setmeal_dish.SetMealDishRepository
-	cateRepo domain.CategoryRepository
+	cateRepo category.CategoryRepository
 }
 
 func NewSetMealService(setRepo setmeal.SetMealRepository,
-	dishRepo setmeal_dish.SetMealDishRepository,
-	cateRepo domain.CategoryRepository) *SetMealService {
+	cateRepo category.CategoryRepository) *SetMealService {
 	return &SetMealService{
 		setRepo:  setRepo,
-		dishRepo: dishRepo,
 		cateRepo: cateRepo,
 	}
 }
 
-func (svc *SetMealService) AddSetMeal(ctx context.Context, dto *AddSetMealDTO, curId int64) error {
+func (svc *SetMealService) Create(ctx context.Context, dto *AddSetMealDTO, curId int64) error {
 
-	set := &setmeal.SetMeal{
-		Id:          dto.Id,
+	setEntity := &setmeal.SetMeal{
+		Id:          dto.Id, // 现在还不知道
 		CategoryId:  dto.CategoryId,
 		Name:        dto.Name,
 		Price:       dto.Price,
@@ -42,17 +38,12 @@ func (svc *SetMealService) AddSetMeal(ctx context.Context, dto *AddSetMealDTO, c
 		UpdateUser:  curId,
 	}
 
-	mealDishes := make([]*setmeal_dish.SetMealDish, len(dto.SetMealDishes))
-
-	err := svc.setRepo.Insert(ctx, set)
-	if err != nil {
-		return err
-	}
+	dishEntities := make([]*setmeal.SetMealDish, len(dto.SetMealDishes))
 
 	for index, value := range dto.SetMealDishes {
-		mealDishes[index] = &setmeal_dish.SetMealDish{
-			Id:        value.ID,
-			SetMealId: set.Id,
+		dishEntities[index] = &setmeal.SetMealDish{
+			Id:        value.ID,     // 主键
+			SetMealId: setEntity.Id, // 现在还不知道
 			DishId:    value.DishId,
 			Name:      value.Name,
 			Price:     value.Price,
@@ -60,23 +51,21 @@ func (svc *SetMealService) AddSetMeal(ctx context.Context, dto *AddSetMealDTO, c
 		}
 	}
 
-	err = svc.dishRepo.Inserts(ctx, mealDishes)
-	if err != nil {
-		return err
-	}
-	return nil
+	err := svc.setRepo.Create(ctx, setEntity, dishEntities)
+
+	return err
 }
 
 func (svc *SetMealService) Deletes(ctx context.Context, ids []int64) error {
 
-	err := svc.setRepo.DeletesByIds(ctx, ids)
+	err := svc.setRepo.Delete(ctx, ids)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *SetMealService) Edit(ctx context.Context, dto *AddSetMealDTO, curId int64) error {
+func (svc *SetMealService) Update(ctx context.Context, dto *AddSetMealDTO, curId int64) error {
 
 	set := &setmeal.SetMeal{
 		Id:          dto.Id,
@@ -88,34 +77,26 @@ func (svc *SetMealService) Edit(ctx context.Context, dto *AddSetMealDTO, curId i
 		UpdateTime:  time.Now(),
 		UpdateUser:  curId,
 	}
-	err := svc.setRepo.UpdateById(ctx, set)
-	if err != nil {
-		return err
-	}
 
-	if len(dto.SetMealDishes) == 0 {
-		return nil
-	}
-
-	sets := make([]*setmeal_dish.SetMealDish, len(dto.SetMealDishes))
-	for i, dish := range dto.SetMealDishes {
-		sets[i] = &setmeal_dish.SetMealDish{
-			Id:        dish.ID,
+	dishes := make([]*setmeal.SetMealDish, len(dto.SetMealDishes))
+	for index, value := range dto.SetMealDishes {
+		dishes[index] = &setmeal.SetMealDish{
+			Id:        value.ID,
 			SetMealId: set.Id,
-			DishId:    dish.DishId,
-			Name:      dish.Name,
-			Price:     dish.Price,
-			Copies:    dish.Copies,
+			DishId:    value.DishId,
+			Name:      value.Name,
+			Price:     value.Price,
+			Copies:    value.Copies,
 		}
 	}
-	err = svc.dishRepo.UpdatesBySetMealId(ctx, sets)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	err := svc.setRepo.Update(ctx, set, dishes)
+
+	return err
 }
 
-func (svc *SetMealService) StatusFlip(ctx context.Context, id int64, curId int64, status int) error {
+func (svc *SetMealService) UpdateStatus(ctx context.Context, id int64,
+	curId int64, status int) error {
 
 	entity := &setmeal.SetMeal{
 		Id:         id,
@@ -123,7 +104,7 @@ func (svc *SetMealService) StatusFlip(ctx context.Context, id int64, curId int64
 		UpdateUser: curId,
 		UpdateTime: time.Now(),
 	}
-	err := svc.setRepo.UpdateStatusById(ctx, entity)
+	err := svc.setRepo.UpdateStatus(ctx, entity)
 	if err != nil {
 		return err
 	}
@@ -131,13 +112,9 @@ func (svc *SetMealService) StatusFlip(ctx context.Context, id int64, curId int64
 	return nil
 }
 
-func (svc *SetMealService) IdQuery(ctx context.Context, id int64) (GetSetMealVO, error) {
+func (svc *SetMealService) FindById(ctx context.Context, id int64) (GetSetMealVO, error) {
 
-	set, err := svc.setRepo.GetById(ctx, id)
-	if err != nil {
-		return GetSetMealVO{}, err
-	}
-	dishes, err := svc.dishRepo.GetsBySetMealId(ctx, set.Id)
+	set, dishes, err := svc.setRepo.FindById(ctx, id)
 	if err != nil {
 		return GetSetMealVO{}, err
 	}
@@ -155,14 +132,14 @@ func (svc *SetMealService) IdQuery(ctx context.Context, id int64) (GetSetMealVO,
 		}
 	}
 
-	category, err := svc.cateRepo.FindById(ctx, set.CategoryId)
+	cate, err := svc.cateRepo.FindById(ctx, set.CategoryId)
 	if err != nil {
 		return GetSetMealVO{}, err
 	}
 
 	vo := GetSetMealVO{
 		CategoryId:    set.CategoryId,
-		CategoryName:  category.Name,
+		CategoryName:  cate.Name,
 		Description:   set.Description,
 		Id:            set.Id,
 		Image:         set.Image,
@@ -177,7 +154,7 @@ func (svc *SetMealService) IdQuery(ctx context.Context, id int64) (GetSetMealVO,
 
 }
 
-func (svc *SetMealService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO, error) {
+func (svc *SetMealService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, error) {
 
 	categoryId := dto.CategoryId
 	name := dto.Name
@@ -187,7 +164,7 @@ func (svc *SetMealService) PageQuery(ctx context.Context, dto *PageDTO) (PageVO,
 	if dto.Status == "" {
 		status = -1
 	}
-	records, total, err := svc.setRepo.GetsPaged(ctx, categoryId, name, page, pageSize, status)
+	records, total, err := svc.setRepo.FindPage(ctx, categoryId, name, page, pageSize, status)
 	if err != nil {
 		return PageVO{}, err
 	}

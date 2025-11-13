@@ -11,65 +11,80 @@ type DefaultSetMealRepository struct {
 	db *gorm.DB
 }
 
-func NewSetMealRepository(db *gorm.DB) *DefaultSetMealRepository {
+func NewSetMealRepository(db *gorm.DB) domain.SetMealRepository {
 	return &DefaultSetMealRepository{db: db}
 }
 
-func (repo *DefaultSetMealRepository) GetsPaged(ctx context.Context, categoryID int64,
+func (repo *DefaultSetMealRepository) FindPage(ctx context.Context, categoryID int64,
 	name string, page, pageSize, status int) ([]*domain.SetMeal, int64, error) {
 
 	records := make([]*domain.SetMeal, 0)
 	total := int64(0)
 
-	db := repo.db.WithContext(ctx).
-		Model(&domain.SetMeal{})
+	tx := repo.db.WithContext(ctx).
+		Model(&domain.SetMeal{}).Begin()
 
 	if name != "" {
-		db = db.Where("name = ?", name)
+		tx = tx.Where("name = ?", name)
 	}
 
 	if categoryID != 0 {
-		db = db.Where("category_id = ?", categoryID)
+		tx = tx.Where("category_id = ?", categoryID)
 	}
 
 	if status == 0 || status == 1 {
-		db = db.Where("status = ?", status)
+		tx = tx.Where("status = ?", status)
 	}
 
-	err := db.Count(&total).Error
-	if err != nil || total == 0 {
+	if err := tx.Count(&total).Error; err != nil {
+		tx.Rollback()
 		return nil, 0, err
 	}
 
 	// record一定要给指针啊
 	offset := (page - 1) * pageSize
-	db = db.Offset(offset).
+	if err := tx.Offset(offset).
 		Limit(pageSize).
-		Find(&records)
-
-	err = db.Error
-	if err != nil {
+		Find(&records).Error; err != nil {
+		tx.Rollback()
 		return nil, 0, err
 	}
 
+	if tx.Commit().Error != nil {
+		tx.Rollback()
+	}
 	return records, total, nil
 
 }
 
-func (repo *DefaultSetMealRepository) Insert(ctx context.Context, set *domain.SetMeal) error {
+func (repo *DefaultSetMealRepository) Create(ctx context.Context,
+	set *domain.SetMeal, dishes []*domain.SetMealDish) error {
 
-	db := repo.db.
-		WithContext(ctx).
-		Model(&domain.SetMeal{}).
-		Create(set)
+	tx := repo.db.WithContext(ctx).Begin()
 
-	if db.Error != nil {
-		return db.Error
+	if err := tx.Model(&domain.SetMeal{}).
+		Create(&set).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	for index, _ := range dishes {
+		dishes[index].SetMealId = set.Id
+	}
+
+	if err := tx.Model(&domain.SetMealDish{}).
+		Create(&dishes).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
 	}
 	return nil
 }
 
-func (repo *DefaultSetMealRepository) UpdateStatusById(ctx context.Context,
+func (repo *DefaultSetMealRepository) UpdateStatus(ctx context.Context,
 	set *domain.SetMeal) error {
 
 	db := repo.db.WithContext(ctx).Model(&domain.SetMeal{}).
@@ -84,47 +99,79 @@ func (repo *DefaultSetMealRepository) UpdateStatusById(ctx context.Context,
 	return nil
 }
 
-func (repo *DefaultSetMealRepository) DeletesByIds(ctx context.Context, ids []int64) error {
+func (repo *DefaultSetMealRepository) Delete(ctx context.Context, ids []int64) error {
 
-	db := repo.db.WithContext(ctx).
-		Model(&domain.SetMeal{}).
+	tx := repo.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&domain.SetMeal{}).
 		Where("id in (?)", ids).
-		Delete(&domain.SetMeal{})
-
-	err := db.Error
-	if err != nil {
+		Delete(&domain.SetMeal{}).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+
+	if err := tx.Model(&domain.SetMealDish{}).
+		Where("setmeal_id in (?)", ids).
+		Delete(&domain.SetMealDish{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }
 
-func (repo *DefaultSetMealRepository) GetById(ctx context.Context,
-	id int64) (*domain.SetMeal, error) {
+func (repo *DefaultSetMealRepository) FindById(ctx context.Context,
+	id int64) (*domain.SetMeal, []*domain.SetMealDish, error) {
 
 	var set domain.SetMeal
-	err := repo.db.WithContext(ctx).
-		Model(&domain.SetMeal{}).
-		Where("id = ?", id).
-		First(&set).Error
+	var dishes []*domain.SetMealDish
 
-	if err != nil {
-		return nil, err
+	tx := repo.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&domain.SetMeal{}).
+		Where("id = ?", id).
+		First(&set).Error; err != nil {
+		tx.Rollback()
+		return nil, nil, err
 	}
-	return &set, nil
+	if err := repo.db.WithContext(ctx).
+		Model(&domain.SetMealDish{}).
+		Where("setmeal_id = ?", id).
+		Find(&dishes).Error; err != nil {
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, nil, err
+	}
+	return &set, dishes, nil
 
 }
 
-func (repo *DefaultSetMealRepository) UpdateById(ctx context.Context,
-	set *domain.SetMeal) error {
+func (repo *DefaultSetMealRepository) Update(ctx context.Context,
+	set *domain.SetMeal, dishes []*domain.SetMealDish) error {
 
-	err := repo.db.WithContext(ctx).
-		Model(&domain.SetMeal{}).
+	tx := repo.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&domain.SetMeal{}).
 		Where("id = ?", set.Id).
-		Omit("id", "status", "create_time", "create_user").
-		Updates(set).Error
-
-	if err != nil {
+		Omit("status", "create_time", "create_user").
+		Updates(set).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
-	return nil
+
+	if err := tx.Where("setmeal_id = ?", set.Id).
+		Delete(&domain.SetMealDish{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&domain.SetMealDish{}).
+		Create(&dishes).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+
 }

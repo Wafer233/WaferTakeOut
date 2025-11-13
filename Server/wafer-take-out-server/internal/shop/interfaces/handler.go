@@ -24,7 +24,7 @@ func (h *ShopHandler) Get(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	status, err := h.svc.GetStatus(ctx)
+	status, err := h.svc.Find(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return
@@ -42,7 +42,7 @@ func (h *ShopHandler) Update(c *gin.Context) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	err = h.svc.EditStatus(ctx, status)
+	err = h.svc.Update(ctx, status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("调用服务错误"))
 		return

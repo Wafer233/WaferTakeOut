@@ -17,7 +17,7 @@ func NewDefaultShopCache(rbd *redis.Client) domian.ShopRepository {
 	return &DefaultShopCache{rbd: rbd}
 }
 
-func (c *DefaultShopCache) Set(ctx context.Context, status int) error {
+func (c *DefaultShopCache) Update(ctx context.Context, status int) error {
 	key := "ShopStatus"
 	rdb := c.rbd.Set(ctx, key, status, time.Hour)
 
@@ -28,7 +28,7 @@ func (c *DefaultShopCache) Set(ctx context.Context, status int) error {
 	return nil
 }
 
-func (c *DefaultShopCache) Get(ctx context.Context) (int, error) {
+func (c *DefaultShopCache) Find(ctx context.Context) (int, error) {
 	key := "ShopStatus"
 	statusStr, err := c.rbd.Get(ctx, key).Result()
 	if err != nil {

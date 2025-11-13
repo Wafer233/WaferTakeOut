@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
 	"gorm.io/gorm"
@@ -18,7 +19,7 @@ func NewDishRepository(db *gorm.DB) domain.DishRepository {
 
 }
 
-func (repo *DefaultDishRepository) GetsPaged(ctx context.Context, name string, categoryId int64,
+func (repo *DefaultDishRepository) FindPage(ctx context.Context, name string, categoryId int64,
 	status int, page int, pageSize int) ([]*domain.Dish, int64, error) {
 
 	dishes := make([]*domain.Dish, 0)
@@ -53,7 +54,7 @@ func (repo *DefaultDishRepository) GetsPaged(ctx context.Context, name string, c
 
 }
 
-func (repo *DefaultDishRepository) DeletesById(ctx context.Context, ids []int64) error {
+func (repo *DefaultDishRepository) Delete(ctx context.Context, ids []int64) error {
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Dish{}).
 		Where("id in (?)", ids).
@@ -66,22 +67,38 @@ func (repo *DefaultDishRepository) DeletesById(ctx context.Context, ids []int64)
 	return nil
 }
 
-func (repo *DefaultDishRepository) Insert(ctx context.Context, entity *domain.Dish) error {
+func (repo *DefaultDishRepository) Create(ctx context.Context, dish *domain.Dish, flavors []*domain.Flavor) error {
 
-	db := repo.db.WithContext(ctx).
-		Model(&domain.Dish{}).
-		Create(&entity)
+	tx := repo.db.WithContext(ctx).Begin()
 
-	err := db.Error
-	if err != nil {
+	// 创建Dish
+	if err := tx.Model(&domain.Dish{}).
+		Create(dish).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return err
+	// 获取DishId
+	if dish.Id == 0 {
+		tx.Rollback()
+		return errors.New("获取菜品id失败")
+	}
+
+	// 更新flavor中的DishId
+	for _, f := range flavors {
+		f.DishId = dish.Id
+	}
+
+	//创建flavor
+	if err := tx.Model(&domain.Flavor{}).
+		Create(&flavors).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
-func (repo *DefaultDishRepository) UpdateStatusById(ctx context.Context,
-	entity *domain.Dish) error {
+func (repo *DefaultDishRepository) UpdateStatus(ctx context.Context, entity *domain.Dish) error {
 
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Dish{}).
@@ -93,7 +110,7 @@ func (repo *DefaultDishRepository) UpdateStatusById(ctx context.Context,
 
 }
 
-func (repo *DefaultDishRepository) GetsByCategoryId(ctx context.Context, id int64) ([]*domain.Dish, error) {
+func (repo *DefaultDishRepository) FindByCategoryId(ctx context.Context, id int64) ([]*domain.Dish, error) {
 
 	dishes := make([]*domain.Dish, 0)
 
@@ -110,32 +127,57 @@ func (repo *DefaultDishRepository) GetsByCategoryId(ctx context.Context, id int6
 	return dishes, nil
 }
 
-func (repo *DefaultDishRepository) GetById(ctx context.Context, id int64) (*domain.Dish, error) {
+func (repo *DefaultDishRepository) FindById(ctx context.Context, id int64) (*domain.Dish, []*domain.Flavor, error) {
 
-	entity := &domain.Dish{}
-	db := repo.db.WithContext(ctx).
-		Model(&domain.Dish{}).
+	dish := &domain.Dish{}
+	flavors := make([]*domain.Flavor, 0)
+	tx := repo.db.WithContext(ctx).Begin()
+	if err := tx.Model(&domain.Dish{}).
 		Where("id = ?", id).
-		First(entity)
-
-	err := db.Error
-	if err != nil {
-		return nil, err
+		First(dish).Error; err != nil {
+		tx.Rollback()
+		return nil, nil, err
 	}
-	return entity, nil
+
+	if err := tx.Model(&domain.Flavor{}).
+		Where("dish_id = ?", id).
+		Find(&flavors).Error; err != nil {
+		tx.Rollback()
+		return nil, nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, nil, err
+	}
+	return dish, flavors, nil
 
 }
 
-func (repo *DefaultDishRepository) UpdateById(ctx context.Context, entity *domain.Dish) error {
-	db := repo.db.WithContext(ctx).
-		Model(&domain.Dish{}).
-		Where("id = ?", entity.Id).
-		Omit("id", "status", "create_time", "create_user").
-		Updates(entity)
+func (repo *DefaultDishRepository) Update(ctx context.Context, dish *domain.Dish, flavors []*domain.Flavor) error {
 
-	err := db.Error
-	if err != nil {
+	tx := repo.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&domain.Dish{}).
+		Where("id = ?", dish.Id).
+		Omit("id", "status", "create_time", "create_user").
+		Updates(dish).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
-	return err
+
+	if err := tx.Where("dish_id = ?", dish.Id).
+		Delete(&domain.Flavor{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if len(flavors) == 0 {
+		return tx.Commit().Error
+	}
+	if err := tx.Model(&domain.Flavor{}).
+		Create(&flavors).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }

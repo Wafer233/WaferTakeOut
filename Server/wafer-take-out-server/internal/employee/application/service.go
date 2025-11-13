@@ -22,7 +22,7 @@ func NewEmployeeService(repo *employeeInfra.EmployeeRepository) *EmployeeService
 
 func (svc *EmployeeService) Login(ctx context.Context, dto *LoginDTO) (*LoginVO, error) {
 
-	entity, err := svc.repo.GetByUsername(ctx, dto.Username)
+	entity, err := svc.repo.FindByUsername(ctx, dto.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -40,9 +40,9 @@ func (svc *EmployeeService) Login(ctx context.Context, dto *LoginDTO) (*LoginVO,
 	}, nil
 }
 
-func (svc *EmployeeService) PageQuery(ctx context.Context, dto *PageDTO) (*PageVO, error) {
+func (svc *EmployeeService) FindPage(ctx context.Context, dto *PageDTO) (*PageVO, error) {
 
-	total, employees, err := svc.repo.GetByUsernamePaged(ctx, dto.Name, dto.Page, dto.PageSize)
+	total, employees, err := svc.repo.FindPage(ctx, dto.Name, dto.Page, dto.PageSize)
 
 	if err != nil {
 		return nil, err
@@ -71,9 +71,9 @@ func (svc *EmployeeService) PageQuery(ctx context.Context, dto *PageDTO) (*PageV
 	}, nil
 }
 
-func (svc *EmployeeService) GetEmployee(ctx context.Context, id int64) (*Employee, error) {
+func (svc *EmployeeService) FindById(ctx context.Context, id int64) (*Employee, error) {
 
-	employee, err := svc.repo.GetById(ctx, id)
+	employee, err := svc.repo.FindById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +96,7 @@ func (svc *EmployeeService) GetEmployee(ctx context.Context, id int64) (*Employe
 	return &employeeVO, nil
 }
 
-func (svc *EmployeeService) UpdateEmployee(ctx context.Context,
-	dto *AddEmployeeDTO, updateId int64) error {
+func (svc *EmployeeService) Update(ctx context.Context, dto *AddEmployeeDTO, updateId int64) error {
 
 	entity := &domain.Employee{}
 
@@ -107,12 +106,11 @@ func (svc *EmployeeService) UpdateEmployee(ctx context.Context,
 	}
 	entity.UpdateUser = updateId
 	entity.UpdateTime = time.Now()
-	err = svc.repo.UpdateById(ctx, entity)
+	err = svc.repo.Update(ctx, entity)
 	return err
 }
 
-func (svc *EmployeeService) StatusFlips(ctx context.Context,
-	status int, id int64, curId int64) error {
+func (svc *EmployeeService) UpdateStatus(ctx context.Context, status int, id int64, curId int64) error {
 
 	emp := &domain.Employee{
 		Id:         id,
@@ -121,11 +119,11 @@ func (svc *EmployeeService) StatusFlips(ctx context.Context,
 		UpdateUser: curId,
 	}
 
-	err := svc.repo.UpdateStatusByID(ctx, emp)
+	err := svc.repo.UpdateStatus(ctx, emp)
 	return err
 }
 
-func (svc *EmployeeService) AddEmployee(ctx context.Context, dto *AddEmployeeDTO, id int64) error {
+func (svc *EmployeeService) Create(ctx context.Context, dto *AddEmployeeDTO, id int64) error {
 
 	entity := &domain.Employee{
 		IDNumber: dto.IDNumber,
@@ -142,7 +140,7 @@ func (svc *EmployeeService) AddEmployee(ctx context.Context, dto *AddEmployeeDTO
 	entity.CreateUser = id
 	entity.UpdateUser = id
 
-	err := svc.repo.Insert(ctx, entity)
+	err := svc.repo.Create(ctx, entity)
 	if err != nil {
 		return err
 	}

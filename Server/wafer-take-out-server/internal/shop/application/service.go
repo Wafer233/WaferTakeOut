@@ -14,18 +14,18 @@ func NewShopService(cache domian.ShopRepository) *ShopService {
 	return &ShopService{cache: cache}
 }
 
-func (svc *ShopService) EditStatus(ctx context.Context, status int) error {
+func (svc *ShopService) Update(ctx context.Context, status int) error {
 
-	err := svc.cache.Set(ctx, status)
+	err := svc.cache.Update(ctx, status)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *ShopService) GetStatus(ctx context.Context) (int, error) {
+func (svc *ShopService) Find(ctx context.Context) (int, error) {
 
-	status, err := svc.cache.Get(ctx)
+	status, err := svc.cache.Find(ctx)
 	if err != nil {
 		return 0, err
 	}
