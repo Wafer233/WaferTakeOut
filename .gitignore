@@ -2,3 +2,4 @@ Client
 *.iml
 .idea
 Uploads
+Server/wafer-take-out-server/pkg/wechat/secret.go
