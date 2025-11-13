@@ -7,13 +7,17 @@ import (
 
 func NewRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
 
-	category := r.Group("/admin/category")
-	category.Use(middleware.JWTAuthMiddleware())
-	category.POST("", h.Create)
-	category.GET("page", h.ListPage)
-	category.PUT("", h.Update)
-	category.POST("status/:status", h.UpdateStatus)
-	category.DELETE("", h.Delete)
-	category.GET("list", h.ListByType)
+	admin := r.Group("/admin/category")
+	admin.Use(middleware.JWTAuthMiddleware())
+	admin.POST("", h.Create)
+	admin.GET("page", h.ListPage)
+	admin.PUT("", h.Update)
+	admin.POST("status/:status", h.UpdateStatus)
+	admin.DELETE("", h.Delete)
+	admin.GET("list", h.ListByType)
+
+	user := r.Group("/user/category")
+	user.Use(middleware.JWTAuthMiddleware())
+	user.GET("list", h.ListByType)
 	return r
 }

@@ -145,10 +145,6 @@ func (h *CategoryHandler) ListPage(c *gin.Context) {
 
 func (h *CategoryHandler) ListByType(c *gin.Context) {
 	curType := c.Query("type")
-	if curType == "" {
-		c.JSON(http.StatusBadRequest, result.Error("获取总类失败"))
-		return
-	}
 	curTypeInt, _ := strconv.Atoi(curType)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

@@ -102,11 +102,12 @@ func (repo *DefaultCategoryRepository) FindByType(ctx context.Context, curType i
 
 	entity := make([]*domain.Category, 0)
 	db := repo.db.WithContext(ctx).
-		Model(&domain.Category{}).
-		Where("type = ?", curType).
-		Find(&entity)
-	err := db.Error
-	if err != nil {
+		Model(&domain.Category{})
+	if curType > 0 {
+		db.Where("type = ?", curType)
+	}
+
+	if err := db.Find(&entity).Error; err != nil {
 		return nil, err
 	}
 	return entity, nil

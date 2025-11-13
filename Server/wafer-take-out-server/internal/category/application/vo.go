@@ -15,5 +15,3 @@ type Record struct {
 	CreateUser int64  `json:"createUser"`
 	UpdateUser int64  `json:"updateUser"`
 }
-
-type GetsTypedVO []Record
