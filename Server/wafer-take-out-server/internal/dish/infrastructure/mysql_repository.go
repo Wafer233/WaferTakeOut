@@ -12,10 +12,35 @@ type DefaultDishRepository struct {
 	db *gorm.DB
 }
 
-func NewDefaultDishRepository(db *gorm.DB) domain.DishRepository {
-	return &DefaultDishRepository{
-		db: db,
+func (repo *DefaultDishRepository) FindByCategoryIdFlavor(ctx context.Context,
+	categoryId int64) ([]*domain.Dish, map[int64][]*domain.Flavor, error) {
+
+	var dishes []*domain.Dish
+	tx := repo.db.WithContext(ctx).Begin()
+
+	if err := tx.Model(&domain.Dish{}).
+		Where("category_id = ? ", categoryId).
+		Find(&dishes).Error; err != nil {
+		tx.Rollback()
+		return nil, nil, err
 	}
+
+	flavors := make([]*domain.Flavor, 0)
+	mapping := make(map[int64][]*domain.Flavor)
+
+	for _, dish := range dishes {
+		err := tx.Model(&domain.Flavor{}).Where("dish_id = ?", dish.Id).Find(&flavors).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, nil, err
+		}
+		mapping[dish.Id] = flavors
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, nil, err
+	}
+	return dishes, mapping, nil
 
 }
 
@@ -212,5 +237,12 @@ func (repo *DefaultDishRepository) FindByIds(ctx context.Context,
 	}
 
 	return descriptions, images, nil
+
+}
+
+func NewDefaultDishRepository(db *gorm.DB) domain.DishRepository {
+	return &DefaultDishRepository{
+		db: db,
+	}
 
 }

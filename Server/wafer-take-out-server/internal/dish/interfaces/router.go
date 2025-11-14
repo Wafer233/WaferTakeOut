@@ -20,6 +20,6 @@ func NewRouter(r *gin.Engine, h *DishHandler) *gin.Engine {
 
 	user := r.Group("/user/dish")
 	//user.Use(middleware.JWTAuthMiddleware())
-	user.GET("list", h.ListByCategory)
+	user.GET("list", h.ListByCategoryIdFlavor)
 	return r
 }

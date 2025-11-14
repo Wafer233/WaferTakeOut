@@ -25,7 +25,9 @@ type DishVO struct {
 	ID           int64    `json:"id"`
 	Image        string   `json:"image"`
 	Name         string   `json:"name"`
-	Price        float64  `json:"price,string"`
-	Status       int      `json:"status"`
-	UpdateTime   string   `json:"updateTime"`
+
+	//这个地方不是string ！！ debug了几个小时
+	Price      float64 `json:"price"`
+	Status     int     `json:"status"`
+	UpdateTime string  `json:"updateTime"`
 }

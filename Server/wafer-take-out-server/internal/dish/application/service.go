@@ -8,6 +8,7 @@ import (
 	cate "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
 	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
+	"github.com/jinzhu/copier"
 )
 
 type DishService struct {
@@ -221,4 +222,47 @@ func (svc *DishService) Delete(ctx context.Context, idArr []int64) error {
 	}
 
 	return nil
+}
+
+func (svc *DishService) FindByCategoryIdFlavor(ctx context.Context, categoryId int64) ([]DishVO, error) {
+
+	dishes, mapping, err := svc.repo.FindByCategoryIdFlavor(ctx, categoryId)
+	if err != nil {
+		return []DishVO{}, err
+	}
+
+	if len(dishes) == 0 {
+		return []DishVO{}, nil
+	}
+
+	records := make([]DishVO, len(dishes))
+
+	mappingVO := make(map[int64][]Flavor)
+
+	err = copier.Copy(&mappingVO, &mapping)
+	if err != nil {
+		return []DishVO{}, err
+	}
+
+	category, err := svc.cateRepo.FindById(ctx, dishes[0].CategoryId)
+	if err != nil {
+		return []DishVO{}, err
+	}
+
+	for index, d := range dishes {
+		records[index] = DishVO{
+			CategoryId:   d.CategoryId,
+			CategoryName: category.Name,
+			Description:  d.Description,
+			Flavors:      mappingVO[d.Id],
+			ID:           d.Id,
+			Image:        d.Image,
+			Name:         d.Name,
+			Price:        d.Price,
+			Status:       d.Status,
+			UpdateTime:   d.UpdateTime.Format("2006-01-02 15:04"),
+		}
+	}
+
+	return records, nil
 }

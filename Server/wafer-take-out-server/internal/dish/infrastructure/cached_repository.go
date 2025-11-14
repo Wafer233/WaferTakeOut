@@ -19,14 +19,9 @@ type CachedDishRepository struct {
 	cache *redis.Client
 }
 
-func NewCachedDishRepository(
-	repo domain.DishRepository,
-	cache *redis.Client,
-) domain.DishRepository {
-	return &CachedDishRepository{
-		repo:  repo,
-		cache: cache,
-	}
+func (c *CachedDishRepository) FindByCategoryIdFlavor(ctx context.Context, i int64) ([]*domain.Dish,
+	map[int64][]*domain.Flavor, error) {
+	return c.repo.FindByCategoryIdFlavor(ctx, i)
 }
 
 func (c *CachedDishRepository) Delete(ctx context.Context, ids []int64) error {
@@ -133,4 +128,14 @@ func (c *CachedDishRepository) cleanCache(ctx context.Context, pattern string) e
 	}
 
 	return iter.Err()
+}
+
+func NewCachedDishRepository(
+	repo domain.DishRepository,
+	cache *redis.Client,
+) domain.DishRepository {
+	return &CachedDishRepository{
+		repo:  repo,
+		cache: cache,
+	}
 }

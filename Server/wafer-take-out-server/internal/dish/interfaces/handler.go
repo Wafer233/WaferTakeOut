@@ -194,3 +194,19 @@ func (h *DishHandler) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result.Success())
 }
+
+func (h *DishHandler) ListByCategoryIdFlavor(c *gin.Context) {
+	categoryId := c.Query("categoryId")
+	categoryIdInt, _ := strconv.Atoi(categoryId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30000*time.Second)
+	defer cancel()
+
+	vo, err := h.svc.FindByCategoryIdFlavor(ctx, int64(categoryIdInt))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	c.JSON(http.StatusOK, result.SuccessData(vo))
+
+}
