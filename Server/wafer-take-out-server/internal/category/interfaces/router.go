@@ -8,7 +8,8 @@ import (
 func NewRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
 
 	admin := r.Group("/admin/category")
-	admin.Use(middleware.JWTAuthMiddleware())
+	admin.Use(middleware.EmployeeAuthMiddleware())
+
 	admin.POST("", h.Create)
 	admin.GET("page", h.ListPage)
 	admin.PUT("", h.Update)
@@ -17,7 +18,8 @@ func NewRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
 	admin.GET("list", h.ListByType)
 
 	user := r.Group("/user/category")
-	//user.Use(middleware.JWTAuthMiddleware())
+	user.Use(middleware.UserAuthMiddleware())
+
 	user.GET("list", h.ListByType)
 	return r
 }

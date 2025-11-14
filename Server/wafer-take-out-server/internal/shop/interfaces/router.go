@@ -9,12 +9,13 @@ func NewRouter(r *gin.Engine, h *ShopHandler) *gin.Engine {
 
 	admin := r.Group("/admin/shop")
 
-	admin.Use(middleware.JWTAuthMiddleware())
+	admin.Use(middleware.EmployeeAuthMiddleware())
 	admin.PUT(":status", h.Update)
 	admin.GET("status", h.Get)
 
 	user := r.Group("/user/shop")
-	//user.Use(middleware.JWTAuthMiddleware())
+	user.Use(middleware.UserAuthMiddleware())
+
 	user.GET("status", h.Get)
 	return r
 

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/middleware"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/user/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/jwt"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/wechat"
 )
 
@@ -36,7 +36,7 @@ func (svc *UserService) WxLogin(ctx context.Context, code string) (LoginVO, erro
 		return LoginVO{}, err
 	}
 
-	token, err := middleware.GenerateToken(user.Id)
+	token, err := jwt.GenerateToken(user.Id)
 	if err != nil {
 		return LoginVO{}, err
 	}

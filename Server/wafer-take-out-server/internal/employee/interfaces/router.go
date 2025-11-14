@@ -11,7 +11,7 @@ func NewRouter(r *gin.Engine, h *EmployeeHandler) *gin.Engine {
 	unprotected.POST("/logout", h.Logout)
 
 	employee := r.Group("/admin/employee")
-	employee.Use(middleware.JWTAuthMiddleware())
+	employee.Use(middleware.EmployeeAuthMiddleware())
 	employee.POST("", h.Create)
 	employee.GET("/page", h.ListPage)
 	employee.POST("/status/:status", h.UpdateStatus)

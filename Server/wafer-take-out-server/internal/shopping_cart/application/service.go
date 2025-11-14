@@ -26,16 +26,14 @@ func NewShoppingCartService(cartRepo cart.ShoppingCartRepository,
 	}
 }
 
-func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO) error {
+func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO, curId int64) error {
 
-	// 这里因为他不支持cookie我暂时不搞userid
-	userId := int64(1)
 	dishId := dto.DishId
 	setId := dto.SetMealId
 	shoppingCart := &cart.ShoppingCart{}
 
 	// 1.先看有没有
-	shoppingCart, err := svc.cartRepo.Find(ctx, userId, dishId, setId)
+	shoppingCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
 	if err != nil {
 		return err
 	}
@@ -60,7 +58,7 @@ func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO) error {
 		shoppingCart = &cart.ShoppingCart{
 			Name:       dishEntity.Name,
 			Image:      dishEntity.Image,
-			UserId:     userId,
+			UserId:     curId,
 			DishId:     dishId,
 			SetmealId:  setId,
 			DishFlavor: dto.DishFlavor,
@@ -77,7 +75,7 @@ func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO) error {
 		shoppingCart = &cart.ShoppingCart{
 			Name:       setEntity.Name,
 			Image:      setEntity.Image,
-			UserId:     userId,
+			UserId:     curId,
 			SetmealId:  setId,
 			DishId:     dishId,
 			DishFlavor: dto.DishFlavor,

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/application"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/middleware"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/jwt"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
 	"github.com/gin-gonic/gin"
 )
@@ -40,7 +40,7 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := middleware.GenerateToken(vo.ID)
+	token, err := jwt.GenerateToken(vo.ID)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
 		return

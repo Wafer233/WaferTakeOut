@@ -28,10 +28,16 @@ func (h *ShoppingCartHandler) Create(c *gin.Context) {
 		return
 	}
 
+	curId, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	err = h.svc.Create(ctx, &dto)
+	err = h.svc.Create(ctx, &dto, curId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error(err.Error()))
 		return
@@ -39,3 +45,9 @@ func (h *ShoppingCartHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result.Success())
 }
+
+//func (h *ShoppingCartHandler) ListByUserId(c *gin.Context) {
+//
+//	userId := int64(1)
+//	vo := h.svc.FindByUserId(ctx, userId)
+//}

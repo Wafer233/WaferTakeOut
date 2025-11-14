@@ -37,17 +37,5 @@ func (h *UserHandler) WxLogin(c *gin.Context) {
 		return
 	}
 
-	//这里小程序不支持cookie所以很烦....
-	//只能在header里头验证了
-	//c.SetCookie(
-	//	"token",
-	//	vo.Token,
-	//	1*60*60,
-	//	"/",
-	//	"",
-	//	false,
-	//	false,
-	//)
-
 	c.JSON(http.StatusOK, result.SuccessData(vo))
 }

@@ -8,7 +8,8 @@ import (
 func NewRouter(r *gin.Engine, h *SetMealHandler) *gin.Engine {
 
 	admin := r.Group("/admin/setmeal")
-	admin.Use(middleware.JWTAuthMiddleware())
+	admin.Use(middleware.EmployeeAuthMiddleware())
+
 	admin.PUT("", h.Update)
 	admin.GET("page", h.ListPage)
 	admin.POST("status/:status", h.UpdateStatus)
@@ -17,7 +18,8 @@ func NewRouter(r *gin.Engine, h *SetMealHandler) *gin.Engine {
 	admin.GET(":id", h.ListById)
 
 	user := r.Group("/user/setmeal")
-	//user.Use(middleware.JWTAuthMiddleware())
+	user.Use(middleware.UserAuthMiddleware())
+
 	user.GET("list", h.ListByCategoryId)
 	user.GET("dish/:id", h.ListDishById)
 	return r

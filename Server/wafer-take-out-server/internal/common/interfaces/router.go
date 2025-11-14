@@ -8,7 +8,8 @@ import (
 func NewRouter(r *gin.Engine, h *CommonHandler) *gin.Engine {
 
 	common := r.Group("/admin/common")
-	common.Use(middleware.JWTAuthMiddleware())
+	common.Use(middleware.EmployeeAuthMiddleware())
+
 	common.POST("upload", h.Upload)
 	return r
 }
