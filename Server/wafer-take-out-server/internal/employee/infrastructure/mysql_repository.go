@@ -8,15 +8,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type EmployeeRepository struct {
+type DefaultEmployeeRepository struct {
 	db *gorm.DB
 }
 
-func NewEmployeeRepository(db *gorm.DB) *EmployeeRepository {
-	return &EmployeeRepository{db: db}
+func NewDefaultEmployeeRepository(db *gorm.DB) *DefaultEmployeeRepository {
+	return &DefaultEmployeeRepository{db: db}
 }
 
-func (r *EmployeeRepository) FindByUsername(ctx context.Context, username string) (*domain.Employee, error) {
+func (r *DefaultEmployeeRepository) FindByUsername(ctx context.Context, username string) (*domain.Employee, error) {
 	var model domain.Employee
 
 	err := r.db.
@@ -35,7 +35,7 @@ func (r *EmployeeRepository) FindByUsername(ctx context.Context, username string
 	}, nil
 }
 
-func (r *EmployeeRepository) Create(ctx context.Context, model *domain.Employee) error {
+func (r *DefaultEmployeeRepository) Create(ctx context.Context, model *domain.Employee) error {
 	err := r.db.
 		WithContext(ctx).
 		Create(&model).Error
@@ -45,7 +45,7 @@ func (r *EmployeeRepository) Create(ctx context.Context, model *domain.Employee)
 	return nil
 }
 
-func (r *EmployeeRepository) FindPage(ctx context.Context,
+func (r *DefaultEmployeeRepository) FindPage(ctx context.Context,
 	name string, page int, pageSize int) (int64, []domain.Employee, error) {
 
 	var employees []domain.Employee
@@ -78,7 +78,7 @@ func (r *EmployeeRepository) FindPage(ctx context.Context,
 
 }
 
-func (r *EmployeeRepository) UpdateStatus(ctx context.Context,
+func (r *DefaultEmployeeRepository) UpdateStatus(ctx context.Context,
 	emp *domain.Employee) error {
 
 	id := emp.Id
@@ -92,7 +92,7 @@ func (r *EmployeeRepository) UpdateStatus(ctx context.Context,
 
 }
 
-func (r *EmployeeRepository) FindById(ctx context.Context,
+func (r *DefaultEmployeeRepository) FindById(ctx context.Context,
 	id int64) (*domain.Employee, error) {
 
 	var entity domain.Employee
@@ -107,7 +107,7 @@ func (r *EmployeeRepository) FindById(ctx context.Context,
 	return &entity, nil
 }
 
-func (r *EmployeeRepository) Update(ctx context.Context,
+func (r *DefaultEmployeeRepository) Update(ctx context.Context,
 	employee *domain.Employee) error {
 
 	err := r.db.WithContext(ctx).
@@ -119,7 +119,7 @@ func (r *EmployeeRepository) Update(ctx context.Context,
 
 }
 
-func (r *EmployeeRepository) UpdatePassword(ctx context.Context, id int64,
+func (r *DefaultEmployeeRepository) UpdatePassword(ctx context.Context, id int64,
 	old string, neo string) error {
 	realPassword := ""
 

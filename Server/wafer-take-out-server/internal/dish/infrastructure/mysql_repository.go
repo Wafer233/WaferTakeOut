@@ -12,7 +12,7 @@ type DefaultDishRepository struct {
 	db *gorm.DB
 }
 
-func NewDishRepository(db *gorm.DB) domain.DishRepository {
+func NewDefaultDishRepository(db *gorm.DB) domain.DishRepository {
 	return &DefaultDishRepository{
 		db: db,
 	}

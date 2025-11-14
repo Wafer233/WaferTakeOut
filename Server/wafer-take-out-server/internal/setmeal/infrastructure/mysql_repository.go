@@ -11,7 +11,7 @@ type DefaultSetMealRepository struct {
 	db *gorm.DB
 }
 
-func NewSetMealRepository(db *gorm.DB) domain.SetMealRepository {
+func NewDefaultSetMealRepository(db *gorm.DB) domain.SetMealRepository {
 	return &DefaultSetMealRepository{db: db}
 }
 

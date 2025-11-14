@@ -11,10 +11,10 @@ import (
 )
 
 type EmployeeService struct {
-	repo *employeeInfra.EmployeeRepository
+	repo *employeeInfra.DefaultEmployeeRepository
 }
 
-func NewEmployeeService(repo *employeeInfra.EmployeeRepository) *EmployeeService {
+func NewEmployeeService(repo *employeeInfra.DefaultEmployeeRepository) *EmployeeService {
 	return &EmployeeService{
 		repo: repo,
 	}

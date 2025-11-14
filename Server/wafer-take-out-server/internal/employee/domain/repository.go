@@ -2,7 +2,7 @@ package domain
 
 import "context"
 
-type EmployeeRepo interface {
+type EmployeeRepository interface {
 	FindByUsername(context.Context, string) (*Employee, error)
 	Create(context.Context, *Employee) error
 	FindPage(context.Context, string, int, int) (int64, []Employee, error)

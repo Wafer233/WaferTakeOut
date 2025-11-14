@@ -11,7 +11,7 @@ type DefaultCategoryRepository struct {
 	db *gorm.DB
 }
 
-func NewCategoryRepository(db *gorm.DB) domain.CategoryRepository {
+func NewDefaultCategoryRepository(db *gorm.DB) domain.CategoryRepository {
 	return &DefaultCategoryRepository{
 		db: db,
 	}

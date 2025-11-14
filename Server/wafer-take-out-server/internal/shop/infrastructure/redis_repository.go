@@ -9,15 +9,15 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type DefaultShopCache struct {
+type DefaultShopRepository struct {
 	rbd *redis.Client
 }
 
-func NewDefaultShopCache(rbd *redis.Client) domian.ShopRepository {
-	return &DefaultShopCache{rbd: rbd}
+func NewDefaultShopRepository(rbd *redis.Client) domian.ShopRepository {
+	return &DefaultShopRepository{rbd: rbd}
 }
 
-func (c *DefaultShopCache) Update(ctx context.Context, status int) error {
+func (c *DefaultShopRepository) Update(ctx context.Context, status int) error {
 	key := "ShopStatus"
 	rdb := c.rbd.Set(ctx, key, status, time.Hour)
 
@@ -28,7 +28,7 @@ func (c *DefaultShopCache) Update(ctx context.Context, status int) error {
 	return nil
 }
 
-func (c *DefaultShopCache) Find(ctx context.Context) (int, error) {
+func (c *DefaultShopRepository) Find(ctx context.Context) (int, error) {
 	key := "ShopStatus"
 	statusStr, err := c.rbd.Get(ctx, key).Result()
 	if err != nil {
