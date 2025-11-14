@@ -41,7 +41,7 @@ func main() {
 	svc := emplApp.NewEmployeeService(repo)
 	svc1 := cateApp.NewCategoryService(repo1)
 	svc3 := dishApp.NewDishService(repo3, repo1)
-	svc4 := setmApp.NewSetMealService(repo5, repo1)
+	svc4 := setmApp.NewSetMealService(repo5, repo1, repo3)
 	svc5 := shopApp.NewShopService(repo6)
 	svc6 := userApp.NewUserService(repo7)
 	h := emplInter.NewEmployeeHandler(svc)

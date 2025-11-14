@@ -181,3 +181,36 @@ func (repo *DefaultDishRepository) Update(ctx context.Context, dish *domain.Dish
 	}
 	return tx.Commit().Error
 }
+
+func (repo *DefaultDishRepository) FindByIds(ctx context.Context,
+	ids []int64) (map[int64]string, map[int64]string, error) {
+
+	// 这里是自定义模型 只能scan
+	type DishDetail struct {
+		Id          int64  `gorm:"column:id;primaryKey;type:bigint,autoIncrement"`
+		Description string `gorm:"column:description;type:varchar(255)"`
+		Image       string `gorm:"column:image;type:varchar(255)"`
+	}
+
+	var detail []*DishDetail
+	descriptions := make(map[int64]string)
+	images := make(map[int64]string)
+
+	err := repo.db.WithContext(ctx).
+		Model(&domain.Dish{}).
+		Where("id in (?)", ids).
+		Select("id,description,image").
+		Scan(&detail).Error
+
+	if err != nil {
+		return descriptions, images, err
+	}
+
+	for _, value := range detail {
+		descriptions[value.Id] = value.Description
+		images[value.Id] = value.Image
+	}
+
+	return descriptions, images, nil
+
+}

@@ -10,4 +10,5 @@ type SetMealRepository interface {
 	FindById(context.Context, int64) (*SetMeal, []*SetMealDish, error)
 	Update(context.Context, *SetMeal, []*SetMealDish) error
 	FindByCategoryId(context.Context, int64) ([]*SetMeal, error)
+	FindDishById(context.Context, int64) ([]*SetMealDish, error)
 }

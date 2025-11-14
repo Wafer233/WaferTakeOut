@@ -43,3 +43,10 @@ type FindByCategoryVO struct {
 	UpdateTime  string  `json:"updateTime"`
 	UpdateUser  int64   `json:"updateUser"`
 }
+
+type DishVO struct {
+	Copies      int    `json:"copies"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+	Name        string `json:"name"`
+}

@@ -193,3 +193,19 @@ func (h *SetMealHandler) ListByCategoryId(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result.SuccessData(vo))
 }
+
+func (h *SetMealHandler) ListDishById(c *gin.Context) {
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	vo, err := h.svc.FindDishById(ctx, int64(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+
+	c.JSON(http.StatusOK, result.SuccessData(vo))
+
+}

@@ -190,3 +190,17 @@ func (repo *DefaultSetMealRepository) FindByCategoryId(ctx context.Context, cid 
 	}
 	return sets, nil
 }
+
+func (repo *DefaultSetMealRepository) FindDishById(ctx context.Context, setmealId int64) ([]*domain.SetMealDish, error) {
+
+	var dishes []*domain.SetMealDish
+	err := repo.db.WithContext(ctx).
+		Model(&domain.SetMealDish{}).
+		Where("setmeal_id = ?", setmealId).
+		Find(&dishes).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return dishes, nil
+}

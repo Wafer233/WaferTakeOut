@@ -6,19 +6,23 @@ import (
 	"time"
 
 	category "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
+	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
 	setmeal "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
 )
 
 type SetMealService struct {
 	setRepo  setmeal.SetMealRepository
 	cateRepo category.CategoryRepository
+	dishRepo dish.DishRepository
 }
 
 func NewSetMealService(setRepo setmeal.SetMealRepository,
-	cateRepo category.CategoryRepository) *SetMealService {
+	cateRepo category.CategoryRepository,
+	dishRepo dish.DishRepository) *SetMealService {
 	return &SetMealService{
 		setRepo:  setRepo,
 		cateRepo: cateRepo,
+		dishRepo: dishRepo,
 	}
 }
 
@@ -121,13 +125,13 @@ func (svc *SetMealService) FindById(ctx context.Context, id int64) (GetSetMealVO
 
 	dishVOs := make([]SetMealDish, len(dishes))
 
-	for i, dish := range dishes {
+	for i, d := range dishes {
 		dishVOs[i] = SetMealDish{
-			Copies:    dish.Copies,
-			DishId:    dish.DishId,
-			ID:        dish.Id,
-			Name:      dish.Name,
-			Price:     dish.Price,
+			Copies:    d.Copies,
+			DishId:    d.DishId,
+			ID:        d.Id,
+			Name:      d.Name,
+			Price:     d.Price,
 			SetmealId: set.Id,
 		}
 	}
@@ -226,4 +230,35 @@ func (svc *SetMealService) FindByCategoryId(ctx context.Context, cid int64) ([]F
 	}
 	return vo, nil
 
+}
+
+func (svc *SetMealService) FindDishById(ctx context.Context, setId int64) ([]DishVO, error) {
+
+	dishes, err := svc.setRepo.FindDishById(ctx, setId)
+	if err != nil {
+		return []DishVO{}, err
+	}
+
+	var ids []int64
+	for _, value := range dishes {
+		//这个地方是dishid
+		ids = append(ids, value.DishId)
+	}
+
+	descriptions, images, err := svc.dishRepo.FindByIds(ctx, ids)
+	if err != nil || len(descriptions) != len(dishes) {
+		return []DishVO{}, err
+	}
+
+	dishVOs := make([]DishVO, len(dishes))
+	for index, d := range dishes {
+		dishVOs[index] = DishVO{
+			Copies: d.Copies,
+			// 这两个都是dishid
+			Description: descriptions[d.DishId],
+			Image:       images[d.DishId],
+			Name:        d.Name,
+		}
+	}
+	return dishVOs, err
 }
