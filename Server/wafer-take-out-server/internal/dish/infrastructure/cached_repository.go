@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -19,9 +18,45 @@ type CachedDishRepository struct {
 	cache *redis.Client
 }
 
-func (c *CachedDishRepository) FindByCategoryIdFlavor(ctx context.Context, i int64) ([]*domain.Dish,
+func (c *CachedDishRepository) FindByCategoryIdFlavor(ctx context.Context, categoryId int64) ([]*domain.Dish,
 	map[int64][]*domain.Flavor, error) {
-	return c.repo.FindByCategoryIdFlavor(ctx, i)
+	type Cache struct {
+		Dishes  []*domain.Dish             `json:"dishes"`
+		Flavors map[int64][]*domain.Flavor `json:"flavors"`
+	}
+
+	// 生成key
+	key := fmt.Sprintf("dish_%d", categoryId)
+
+	// 尝试从Redis里头读取
+	val, err := c.cache.Get(ctx, key).Result()
+	if err == nil && val != "" {
+		var cache Cache
+		if err = json.Unmarshal([]byte(val), &cache); err == nil {
+			return cache.Dishes, cache.Flavors, nil
+		}
+		_ = c.cache.Del(ctx, key).Err()
+	}
+
+	// 查数据库
+	dishes, flavors, err := c.repo.FindByCategoryIdFlavor(ctx, categoryId)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// 写入缓存
+	newCache := Cache{
+		Dishes:  dishes,
+		Flavors: flavors,
+	}
+
+	bytes, _ := json.Marshal(&newCache)
+	err = c.cache.Set(ctx, key, bytes, 1*time.Hour).Err()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return dishes, flavors, nil
 }
 
 func (c *CachedDishRepository) Delete(ctx context.Context, ids []int64) error {
@@ -55,37 +90,7 @@ func (c *CachedDishRepository) FindById(ctx context.Context, id int64) (*domain.
 }
 
 func (c *CachedDishRepository) FindByCategoryId(ctx context.Context, categoryId int64) ([]*domain.Dish, error) {
-	// 这里涉及到查，要优先使用缓存
-
-	var dishes []*domain.Dish
-	//  1.构建key
-	key := fmt.Sprintf("dish_%d", categoryId)
-
-	//	2.查缓存
-	// 如果 val = ""   那么 err = redis.Nil
-	val, err := c.cache.Get(ctx, key).Result()
-	if err == nil {
-		err = json.Unmarshal([]byte(val), &dishes)
-		if err != nil {
-			return nil, errors.New("反序列化失败")
-		}
-		return dishes, nil
-	}
-
-	// 3.如果没有缓存，查mysql
-	dishes, err = c.repo.FindByCategoryId(ctx, categoryId)
-	if err != nil {
-		return nil, err
-	}
-
-	// 4.从新写缓存
-	bytes, err := json.Marshal(dishes)
-	if err != nil {
-		return nil, errors.New("序列化失败")
-	}
-	c.cache.Set(ctx, key, bytes, time.Hour)
-	return dishes, nil
-
+	return c.repo.FindByCategoryId(ctx, categoryId)
 }
 
 func (c *CachedDishRepository) FindPage(ctx context.Context, s string, i int64, i2 int, i3 int, i4 int) ([]*domain.Dish, int64, error) {
