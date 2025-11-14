@@ -147,3 +147,14 @@ func (svc *EmployeeService) Create(ctx context.Context, dto *AddEmployeeDTO, id 
 
 	return nil
 }
+
+func (svc *EmployeeService) UpdatePassword(ctx context.Context, dto *PasswordDTO, curid int64) error {
+
+	id := curid
+	old := dto.OldPassword
+	neo := dto.NewPassword
+	err := svc.repo.UpdatePassword(ctx, id, old, neo)
+
+	return err
+
+}

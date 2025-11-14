@@ -9,4 +9,5 @@ type EmployeeRepo interface {
 	UpdateStatus(context.Context, *Employee) error
 	FindById(context.Context, int64) (*Employee, error)
 	Update(context.Context, *Employee) error
+	UpdatePassword(context.Context, int64, string, string) error
 }

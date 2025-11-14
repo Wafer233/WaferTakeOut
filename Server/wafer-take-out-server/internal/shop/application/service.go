@@ -7,25 +7,25 @@ import (
 )
 
 type ShopService struct {
-	cache domian.ShopRepository
+	repo domian.ShopRepository
 }
 
 func NewShopService(cache domian.ShopRepository) *ShopService {
-	return &ShopService{cache: cache}
+	return &ShopService{repo: cache}
 }
 
-func (svc *ShopService) Update(ctx context.Context, status int) error {
+func (svc *ShopService) UpdateStatus(ctx context.Context, status int) error {
 
-	err := svc.cache.Update(ctx, status)
+	err := svc.repo.Update(ctx, status)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *ShopService) Find(ctx context.Context) (int, error) {
+func (svc *ShopService) FindStatus(ctx context.Context) (int, error) {
 
-	status, err := svc.cache.Find(ctx)
+	status, err := svc.repo.Find(ctx)
 	if err != nil {
 		return 0, err
 	}

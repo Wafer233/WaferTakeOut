@@ -196,3 +196,29 @@ func (h *EmployeeHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result.Success())
 }
+
+func (h *EmployeeHandler) UpdatePassword(c *gin.Context) {
+	//想骂人了这里根本没有传入empID,我在token自己获取了
+	var dto application.PasswordDTO
+	err := c.ShouldBindJSON(&dto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("绑定失败"))
+		return
+	}
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
+	defer cancel()
+
+	curId, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, result.Error("无权限"))
+		return
+	}
+
+	err = h.svc.UpdatePassword(ctx, &dto, curId.(int64))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("密码错误或内部错误"))
+		return
+	}
+
+	c.JSON(http.StatusOK, result.Success())
+}

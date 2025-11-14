@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/domain"
 	"gorm.io/gorm"
@@ -115,5 +116,34 @@ func (r *EmployeeRepository) Update(ctx context.Context,
 		Updates(employee).Error
 
 	return err
+
+}
+
+func (r *EmployeeRepository) UpdatePassword(ctx context.Context, id int64,
+	old string, neo string) error {
+	realPassword := ""
+
+	tx := r.db.WithContext(ctx).
+		Model(&domain.Employee{}).
+		Begin()
+
+	if err := tx.Where("id = ?", id).
+		Select("password").
+		Scan(&realPassword).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if realPassword != old {
+		tx.Rollback()
+		return errors.New("密码错误")
+	}
+
+	if err := tx.Where("id = ?", id).
+		Update("password", neo).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 
 }

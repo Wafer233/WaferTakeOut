@@ -5,13 +5,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(r *gin.Engine, h5 *ShopHandler) *gin.Engine {
+func NewRouter(r *gin.Engine, h *ShopHandler) *gin.Engine {
 
-	shop := r.Group("/admin/shop")
+	admin := r.Group("/admin/shop")
 
-	shop.Use(middleware.JWTAuthMiddleware())
-	shop.PUT(":status", h5.Update)
-	shop.GET("status", h5.Get)
+	admin.Use(middleware.JWTAuthMiddleware())
+	admin.PUT(":status", h.Update)
+	admin.GET("status", h.Get)
+
+	user := r.Group("/user/shop")
+	//user.Use(middleware.JWTAuthMiddleware())
+	user.GET("status", h.Get)
 	return r
 
 }

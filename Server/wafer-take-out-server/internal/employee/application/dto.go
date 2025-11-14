@@ -23,3 +23,9 @@ type AddEmployeeDTO struct {
 	Sex      string `json:"sex"`
 	UserName string `json:"username"`
 }
+
+type PasswordDTO struct {
+	ID          int64  `json:"empId"`
+	NewPassword string `json:"newPassword"`
+	OldPassword string `json:"oldPassword"`
+}

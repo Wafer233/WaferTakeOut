@@ -17,5 +17,6 @@ func NewRouter(r *gin.Engine, h *EmployeeHandler) *gin.Engine {
 	employee.POST("/status/:status", h.UpdateStatus)
 	employee.GET("/:id", h.List)
 	employee.PUT("", h.Update)
+	employee.PUT("editPassword", h.UpdatePassword)
 	return r
 }
