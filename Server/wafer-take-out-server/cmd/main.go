@@ -50,7 +50,7 @@ func main() {
 	svc4 := setmApp.NewSetMealService(repo5, repo1, repo3)
 	svc5 := shopApp.NewShopService(repo6)
 	svc6 := userApp.NewUserService(repo7)
-	svc7 := cartApp.NewShoppingCartService(repo9)
+	svc7 := cartApp.NewShoppingCartService(repo9, repo8, repo5)
 
 	h := emplInter.NewEmployeeHandler(svc)
 	h1 := cateInter.NewCategoryHandler(svc1)

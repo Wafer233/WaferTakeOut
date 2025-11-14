@@ -4,39 +4,90 @@ import (
 	"context"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/domain"
+	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
+	setm "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
+	cart "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/domain"
 )
 
 type ShoppingCartService struct {
-	repo domain.ShoppingCartRepository
+	cartRepo cart.ShoppingCartRepository
+	dishRepo dish.DishRepository
+	setRepo  setm.SetMealRepository
 }
 
-func NewShoppingCartService(repo domain.ShoppingCartRepository) *ShoppingCartService {
+func NewShoppingCartService(cartRepo cart.ShoppingCartRepository,
+	dishRepo dish.DishRepository,
+	setRepo setm.SetMealRepository,
+) *ShoppingCartService {
 	return &ShoppingCartService{
-		repo: repo,
+		cartRepo: cartRepo,
+		dishRepo: dishRepo,
+		setRepo:  setRepo,
 	}
 }
 
 func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO) error {
 
 	// 这里因为他不支持cookie我暂时不搞userid
-	// TODO 有时间搞没时间算了
 	userId := int64(1)
+	dishId := dto.DishId
+	setId := dto.SetMealId
+	shoppingCart := &cart.ShoppingCart{}
 
-	cart := &domain.ShoppingCart{
-
-		Name:       "", //冗余字段
-		Image:      "", //冗余字段
-		UserId:     userId,
-		DishId:     dto.DishId,
-		SetmealId:  dto.SetMealId,
-		DishFlavor: dto.DishFlavor,
-		Number:     1,          //就是1
-		Amount:     float64(0), //冗余字段
-		CreateTime: time.Now(),
+	// 1.先看有没有
+	shoppingCart, err := svc.cartRepo.Find(ctx, userId, dishId, setId)
+	if err != nil {
+		return err
 	}
 
-	err := svc.repo.Create(ctx, cart)
+	// 2.1.如果有就增加
+	if shoppingCart != nil {
+		num := shoppingCart.Number + 1
 
+		err = svc.cartRepo.UpdateNumber(ctx, shoppingCart.Id, num)
+
+		return err
+	}
+	// 2.2.如果没有就创建
+
+	// 2.2.1 获取name，image和amount
+	// dish
+	if dishId != 0 {
+		dishEntity, _, er := svc.dishRepo.FindById(ctx, dishId)
+		if er != nil {
+			return er
+		}
+		shoppingCart = &cart.ShoppingCart{
+			Name:       dishEntity.Name,
+			Image:      dishEntity.Image,
+			UserId:     userId,
+			DishId:     dishId,
+			SetmealId:  setId,
+			DishFlavor: dto.DishFlavor,
+			Number:     1,
+			Amount:     dishEntity.Price,
+			CreateTime: time.Now(),
+		}
+	} else if setId != 0 {
+		setEntity, _, er := svc.setRepo.FindById(ctx, setId)
+		if er != nil {
+			return er
+		}
+
+		shoppingCart = &cart.ShoppingCart{
+			Name:       setEntity.Name,
+			Image:      setEntity.Image,
+			UserId:     userId,
+			SetmealId:  setId,
+			DishId:     dishId,
+			DishFlavor: dto.DishFlavor,
+			Number:     1,
+			Amount:     setEntity.Price,
+			CreateTime: time.Now(),
+		}
+	}
+
+	err = svc.cartRepo.Create(ctx, shoppingCart)
 	return err
+
 }
