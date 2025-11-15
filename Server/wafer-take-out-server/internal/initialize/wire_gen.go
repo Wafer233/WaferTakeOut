@@ -7,6 +7,9 @@
 package initialize
 
 import (
+	application8 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/application"
+	infrastructure8 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/infrastructure"
+	interfaces9 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/interfaces"
 	application2 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/application"
 	infrastructure2 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/infrastructure"
 	interfaces2 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/interfaces"
@@ -66,7 +69,10 @@ func Init() (*gin.Engine, error) {
 	shoppingCartRepository := infrastructure7.NewDefaultShoppingCartRepository(db)
 	shoppingCartService := application7.NewShoppingCartService(shoppingCartRepository, dishRepository, setMealRepository)
 	shoppingCartHandler := interfaces8.NewShoppingCartHandler(shoppingCartService)
-	engine := NewRouter(employeeHandler, categoryHandler, commonHandler, dishHandler, setMealHandler, shopHandler, userHandler, shoppingCartHandler)
+	addressRepository := infrastructure8.NewDefaultAddressRepository(db)
+	addressService := application8.NewAddressService(addressRepository)
+	addressHandler := interfaces9.NewAddressHandler(addressService)
+	engine := NewRouter(employeeHandler, categoryHandler, commonHandler, dishHandler, setMealHandler, shopHandler, userHandler, shoppingCartHandler, addressHandler)
 	return engine, nil
 }
 

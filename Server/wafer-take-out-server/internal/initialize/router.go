@@ -3,6 +3,7 @@ package initialize
 import (
 	"github.com/gin-gonic/gin"
 
+	addrInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/interfaces"
 	cateInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/interfaces"
 	commonInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/common/interfaces"
 	dishInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/interfaces"
@@ -22,6 +23,7 @@ func NewRouter(
 	hShop *shopInter.ShopHandler,
 	hUser *userInter.UserHandler,
 	hCart *cartInter.ShoppingCartHandler,
+	hAddr *addrInter.AddressHandler,
 ) *gin.Engine {
 
 	r := gin.Default()
@@ -34,6 +36,7 @@ func NewRouter(
 	r = shopInter.NewRouter(r, hShop)
 	r = userInter.NewRouter(r, hUser)
 	r = cartInter.NewRouter(r, hCart)
+	r = addrInter.NewRouter(r, hAddr)
 
 	return r
 }
