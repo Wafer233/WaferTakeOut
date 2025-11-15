@@ -8,4 +8,6 @@ type AddressRepository interface {
 	FindByUserIdDefault(context.Context, int64) (*AddressBook, error)
 	UpdateDefault(context.Context, int64, int64, int) error
 	FindById(context.Context, int64) (*AddressBook, error)
+	DeleteById(context.Context, int64) error
+	Update(context.Context, *AddressBook) error
 }

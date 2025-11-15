@@ -15,6 +15,7 @@ func NewRouter(r *gin.Engine, h *AddressHandler) *gin.Engine {
 	user.GET("/default", h.GetDefault)
 	user.PUT("/default", h.UpdateDefault)
 	user.GET("/:id", h.GetById)
-
+	user.DELETE("", h.Delete)
+	user.PUT("", h.Update)
 	return r
 }

@@ -12,6 +12,29 @@ type DefaultAddressRepository struct {
 	db *gorm.DB
 }
 
+func (repo *DefaultAddressRepository) DeleteById(ctx context.Context, addrId int64) error {
+
+	err := repo.db.WithContext(ctx).
+		Model(&domain.AddressBook{}).
+		Where("id = ?", addrId).
+		Delete(&domain.AddressBook{}).Error
+
+	return err
+}
+
+func (repo *DefaultAddressRepository) Update(ctx context.Context, book *domain.AddressBook) error {
+
+	err := repo.db.
+		WithContext(ctx).
+		Model(&domain.AddressBook{}).
+		Where("id = ?", book.Id).
+		Updates(book).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repo *DefaultAddressRepository) UpdateDefault(ctx context.Context, userId int64,
 	addrId int64, isDefault int) error {
 

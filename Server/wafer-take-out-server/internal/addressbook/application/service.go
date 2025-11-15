@@ -145,3 +145,34 @@ func (svc *AddressService) FindById(ctx context.Context, id int64) (AddressBookV
 
 	return vo, nil
 }
+
+func (svc *AddressService) DeleteById(ctx context.Context, addrId int64) error {
+	err := svc.repo.DeleteById(ctx, addrId)
+	return err
+}
+
+func (svc *AddressService) Update(ctx context.Context,
+	dto *AddressDTO, userId int64) error {
+
+	label := strconv.Itoa(dto.Label)
+
+	book := &domain.AddressBook{
+		UserId:       userId,
+		Consignee:    dto.Consignee,
+		Sex:          dto.Sex,
+		Phone:        dto.Phone,
+		ProvinceCode: dto.ProvinceCode,
+		ProvinceName: dto.ProvinceName,
+		CityCode:     dto.CityCode,
+		CityName:     dto.CityName,
+		DistrictCode: dto.DistrictCode,
+		DistrictName: dto.DistrictName,
+		Detail:       dto.Detail,
+		Label:        label,
+		IsDefault:    dto.IsDefault,
+	}
+
+	err := svc.repo.Update(ctx, book)
+
+	return err
+}
