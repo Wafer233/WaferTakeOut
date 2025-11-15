@@ -157,6 +157,7 @@ func (svc *AddressService) Update(ctx context.Context,
 	label := strconv.Itoa(dto.Label)
 
 	book := &domain.AddressBook{
+		Id:           dto.ID,
 		UserId:       userId,
 		Consignee:    dto.Consignee,
 		Sex:          dto.Sex,
