@@ -12,10 +12,10 @@ import (
 )
 
 type CategoryHandler struct {
-	svc *application.CategoryService
+	svc *application.CategoryAppService
 }
 
-func NewCategoryHandler(svc *application.CategoryService) *CategoryHandler {
+func NewCategoryHandler(svc *application.CategoryAppService) *CategoryHandler {
 	return &CategoryHandler{
 		svc: svc,
 	}

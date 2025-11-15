@@ -99,19 +99,16 @@ func (repo *DefaultCategoryRepository) Delete(ctx context.Context, id int64) err
 }
 
 func (repo *DefaultCategoryRepository) FindByType(ctx context.Context, curType int) ([]*domain.Category, error) {
-
 	entity := make([]*domain.Category, 0)
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{})
 	if curType > 0 {
 		db.Where("type = ?", curType)
 	}
-
 	if err := db.Find(&entity).Error; err != nil {
 		return nil, err
 	}
 	return entity, nil
-
 }
 
 func (repo *DefaultCategoryRepository) FindById(ctx context.Context, id int64) (*domain.Category, error) {

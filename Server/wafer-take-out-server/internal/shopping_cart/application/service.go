@@ -26,36 +26,35 @@ func NewShoppingCartService(cartRepo cart.ShoppingCartRepository,
 	}
 }
 
-func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO, curId int64) error {
+func (svc *ShoppingCartService) Add(ctx context.Context, dto *CartDTO, curId int64) error {
 
 	dishId := dto.DishId
 	setId := dto.SetMealId
-	shoppingCart := &cart.ShoppingCart{}
 
-	// 1.先看有没有
-	shoppingCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
+	curCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
 	if err != nil {
 		return err
 	}
 
-	// 2.1.如果有就增加
-	if shoppingCart != nil {
-		num := shoppingCart.Number + 1
-
-		err = svc.cartRepo.UpdateNumber(ctx, shoppingCart.Id, num)
-
-		return err
+	if curCart != nil && len(curCart) > 0 {
+		num := curCart[0].Number + 1
+		err = svc.cartRepo.UpdateNumber(ctx, curCart[0].Id, num)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	// 2.2.如果没有就创建
 
+	// 2.2.如果没有就创建
 	// 2.2.1 获取name，image和amount
 	// dish
+
 	if dishId != 0 {
 		dishEntity, _, er := svc.dishRepo.FindById(ctx, dishId)
 		if er != nil {
 			return er
 		}
-		shoppingCart = &cart.ShoppingCart{
+		item := &cart.ShoppingCart{
 			Name:       dishEntity.Name,
 			Image:      dishEntity.Image,
 			UserId:     curId,
@@ -66,13 +65,15 @@ func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO, curId i
 			Amount:     dishEntity.Price,
 			CreateTime: time.Now(),
 		}
-	} else if setId != 0 {
+		err = svc.cartRepo.Create(ctx, item)
+		return err
+
+	} else {
 		setEntity, _, er := svc.setRepo.FindById(ctx, setId)
 		if er != nil {
 			return er
 		}
-
-		shoppingCart = &cart.ShoppingCart{
+		item := &cart.ShoppingCart{
 			Name:       setEntity.Name,
 			Image:      setEntity.Image,
 			UserId:     curId,
@@ -83,9 +84,66 @@ func (svc *ShoppingCartService) Create(ctx context.Context, dto *AddDTO, curId i
 			Amount:     setEntity.Price,
 			CreateTime: time.Now(),
 		}
+		err = svc.cartRepo.Create(ctx, item)
+		return err
+	}
+}
+
+func (svc *ShoppingCartService) FindByUserId(ctx context.Context, userId int64) ([]RecordVO, error) {
+
+	records, err := svc.cartRepo.FindByUserId(ctx, userId)
+
+	vos := make([]RecordVO, len(records))
+	for i, r := range records {
+		vos[i] = RecordVO{
+			Amount:     r.Amount,
+			CreateTime: r.CreateTime.Format("2006-01-02 15:04"),
+			DishFlavor: r.DishFlavor,
+			DishId:     r.DishId,
+			Id:         r.Id,
+			Image:      r.Image,
+			Name:       r.Name,
+			Number:     r.Number,
+			SetMealId:  r.SetmealId,
+			UserID:     r.UserId,
+		}
+
 	}
 
-	err = svc.cartRepo.Create(ctx, shoppingCart)
+	return vos, err
+}
+
+func (svc *ShoppingCartService) UpdateNumber(ctx context.Context) error {
+	return nil
+	//setId := dto.SetMealId
+	//dishId := dto.DishId
+	//
+	//curCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//curCart.Number = curCart.Number - 1
+	//
+	//// 大于0
+	//if curCart.Number > 0 {
+	//	err = svc.cartRepo.Sub(ctx, curCart.Id, curCart.Number)
+	//	if err != nil {
+	//		return err
+	//	}
+	//} else if curCart.Number == 0 {
+	//	err = svc.cartRepo.Delete(ctx, curCart.Id, curId)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
+	//return nil
+
+}
+
+func (svc *ShoppingCartService) Delete(ctx context.Context, curId int64) error {
+
+	err := svc.cartRepo.Delete(ctx, curId)
 	return err
 
 }

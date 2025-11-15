@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 type CategoryRepository interface {
 	Create(context.Context, *Category) error

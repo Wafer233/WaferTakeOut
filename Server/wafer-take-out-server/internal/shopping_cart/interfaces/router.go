@@ -11,7 +11,10 @@ func NewRouter(r *gin.Engine, h *ShoppingCartHandler) *gin.Engine {
 	user := r.Group("/user/shoppingCart/")
 	user.Use(middleware.UserAuthMiddleware())
 
-	user.POST("/add", h.Create)
+	user.POST("/add", h.Add)
+	user.GET("/list", h.List)
+	user.POST("/sub", h.Sub)
+	user.DELETE("/clean", h.Delete)
 
 	return r
 }

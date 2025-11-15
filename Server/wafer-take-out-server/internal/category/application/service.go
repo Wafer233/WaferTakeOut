@@ -7,17 +7,18 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
 )
 
-type CategoryService struct {
+type CategoryAppService struct {
 	repo domain.CategoryRepository
 }
 
-func NewCategoryService(repo domain.CategoryRepository) *CategoryService {
-	return &CategoryService{
+func NewCategoryService(repo domain.CategoryRepository) *CategoryAppService {
+	return &CategoryAppService{
 		repo: repo,
 	}
 }
 
-func (svc *CategoryService) Create(ctx context.Context, dto *AddCategoryDTO, curId int64) error {
+// Create
+func (svc *CategoryAppService) Create(ctx context.Context, dto *AddCategoryDTO, curId int64) error {
 
 	entity := domain.Category{
 		ID:         dto.ID,
@@ -35,12 +36,12 @@ func (svc *CategoryService) Create(ctx context.Context, dto *AddCategoryDTO, cur
 	return err
 }
 
-func (svc *CategoryService) Delete(ctx context.Context, id int64) error {
+func (svc *CategoryAppService) Delete(ctx context.Context, id int64) error {
 	err := svc.repo.Delete(ctx, id)
 	return err
 }
 
-func (svc *CategoryService) Update(ctx context.Context, dto *EditCategoryDTO, curId int64) error {
+func (svc *CategoryAppService) Update(ctx context.Context, dto *EditCategoryDTO, curId int64) error {
 
 	entity := domain.Category{
 		ID:         dto.ID,
@@ -56,7 +57,7 @@ func (svc *CategoryService) Update(ctx context.Context, dto *EditCategoryDTO, cu
 	return nil
 }
 
-func (svc *CategoryService) UpdateStatus(ctx context.Context, id int64, status int, curId int64) error {
+func (svc *CategoryAppService) UpdateStatus(ctx context.Context, id int64, status int, curId int64) error {
 
 	entity := &domain.Category{
 		ID:         id,
@@ -68,7 +69,7 @@ func (svc *CategoryService) UpdateStatus(ctx context.Context, id int64, status i
 	return err
 }
 
-func (svc *CategoryService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, error) {
+func (svc *CategoryAppService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, error) {
 
 	curName := dto.Name
 	page := dto.Page
@@ -102,7 +103,7 @@ func (svc *CategoryService) FindPage(ctx context.Context, dto *PageDTO) (PageVO,
 
 }
 
-func (svc *CategoryService) FindByType(ctx context.Context, curType int) ([]Record, error) {
+func (svc *CategoryAppService) FindByType(ctx context.Context, curType int) ([]Record, error) {
 
 	entities, err := svc.repo.FindByType(ctx, curType)
 	if err != nil {
