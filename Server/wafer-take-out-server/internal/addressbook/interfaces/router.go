@@ -7,8 +7,12 @@ import (
 
 func NewRouter(r *gin.Engine, h *AddressHandler) *gin.Engine {
 
-	user := r.Group("/user")
+	user := r.Group("/user/addressBook")
 	user.Use(middleware.UserAuthMiddleware())
-	user.POST("/addressBook", h.Create)
+
+	user.POST("", h.Create)
+	user.GET("/list", h.List)
+	user.GET("/default", h.GetDefault)
+
 	return r
 }

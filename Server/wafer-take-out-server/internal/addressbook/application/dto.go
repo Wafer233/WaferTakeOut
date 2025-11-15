@@ -9,7 +9,7 @@ type AddressDTO struct {
 	DistrictName string `json:"districtName"`
 	ID           int64  `json:"id"`
 	IsDefault    int    `json:"isDefault"`
-	Label        string `json:"label"`
+	Label        int    `json:"label"` //这个前端是int
 	Phone        string `json:"phone"`
 	ProvinceCode string `json:"provinceCode"`
 	ProvinceName string `json:"provinceName"`
