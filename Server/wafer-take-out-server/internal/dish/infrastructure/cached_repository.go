@@ -14,7 +14,7 @@ import (
 //解决方式 = “写请求一定要删缓存”，读请求走 Cache→DB 双查策略。
 
 type CachedDishRepository struct {
-	repo  domain.DishRepository
+	repo  *DefaultDishRepository
 	cache *redis.Client
 }
 
@@ -136,7 +136,7 @@ func (c *CachedDishRepository) cleanCache(ctx context.Context, pattern string) e
 }
 
 func NewCachedDishRepository(
-	repo domain.DishRepository,
+	repo *DefaultDishRepository,
 	cache *redis.Client,
 ) domain.DishRepository {
 	return &CachedDishRepository{

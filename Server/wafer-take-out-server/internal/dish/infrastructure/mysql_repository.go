@@ -240,7 +240,7 @@ func (repo *DefaultDishRepository) FindByIds(ctx context.Context,
 
 }
 
-func NewDefaultDishRepository(db *gorm.DB) domain.DishRepository {
+func NewDefaultDishRepository(db *gorm.DB) *DefaultDishRepository {
 	return &DefaultDishRepository{
 		db: db,
 	}

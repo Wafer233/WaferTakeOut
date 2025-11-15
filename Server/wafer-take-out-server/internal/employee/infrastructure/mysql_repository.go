@@ -12,7 +12,7 @@ type DefaultEmployeeRepository struct {
 	db *gorm.DB
 }
 
-func NewDefaultEmployeeRepository(db *gorm.DB) *DefaultEmployeeRepository {
+func NewDefaultEmployeeRepository(db *gorm.DB) domain.EmployeeRepository {
 	return &DefaultEmployeeRepository{db: db}
 }
 

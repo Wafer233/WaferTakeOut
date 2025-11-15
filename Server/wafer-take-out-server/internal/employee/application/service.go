@@ -6,15 +6,14 @@ import (
 	"time"
 
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/domain"
-	employeeInfra "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/infrastructure"
 	"github.com/jinzhu/copier"
 )
 
 type EmployeeService struct {
-	repo *employeeInfra.DefaultEmployeeRepository
+	repo domain.EmployeeRepository
 }
 
-func NewEmployeeService(repo *employeeInfra.DefaultEmployeeRepository) *EmployeeService {
+func NewEmployeeService(repo domain.EmployeeRepository) *EmployeeService {
 	return &EmployeeService{
 		repo: repo,
 	}

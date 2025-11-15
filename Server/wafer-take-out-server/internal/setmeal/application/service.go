@@ -16,7 +16,8 @@ type SetMealService struct {
 	dishRepo dish.DishRepository
 }
 
-func NewSetMealService(setRepo setmeal.SetMealRepository,
+func NewSetMealService(
+	setRepo setmeal.SetMealRepository,
 	cateRepo category.CategoryRepository,
 	dishRepo dish.DishRepository) *SetMealService {
 	return &SetMealService{
