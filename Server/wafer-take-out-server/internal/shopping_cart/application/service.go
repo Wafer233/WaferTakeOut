@@ -91,7 +91,7 @@ func (svc *ShoppingCartService) Add(ctx context.Context, dto *CartDTO, curId int
 
 func (svc *ShoppingCartService) FindByUserId(ctx context.Context, userId int64) ([]RecordVO, error) {
 
-	records, err := svc.cartRepo.FindByUserId(ctx, userId)
+	records, err := svc.cartRepo.Find(ctx, userId, 0, 0)
 
 	vos := make([]RecordVO, len(records))
 	for i, r := range records {
@@ -113,31 +113,21 @@ func (svc *ShoppingCartService) FindByUserId(ctx context.Context, userId int64) 
 	return vos, err
 }
 
-func (svc *ShoppingCartService) UpdateNumber(ctx context.Context) error {
-	return nil
-	//setId := dto.SetMealId
-	//dishId := dto.DishId
-	//
-	//curCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//curCart.Number = curCart.Number - 1
-	//
-	//// 大于0
-	//if curCart.Number > 0 {
-	//	err = svc.cartRepo.Sub(ctx, curCart.Id, curCart.Number)
-	//	if err != nil {
-	//		return err
-	//	}
-	//} else if curCart.Number == 0 {
-	//	err = svc.cartRepo.Delete(ctx, curCart.Id, curId)
-	//	if err != nil {
-	//		return err
-	//	}
-	//}
-	//return nil
+func (svc *ShoppingCartService) Sub(ctx context.Context, dto *CartDTO, curId int64) error {
+
+	setId := dto.SetMealId
+	dishId := dto.DishId
+
+	curCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
+	if err != nil {
+		return err
+	}
+
+	num := curCart[0].Number - 1
+
+	err = svc.cartRepo.UpdateNumber(ctx, curCart[0].Id, num)
+
+	return err
 
 }
 

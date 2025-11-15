@@ -24,7 +24,8 @@ func (repo *DefaultShoppingCartRepository) Find(ctx context.Context, uid int64,
 
 	tx := repo.db.WithContext(ctx).
 		Model(&domain.ShoppingCart{}).
-		Where("user_id =?", uid)
+		Where("user_id =?", uid).
+		Where("number != ?", 0)
 
 	if did != 0 {
 		tx = tx.Where("dish_id =?", did)
@@ -60,20 +61,6 @@ func (repo *DefaultShoppingCartRepository) Create(ctx context.Context, cart *dom
 		Create(&cart).Error
 
 	return err
-}
-
-func (repo *DefaultShoppingCartRepository) FindByUserId(ctx context.Context, userId int64) ([]*domain.ShoppingCart, error) {
-
-	records := make([]*domain.ShoppingCart, 0)
-	err := repo.db.WithContext(ctx).
-		Model(&domain.ShoppingCart{}).
-		Where("user_id =?", userId).
-		Find(&records).Error
-
-	if err != nil {
-		return nil, err
-	}
-	return records, err
 }
 
 func (repo *DefaultShoppingCartRepository) Delete(ctx context.Context, userId int64) error {

@@ -69,28 +69,28 @@ func (h *ShoppingCartHandler) List(c *gin.Context) {
 }
 
 func (h *ShoppingCartHandler) Sub(c *gin.Context) {
-	//
-	//dto := application.CartDTO{}
-	//err := c.ShouldBindJSON(&dto)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, result.Error("错误请求"))
-	//	return
-	//}
-	//
-	//curId, exist := c.Get("CurID")
-	//if !exist {
-	//	c.JSON(http.StatusUnauthorized, result.Error("未授权"))
-	//	return
-	//}
-	//
-	//ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	//defer cancel()
-	//
-	//err = h.svc.Sub(ctx, &dto, curId.(int64))
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
-	//	return
-	//}
+
+	dto := application.CartDTO{}
+	err := c.ShouldBindJSON(&dto)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, result.Error("错误请求"))
+		return
+	}
+
+	curId, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	err = h.svc.Sub(ctx, &dto, curId.(int64))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
 
 	c.JSON(http.StatusOK, result.Success())
 }
