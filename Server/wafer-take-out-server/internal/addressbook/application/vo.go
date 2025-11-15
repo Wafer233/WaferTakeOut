@@ -7,7 +7,7 @@ type AddressBookVO struct {
 	Sex          string `json:"sex"`
 	Phone        string `json:"phone"`
 	ProvinceCode string `json:"provinceCode"`
-	ProvinceName string `json:"provinceAddressBookVOName"`
+	ProvinceName string `json:"provinceName"`
 	CityCode     string `json:"cityCode"`
 	CityName     string `json:"cityName"`
 	DistrictCode string `json:"districtCode"`

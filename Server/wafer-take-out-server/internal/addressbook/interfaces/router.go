@@ -13,6 +13,8 @@ func NewRouter(r *gin.Engine, h *AddressHandler) *gin.Engine {
 	user.POST("", h.Create)
 	user.GET("/list", h.List)
 	user.GET("/default", h.GetDefault)
+	user.PUT("/default", h.UpdateDefault)
+	user.GET("/:id", h.GetById)
 
 	return r
 }

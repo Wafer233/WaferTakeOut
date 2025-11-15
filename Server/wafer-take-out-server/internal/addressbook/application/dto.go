@@ -16,3 +16,7 @@ type AddressDTO struct {
 	Sex          string `json:"sex"`
 	UserID       int64  `json:"userId"`
 }
+
+type DefaultIdDTO struct {
+	Id int64 `json:"id"`
+}

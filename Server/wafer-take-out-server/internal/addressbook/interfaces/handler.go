@@ -3,6 +3,7 @@ package interfaces
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/application"
@@ -73,7 +74,46 @@ func (h *AddressHandler) GetDefault(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	vo, err := h.svc.FindByUserId(ctx, userId.(int64))
+	vo, err := h.svc.FindDefault(ctx, userId.(int64))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	c.JSON(http.StatusOK, result.SuccessData(vo))
+}
+
+func (h *AddressHandler) UpdateDefault(c *gin.Context) {
+	userId, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		return
+	}
+	var addrId application.DefaultIdDTO
+	err := c.ShouldBindJSON(&addrId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, result.Error("绑定错误"))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = h.svc.UpdateDefault(ctx, userId.(int64), addrId.Id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	c.JSON(http.StatusOK, result.Success())
+}
+
+func (h *AddressHandler) GetById(c *gin.Context) {
+
+	idStr := c.Param("id")
+	idInt, _ := strconv.Atoi(idStr)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	vo, err := h.svc.FindById(ctx, int64(idInt))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return

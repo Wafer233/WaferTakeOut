@@ -69,3 +69,79 @@ func (svc *AddressService) FindByUserId(ctx context.Context, userId int64) ([]Ad
 
 	return vos, nil
 }
+
+func (svc *AddressService) FindDefault(ctx context.Context, userId int64) (AddressBookVO, error) {
+
+	addr, err := svc.repo.FindByUserIdDefault(ctx, userId)
+	if err != nil || addr == nil {
+		return AddressBookVO{}, err
+	}
+
+	vo := AddressBookVO{
+		Id:           addr.Id,
+		UserId:       addr.UserId,
+		Consignee:    addr.Consignee,
+		Sex:          addr.Sex,
+		Phone:        addr.Phone,
+		ProvinceCode: addr.ProvinceCode,
+		ProvinceName: addr.ProvinceName,
+		CityCode:     addr.CityCode,
+		CityName:     addr.CityName,
+		DistrictCode: addr.DistrictCode,
+		DistrictName: addr.DistrictName,
+		Detail:       addr.Detail,
+		Label:        addr.Label,
+		IsDefault:    addr.IsDefault,
+	}
+
+	return vo, nil
+}
+
+func (svc *AddressService) UpdateDefault(ctx context.Context, userId int64, addrId int64) error {
+	//先看有没有default的
+	addr, err := svc.repo.FindByUserIdDefault(ctx, userId)
+	if err != nil {
+		return err
+	}
+
+	// 有就更新改地址id
+	if addr != nil {
+		tmpId := addr.Id
+		err = svc.repo.UpdateDefault(ctx, userId, tmpId, 0)
+		if err != nil {
+			return err
+		}
+	}
+
+	// 然后更新新的
+	err = svc.repo.UpdateDefault(ctx, userId, addrId, 1)
+	return err
+
+}
+
+func (svc *AddressService) FindById(ctx context.Context, id int64) (AddressBookVO, error) {
+
+	addr, err := svc.repo.FindById(ctx, id)
+	if err != nil {
+		return AddressBookVO{}, err
+	}
+
+	vo := AddressBookVO{
+		Id:           addr.Id,
+		UserId:       addr.UserId,
+		Consignee:    addr.Consignee,
+		Sex:          addr.Sex,
+		Phone:        addr.Phone,
+		ProvinceCode: addr.ProvinceCode,
+		ProvinceName: addr.ProvinceName,
+		CityCode:     addr.CityCode,
+		CityName:     addr.CityName,
+		DistrictCode: addr.DistrictCode,
+		DistrictName: addr.DistrictName,
+		Detail:       addr.Detail,
+		Label:        addr.Label,
+		IsDefault:    addr.IsDefault,
+	}
+
+	return vo, nil
+}
