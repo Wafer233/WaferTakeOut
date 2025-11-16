@@ -8,6 +8,7 @@ import (
 	cate "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
 	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/ai"
 	"github.com/jinzhu/copier"
 )
 
@@ -39,6 +40,11 @@ func (svc *DishService) Create(ctx context.Context, dto *DishDTO, curId int64) e
 		UpdateUser:  curId,
 	}
 
+	if dto.Description != "" {
+		newDescription, _ := ai.GetDescriptionRanking(dto.Description)
+		dishEntity.Description = newDescription
+	}
+
 	flavorEntities := make([]*domain.Flavor, len(dto.Flavors))
 	for index, value := range dto.Flavors {
 		flavorEntities[index] = &domain.Flavor{
@@ -66,6 +72,11 @@ func (svc *DishService) Update(ctx context.Context, dto *DishDTO, curID int64) e
 		Status:      dto.Status,
 		UpdateTime:  time.Now(),
 		UpdateUser:  curID,
+	}
+
+	if dto.Description != "" {
+		newDescription, _ := ai.GetDescriptionRanking(dto.Description)
+		dishEntity.Description = newDescription
 	}
 
 	flavors := make([]*domain.Flavor, len(dto.Flavors))
