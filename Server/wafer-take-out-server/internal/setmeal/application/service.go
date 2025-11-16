@@ -8,6 +8,7 @@ import (
 	category "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
 	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
 	setmeal "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/ai"
 )
 
 type SetMealService struct {
@@ -41,6 +42,11 @@ func (svc *SetMealService) Create(ctx context.Context, dto *AddSetMealDTO, curId
 		UpdateTime:  time.Now(),
 		CreateUser:  curId,
 		UpdateUser:  curId,
+	}
+
+	if dto.Description != "" {
+		newDescription, _ := ai.GetDescriptionRanking(dto.Description)
+		setEntity.Description = newDescription
 	}
 
 	dishEntities := make([]*setmeal.SetMealDish, len(dto.SetMealDishes))
@@ -81,6 +87,11 @@ func (svc *SetMealService) Update(ctx context.Context, dto *AddSetMealDTO, curId
 		Image:       dto.Image,
 		UpdateTime:  time.Now(),
 		UpdateUser:  curId,
+	}
+
+	if dto.Description != "" {
+		newDescription, _ := ai.GetDescriptionRanking(dto.Description)
+		set.Description = newDescription
 	}
 
 	dishes := make([]*setmeal.SetMealDish, len(dto.SetMealDishes))
