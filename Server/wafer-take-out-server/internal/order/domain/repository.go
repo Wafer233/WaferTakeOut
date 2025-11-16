@@ -8,5 +8,7 @@ type OrderRepository interface {
 	FindByNumber(context.Context, string) (*Order, error)
 	UpdateStatus(context.Context, *Order) error
 	FindPage(context.Context, int, int, int64, int) ([]*Order, int64, error)
-	FindDetailByOrderId(context.Context, []int64) (map[int64][]*OrderDetail, error)
+	FindDetailByOrderIds(context.Context, []int64) (map[int64][]*OrderDetail, error)
+	FindById(context.Context, int64) (*Order, error)
+	FindDetailByOrderId(context.Context, int64) ([]*OrderDetail, error)
 }

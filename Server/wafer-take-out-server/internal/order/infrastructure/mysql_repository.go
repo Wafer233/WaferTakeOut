@@ -13,6 +13,18 @@ type DefaultOrderRepository struct {
 }
 
 func (repo *DefaultOrderRepository) FindDetailByOrderId(ctx context.Context,
+	id int64) ([]*domain.OrderDetail, error) {
+
+	var details []*domain.OrderDetail
+	err := repo.db.WithContext(ctx).Model(&domain.OrderDetail{}).
+		Where("id = ?", id).Find(&details).Error
+	if err != nil {
+		return nil, err
+	}
+	return details, nil
+}
+
+func (repo *DefaultOrderRepository) FindDetailByOrderIds(ctx context.Context,
 	ids []int64) (map[int64][]*domain.OrderDetail, error) {
 
 	tx := repo.db.WithContext(ctx).Model(domain.OrderDetail{}).Begin()
@@ -113,6 +125,20 @@ func (repo *DefaultOrderRepository) CreateDetail(ctx context.Context, details []
 		return err
 	}
 	return nil
+}
+
+func (repo *DefaultOrderRepository) FindById(ctx context.Context, id int64) (*domain.Order, error) {
+
+	var order *domain.Order
+
+	err := repo.db.WithContext(ctx).Model(&domain.Order{}).
+		Where("id = ?", id).Find(&order).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
+
 }
 
 func NewDefaultOrderRepository(db *gorm.DB) domain.OrderRepository {

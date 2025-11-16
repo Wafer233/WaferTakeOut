@@ -13,5 +13,6 @@ func NewRouter(r *gin.Engine, h *OrderHandler) *gin.Engine {
 	user.POST("submit", h.Submit)
 	user.PUT("/payment", h.Payment)
 	user.GET("/historyOrders", h.ListPage)
+	user.GET("/orderDetail/:id", h.GetOrder)
 	return r
 }

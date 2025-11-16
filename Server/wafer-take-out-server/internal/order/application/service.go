@@ -130,7 +130,7 @@ func (svc *OrderService) Page(ctx context.Context, dto *PageDTO,
 	for i, record := range records {
 		ids[i] = record.Id
 	}
-	detailsMap, err := svc.orderRepo.FindDetailByOrderId(ctx, ids)
+	detailsMap, err := svc.orderRepo.FindDetailByOrderIds(ctx, ids)
 	//组装vo
 
 	vo := make([]UserOrderVO, len(records))
@@ -177,6 +177,31 @@ func (svc *OrderService) Page(ctx context.Context, dto *PageDTO,
 	}
 
 	return history, nil
+
+}
+
+func (svc *OrderService) GetOrder(ctx context.Context, orderId int64) (UserOrderVO, error) {
+
+	order, err := svc.orderRepo.FindById(ctx, orderId)
+	if err != nil || order == nil {
+		return UserOrderVO{}, err
+	}
+
+	details, err := svc.orderRepo.FindDetailByOrderId(ctx, orderId)
+
+	var detailVO []OrderDetail
+	_ = copier.Copy(&detailVO, &details)
+
+	var vo UserOrderVO
+	_ = copier.Copy(&vo, &order)
+	vo.OrderTime = order.OrderTime.Format("2006-01-02 15:04:05")
+	vo.CheckoutTime = order.CheckoutTime.Format("2006-01-02 15:04:05")
+	vo.CancelTime = order.CancelTime.Format("2006-01-02 15:04:05")
+	vo.EstimatedDeliveryTime = order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05")
+	vo.DeliveryTime = order.DeliveryTime.Format("2006-01-02 15:04:05")
+	vo.OrderDetails = detailVO
+
+	return vo, nil
 
 }
 
