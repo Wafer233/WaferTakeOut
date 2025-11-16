@@ -40,6 +40,10 @@ import (
 	addrApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/application"
 	addrRepo "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/infrastructure"
 	addrInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/interfaces"
+
+	orderApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/application"
+	orderRepo "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/infrastructure"
+	orderInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/interfaces"
 )
 
 type Application struct {
@@ -64,6 +68,7 @@ func Init() (*gin.Engine, error) {
 		userRepo.NewDefaultUserRepository,
 		cartRepo.NewDefaultShoppingCartRepository,
 		addrRepo.NewDefaultAddressRepository,
+		orderRepo.NewDefaultOrderRepository,
 
 		// services
 		emplApp.NewEmployeeService,
@@ -74,6 +79,7 @@ func Init() (*gin.Engine, error) {
 		userApp.NewUserService,
 		cartApp.NewShoppingCartService,
 		addrApp.NewAddressService,
+		orderApp.NewOrderService,
 
 		// handlers
 		emplInter.NewEmployeeHandler,
@@ -85,6 +91,7 @@ func Init() (*gin.Engine, error) {
 		userInter.NewUserHandler,
 		cartInter.NewShoppingCartHandler,
 		addrInter.NewAddressHandler,
+		orderInter.NewOrderHandler,
 
 		// router
 		NewRouter,

@@ -8,6 +8,7 @@ import (
 	commonInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/common/interfaces"
 	dishInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/interfaces"
 	emplInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/interfaces"
+	orderInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/interfaces"
 	setmInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/interfaces"
 	shopInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/interfaces"
 	cartInter "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/interfaces"
@@ -24,6 +25,7 @@ func NewRouter(
 	hUser *userInter.UserHandler,
 	hCart *cartInter.ShoppingCartHandler,
 	hAddr *addrInter.AddressHandler,
+	hOrder *orderInter.OrderHandler,
 ) *gin.Engine {
 
 	r := gin.Default()
@@ -37,6 +39,7 @@ func NewRouter(
 	r = userInter.NewRouter(r, hUser)
 	r = cartInter.NewRouter(r, hCart)
 	r = addrInter.NewRouter(r, hAddr)
+	r = orderInter.NewRouter(r, hOrder)
 
 	return r
 }

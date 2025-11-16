@@ -20,6 +20,9 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/application"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/infrastructure"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/employee/interfaces"
+	application9 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/application"
+	infrastructure9 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/infrastructure"
+	interfaces10 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/interfaces"
 	application4 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/application"
 	infrastructure4 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/infrastructure"
 	interfaces5 "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/interfaces"
@@ -72,7 +75,10 @@ func Init() (*gin.Engine, error) {
 	addressRepository := infrastructure8.NewDefaultAddressRepository(db)
 	addressService := application8.NewAddressService(addressRepository)
 	addressHandler := interfaces9.NewAddressHandler(addressService)
-	engine := NewRouter(employeeHandler, categoryHandler, commonHandler, dishHandler, setMealHandler, shopHandler, userHandler, shoppingCartHandler, addressHandler)
+	orderRepository := infrastructure9.NewDefaultOrderRepository(db)
+	orderService := application9.NewOrderService(orderRepository, shoppingCartRepository, addressRepository)
+	orderHandler := interfaces10.NewOrderHandler(orderService)
+	engine := NewRouter(employeeHandler, categoryHandler, commonHandler, dishHandler, setMealHandler, shopHandler, userHandler, shoppingCartHandler, addressHandler, orderHandler)
 	return engine, nil
 }
 

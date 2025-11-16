@@ -28,7 +28,7 @@ func GetDescriptionRanking(description string) (string, error) {
 		return description, err
 	}
 
-	fullDescription := description + "\n" + "\n" + response
+	fullDescription := description + "\n-------AI评价-------\n" + response
 
 	return fullDescription, nil
 }
