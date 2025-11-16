@@ -11,7 +11,7 @@ type Order struct {
 	OrderTime             time.Time `gorm:"column:order_time;Type:datetime"`
 	CheckoutTime          time.Time `gorm:"column:checkout_time;Type:datetime"`
 	PayMethod             int       `gorm:"column:pay_method;Type:int,default:1"`
-	PayStatus             int       `gorm:"column:pay_status;Type:tinyint,default:0"`
+	PayStatus             int       `gorm:"column:pay_status;Type:tinyint"`
 	Amount                float64   `gorm:"column:amount;Type:decimal(10,2)"`
 	Remark                string    `gorm:"column:remark;Type:varchar(100)"`
 	Phone                 string    `gorm:"column:phone;Type:varchar(11)"`

@@ -16,3 +16,9 @@ type PaymentDTO struct {
 	OrderNumber string `json:"orderNumber"`
 	PayMethod   int    `json:"payMethod"`
 }
+
+type PageDTO struct {
+	PageSize int `form:"pageSize"`
+	Page     int `form:"page"`
+	Status   int `form:"status"`
+}

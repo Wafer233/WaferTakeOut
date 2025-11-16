@@ -7,6 +7,7 @@ import (
 	addr "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/domain"
 	orde "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/domain"
 	cart "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/domain"
+	"github.com/jinzhu/copier"
 )
 
 type OrderService struct {
@@ -113,6 +114,69 @@ func (svc *OrderService) Payment(ctx context.Context, dto *PaymentDTO) (PaymentV
 	return PaymentVO{
 		EstimatedDeliveryTime: order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05"),
 	}, nil
+
+}
+
+func (svc *OrderService) Page(ctx context.Context, dto *PageDTO,
+	userId int64) (HistoryVO, error) {
+
+	// 查历史
+	records, total, err := svc.orderRepo.FindPage(ctx, dto.Page, dto.PageSize, userId, dto.Status)
+	if err != nil || records == nil {
+		return HistoryVO{}, err
+	}
+	// 查order detail
+	ids := make([]int64, len(records))
+	for i, record := range records {
+		ids[i] = record.Id
+	}
+	detailsMap, err := svc.orderRepo.FindDetailByOrderId(ctx, ids)
+	//组装vo
+
+	vo := make([]UserOrderVO, len(records))
+
+	for i, v := range records {
+		detailVO := make([]OrderDetail, 0)
+		if len(detailsMap[v.Id]) > 0 {
+			_ = copier.Copy(&detailVO, detailsMap[v.Id])
+
+		}
+
+		vo[i] = UserOrderVO{
+			Id:                    v.Id,
+			Number:                v.Number,
+			Status:                v.Status,
+			UserId:                v.UserId,
+			AddressBookId:         v.AddressBookId,
+			OrderTime:             v.OrderTime.Format("2006-01-02 15:04:05"),
+			CheckoutTime:          v.CheckoutTime.Format("2006-01-02 15:04:05"),
+			PayMethod:             v.PayMethod,
+			PayStatus:             v.PayStatus,
+			Amount:                v.Amount,
+			Remark:                v.Remark,
+			Phone:                 v.Phone,
+			Address:               v.Address,
+			UserName:              v.UserName,
+			Consignee:             v.Consignee,
+			CancelReason:          v.CancelReason,
+			RejectionReason:       v.RejectionReason,
+			CancelTime:            v.CancelTime.Format("2006-01-02 15:04:05"),
+			EstimatedDeliveryTime: v.EstimatedDeliveryTime.Format("2006-01-02 15:04:05"),
+			DeliveryStatus:        v.DeliveryStatus,
+			DeliveryTime:          v.DeliveryTime.Format("2006-01-02 15:04:05"),
+			PackAmount:            v.PackAmount,
+			TableWareNumber:       v.TableWareNumber,
+			TableWareStatus:       v.TableWareStatus,
+			OrderDetails:          detailVO,
+		}
+	}
+
+	history := HistoryVO{
+		Total:   total,
+		Records: vo,
+	}
+
+	return history, nil
 
 }
 
