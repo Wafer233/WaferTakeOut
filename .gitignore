@@ -3,3 +3,4 @@ Client
 .idea
 Uploads
 Server/wafer-take-out-server/pkg/wechat/secret.go
+Server/wafer-take-out-server/pkg/ai/secret.go
