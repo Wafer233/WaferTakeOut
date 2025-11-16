@@ -14,5 +14,7 @@ func NewRouter(r *gin.Engine, h *OrderHandler) *gin.Engine {
 	user.PUT("/payment", h.Payment)
 	user.GET("/historyOrders", h.ListPage)
 	user.GET("/orderDetail/:id", h.GetOrder)
+	user.PUT("/cancel/:id", h.Cancel)
+	user.POST("repetition/:id", h.CreateSame)
 	return r
 }

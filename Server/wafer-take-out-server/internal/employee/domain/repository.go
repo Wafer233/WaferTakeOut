@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 type EmployeeRepository interface {
 	FindByUsername(context.Context, string) (*Employee, error)

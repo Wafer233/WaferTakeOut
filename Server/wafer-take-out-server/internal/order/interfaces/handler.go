@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -81,6 +82,45 @@ func (h *OrderHandler) ListPage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result.SuccessData(vo))
+}
+
+func (h *OrderHandler) CreateSame(c *gin.Context) {
+
+	idStr := c.Param("id")
+	idInt, _ := strconv.Atoi(idStr)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	userID, exist := c.Get("CurID")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, result.Error("无权限"))
+		return
+	}
+	err := h.svc.CreateSame(ctx, int64(idInt), userID.(int64))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	c.JSON(http.StatusOK, result.Success())
+}
+
+func (h *OrderHandler) Cancel(c *gin.Context) {
+
+	idStr := c.Param("id")
+	idInt, _ := strconv.Atoi(idStr)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	err := h.svc.Cancel(ctx, int64(idInt))
+	if errors.Is(err, errors.New("无法取消订单")) {
+		c.JSON(http.StatusInternalServerError, result.Error("无法取消订单"))
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		return
+	}
+	c.JSON(http.StatusOK, result.Success())
 }
 
 func (h *OrderHandler) GetOrder(c *gin.Context) {

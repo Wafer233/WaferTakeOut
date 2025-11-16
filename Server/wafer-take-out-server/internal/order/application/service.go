@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	addr "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/domain"
@@ -187,6 +188,64 @@ func (svc *OrderService) GetOrder(ctx context.Context, orderId int64) (UserOrder
 
 	return vo, nil
 
+}
+
+func (svc *OrderService) CreateSame(ctx context.Context, orderId int64, curID int64) error {
+	// 根据订单id查询当前订单详情 detail: []*domain.OrderDetail
+	details, err := svc.orderRepo.FindDetailByOrderId(ctx, orderId)
+	if err != nil || len(details) == 0 {
+		return err
+	}
+
+	// 将购物车对象批量添加到数据库 cart: []domain.ShoppingCart
+	shopCart := make([]*cart.ShoppingCart, len(details))
+
+	_ = copier.Copy(&shopCart, &details)
+	for index, _ := range shopCart {
+		shopCart[index].CreateTime = time.Now()
+		shopCart[index].Id = 0
+		shopCart[index].UserId = curID
+		err = svc.cartRepo.Create(ctx, shopCart[index])
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (svc *OrderService) Cancel(ctx context.Context, orderId int64) error {
+
+	// 根据id查询订单
+	order, err := svc.orderRepo.FindById(ctx, orderId)
+
+	// 校验订单是否存在
+	if err != nil || order == nil {
+		return err
+	}
+	// 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+	if order.Status > 2 {
+		return errors.New("无法取消订单")
+	}
+
+	// 跳过微信流程
+	if order.Status == 2 {
+		order.PayStatus = REFUND
+		err = svc.orderRepo.UpdateStatus(ctx, order)
+		if err != nil {
+			return err
+		}
+	}
+
+	order.Status = CANCELLED
+	order.CancelReason = "用户取消"
+	order.CancelTime = time.Now()
+	err = svc.orderRepo.UpdateStatus(ctx, order)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewOrderService(

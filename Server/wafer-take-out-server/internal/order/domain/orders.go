@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Order struct {
-	Id                    int64     `gorm:"primaryKey,column:id"`
+	Id                    int64     `gorm:"primaryKey;column:id;type:autoIncrement"`
 	Number                string    `gorm:"column:number;Type:varchar(50)"`
 	Status                int       `gorm:"column:status;Type:int"`
 	UserId                int64     `gorm:"column:user_id;Type:bigint"`
