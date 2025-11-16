@@ -130,45 +130,29 @@ func (svc *OrderService) Page(ctx context.Context, dto *PageDTO,
 	for i, record := range records {
 		ids[i] = record.Id
 	}
-	detailsMap, err := svc.orderRepo.FindDetailByOrderIds(ctx, ids)
-	//组装vo
 
+	detailsMap, err := svc.orderRepo.FindDetailByOrderIds(ctx, ids)
+
+	//组装vo
 	vo := make([]UserOrderVO, len(records))
 
-	for i, v := range records {
-		detailVO := make([]OrderDetail, 0)
-		if len(detailsMap[v.Id]) > 0 {
-			_ = copier.Copy(&detailVO, detailsMap[v.Id])
+	// 组装userorder
+	for index, order := range records {
+		tmpVO := UserOrderVO{}
+		_ = copier.Copy(&tmpVO, &order)
+		tmpVO.OrderTime = order.OrderTime.Format("2006-01-02 15:04:05")
+		tmpVO.CheckoutTime = order.CheckoutTime.Format("2006-01-02 15:04:05")
+		tmpVO.CancelTime = order.CancelTime.Format("2006-01-02 15:04:05")
+		tmpVO.EstimatedDeliveryTime = order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05")
+		tmpVO.DeliveryTime = order.DeliveryTime.Format("2006-01-02 15:04:05")
 
-		}
+		//组装特定的vo
+		var detailVO []OrderDetail
+		tmpDetail := detailsMap[order.Id]
+		_ = copier.Copy(&detailVO, &tmpDetail)
+		tmpVO.OrderDetails = detailVO
 
-		vo[i] = UserOrderVO{
-			Id:                    v.Id,
-			Number:                v.Number,
-			Status:                v.Status,
-			UserId:                v.UserId,
-			AddressBookId:         v.AddressBookId,
-			OrderTime:             v.OrderTime.Format("2006-01-02 15:04:05"),
-			CheckoutTime:          v.CheckoutTime.Format("2006-01-02 15:04:05"),
-			PayMethod:             v.PayMethod,
-			PayStatus:             v.PayStatus,
-			Amount:                v.Amount,
-			Remark:                v.Remark,
-			Phone:                 v.Phone,
-			Address:               v.Address,
-			UserName:              v.UserName,
-			Consignee:             v.Consignee,
-			CancelReason:          v.CancelReason,
-			RejectionReason:       v.RejectionReason,
-			CancelTime:            v.CancelTime.Format("2006-01-02 15:04:05"),
-			EstimatedDeliveryTime: v.EstimatedDeliveryTime.Format("2006-01-02 15:04:05"),
-			DeliveryStatus:        v.DeliveryStatus,
-			DeliveryTime:          v.DeliveryTime.Format("2006-01-02 15:04:05"),
-			PackAmount:            v.PackAmount,
-			TableWareNumber:       v.TableWareNumber,
-			TableWareStatus:       v.TableWareStatus,
-			OrderDetails:          detailVO,
-		}
+		vo[index] = tmpVO
 	}
 
 	history := HistoryVO{

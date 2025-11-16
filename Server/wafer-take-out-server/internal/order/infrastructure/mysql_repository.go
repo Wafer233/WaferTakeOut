@@ -27,21 +27,25 @@ func (repo *DefaultOrderRepository) FindDetailByOrderId(ctx context.Context,
 func (repo *DefaultOrderRepository) FindDetailByOrderIds(ctx context.Context,
 	ids []int64) (map[int64][]*domain.OrderDetail, error) {
 
-	tx := repo.db.WithContext(ctx).Model(domain.OrderDetail{}).Begin()
-	var curDetails []*domain.OrderDetail
-	detailMap := map[int64][]*domain.OrderDetail{}
-	var err error
+	tx := repo.db.WithContext(ctx).Begin()
 
-	for _, v := range ids {
-		if err = tx.Where("order_id = ?", v).Find(&curDetails).Error; err != nil {
+	detailMap := make(map[int64][]*domain.OrderDetail)
+
+	for _, id := range ids {
+
+		// 每次循环必须重新声明一个新切片！！！
+		var curDetails []*domain.OrderDetail
+
+		if err := tx.Where("order_id = ?", id).Find(&curDetails).Error; err != nil {
 			tx.Rollback()
-			return map[int64][]*domain.OrderDetail{}, err
+			return nil, err
 		}
-		detailMap[v] = curDetails
+
+		detailMap[id] = curDetails
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return map[int64][]*domain.OrderDetail{}, err
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
 	}
 
 	return detailMap, nil
