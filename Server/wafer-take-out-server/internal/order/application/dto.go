@@ -17,8 +17,32 @@ type PaymentDTO struct {
 	PayMethod   int    `json:"payMethod"`
 }
 
-type PageDTO struct {
+type UserPageDTO struct {
 	PageSize int `form:"pageSize"`
 	Page     int `form:"page"`
 	Status   int `form:"status"`
+}
+
+type AdminPageDTO struct {
+	BeginTime string `form:"beginTime"`
+	EndTime   string `form:"endTime"`
+	Number    string `form:"number"`
+	PageSize  int    `form:"pageSize"`
+	Page      int    `form:"page"`
+	Phone     string `form:"phone"`
+	Status    int    `form:"status"`
+}
+
+type ConfirmDTO struct {
+	Id int64 `json:"id"`
+}
+
+type RejectionDTO struct {
+	RejectionReason string `json:"rejectionReason"`
+	Id              int64  `json:"id"`
+}
+
+type CancelDTO struct {
+	CancelReason string `json:"cancelReason"`
+	Id           int64  `json:"id"`
 }

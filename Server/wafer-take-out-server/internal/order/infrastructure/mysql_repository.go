@@ -3,13 +3,78 @@ package infrastructure
 import (
 	"context"
 	"errors"
+	"time"
 
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/application"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/domain"
 	"gorm.io/gorm"
 )
 
 type DefaultOrderRepository struct {
 	db *gorm.DB
+}
+
+func (repo *DefaultOrderRepository) GetTotalByStatus(ctx context.Context) (int64, int64, int64, error) {
+	var confirmed, deliveryInProgress, toBeConfirmed int64
+
+	tx := repo.db.WithContext(ctx).Model(&domain.Order{})
+
+	if err := tx.Where("status = ?", application.CONFIRMED).
+		Count(&confirmed).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, 0, nil
+	}
+
+	if err := tx.Where("status = ?", application.DELIVERY_IN_PROGRESS).
+		Count(&deliveryInProgress).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, 0, nil
+	}
+
+	if err := tx.Where("status = ?", application.TO_BE_CONFIRMED).
+		Count(&toBeConfirmed).Error; err != nil {
+		tx.Rollback()
+		return 0, 0, 0, nil
+	}
+
+	return confirmed, deliveryInProgress, toBeConfirmed, nil
+}
+
+func (repo *DefaultOrderRepository) FindPageAdmin(ctx context.Context, begin time.Time, end time.Time,
+	number string, page int, pageSize int, phone string, status int) ([]*domain.Order, int64, error) {
+	total := int64(0)
+	tx := repo.db.WithContext(ctx).Model(&domain.Order{}).Begin()
+
+	if !begin.IsZero() {
+		tx = tx.Where("order_time BETWEEN ? AND ?", begin, end)
+	}
+
+	if number != "" {
+		tx = tx.Where("number = ?", number)
+	}
+
+	if phone != "" {
+		tx = tx.Where("phone = ?", phone)
+	}
+
+	if status != 0 {
+		tx = tx.Where("status = ?", status)
+	}
+
+	if err := tx.Count(&total).Error; err != nil {
+		tx.Rollback()
+		return nil, 0, err
+	}
+
+	var orders []*domain.Order
+	offset := (page - 1) * pageSize
+	if err := tx.Limit(offset).Limit(pageSize).Find(&orders).Error; err != nil {
+		tx.Rollback()
+		return nil, 0, err
+	}
+
+	return orders, total, nil
+
 }
 
 func (repo *DefaultOrderRepository) FindDetailByOrderId(ctx context.Context,

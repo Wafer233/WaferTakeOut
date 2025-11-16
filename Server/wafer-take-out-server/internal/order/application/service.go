@@ -8,6 +8,7 @@ import (
 	addr "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/addressbook/domain"
 	orde "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/domain"
 	cart "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/random"
 	"github.com/jinzhu/copier"
 )
 
@@ -33,7 +34,7 @@ func (svc *OrderService) Submit(ctx context.Context, dto *SubmitDTO, curId int64
 	estimateTime, _ := time.Parse("2006-01-02 15:04:05", dto.EstimatedDeliveryTime)
 	orderEntity := &orde.Order{
 		Id:                    0,
-		Number:                time.Now().Format(time.RFC3339Nano),
+		Number:                random.GenerateOrderID(),
 		Status:                1,
 		UserId:                curId,
 		AddressBookId:         dto.AddressBookId,
@@ -118,7 +119,7 @@ func (svc *OrderService) Payment(ctx context.Context, dto *PaymentDTO) (PaymentV
 
 }
 
-func (svc *OrderService) Page(ctx context.Context, dto *PageDTO,
+func (svc *OrderService) Page(ctx context.Context, dto *UserPageDTO,
 	userId int64) (HistoryVO, error) {
 
 	// 查历史
@@ -165,6 +166,60 @@ func (svc *OrderService) Page(ctx context.Context, dto *PageDTO,
 
 }
 
+func (svc *OrderService) FindPageAdmin(ctx context.Context, dto *AdminPageDTO) (ListAdminOrderVO, error) {
+
+	// 查历史
+	layout := "2006-01-02 15:04:05"
+	beginTime, _ := time.Parse(layout, dto.BeginTime)
+	endTime, _ := time.Parse(layout, dto.EndTime)
+
+	records, total, err := svc.orderRepo.FindPageAdmin(ctx, beginTime, endTime, dto.Number,
+		dto.Page, dto.PageSize, dto.Phone, dto.Status)
+
+	if err != nil || records == nil {
+		return ListAdminOrderVO{}, err
+	}
+	// 查order detail
+	//ids := make([]int64, len(records))
+	//for i, record := range records {
+	//	ids[i] = record.Id
+	//}
+
+	//detailsMap, err := svc.orderRepo.FindDetailByOrderIds(ctx, ids)
+
+	//组装vo
+	vo := make([]AdminOrderVO, len(records))
+
+	// 组装userorder
+	for index, order := range records {
+		tmpVO := AdminOrderVO{}
+		_ = copier.Copy(&tmpVO, &order)
+		curLayout := "2006-01-02 15:04"
+		tmpVO.OrderTime = order.OrderTime.Format(curLayout)
+		tmpVO.CheckoutTime = order.CheckoutTime.Format(curLayout)
+		tmpVO.CancelTime = order.CancelTime.Format(curLayout)
+		tmpVO.EstimatedDeliveryTime = order.EstimatedDeliveryTime.Format(curLayout)
+		tmpVO.DeliveryTime = order.DeliveryTime.Format(curLayout)
+		vo[index] = tmpVO
+
+		////组装特定的vo
+		//var detailVO []OrderDetail
+		//tmpDetail := detailsMap[order.Id]
+		//_ = copier.Copy(&detailVO, &tmpDetail)
+		//tmpVO.OrderDetails = detailVO
+		//
+		//vo[index].
+	}
+
+	list := ListAdminOrderVO{
+		Total:  total,
+		Orders: vo,
+	}
+
+	return list, nil
+
+}
+
 func (svc *OrderService) GetOrder(ctx context.Context, orderId int64) (UserOrderVO, error) {
 
 	order, err := svc.orderRepo.FindById(ctx, orderId)
@@ -188,6 +243,30 @@ func (svc *OrderService) GetOrder(ctx context.Context, orderId int64) (UserOrder
 
 	return vo, nil
 
+}
+
+func (svc *OrderService) UserCancel(ctx context.Context, orderId int64) error {
+	// 根据id查询订单
+	order, err := svc.orderRepo.FindById(ctx, orderId)
+
+	// 校验订单是否存在
+	if err != nil || order == nil {
+		return err
+	}
+	// 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+	if order.Status > 2 {
+		return errors.New("无法取消")
+	}
+
+	if order.Status != PENDING_PAYMENT {
+		order.PayStatus = REFUND
+	}
+
+	order.CancelTime = time.Now()
+	order.CancelReason = "用户取消"
+	err = svc.orderRepo.UpdateStatus(ctx, order)
+
+	return err
 }
 
 func (svc *OrderService) CreateSame(ctx context.Context, orderId int64, curID int64) error {
@@ -214,8 +293,84 @@ func (svc *OrderService) CreateSame(ctx context.Context, orderId int64, curID in
 	return nil
 }
 
-func (svc *OrderService) Cancel(ctx context.Context, orderId int64) error {
+func (svc *OrderService) Confirm(ctx context.Context, orderId int64) error {
+	// 根据id查询订单
+	order, err := svc.orderRepo.FindById(ctx, orderId)
 
+	// 校验订单是否存在
+	if err != nil || order == nil {
+		return err
+	}
+
+	order.Status = CONFIRMED
+	err = svc.orderRepo.UpdateStatus(ctx, order)
+
+	return err
+}
+
+func (svc *OrderService) Rejection(ctx context.Context, dto *RejectionDTO) error {
+	// 根据id查询订单
+	order, err := svc.orderRepo.FindById(ctx, dto.Id)
+
+	// 校验订单是否存在
+	if err != nil || order == nil {
+		return err
+	}
+
+	// 跳过微信流程
+	order.PayStatus = REFUND
+	order.Status = CANCELLED
+	order.RejectionReason = dto.RejectionReason
+	order.CancelTime = time.Now()
+	err = svc.orderRepo.UpdateStatus(ctx, order)
+
+	return err
+
+}
+
+func (svc *OrderService) Cancel(ctx context.Context, dto *CancelDTO) error {
+
+	// 根据id查询订单
+	order, err := svc.orderRepo.FindById(ctx, dto.Id)
+
+	// 校验订单是否存在
+	if err != nil || order == nil {
+		return err
+	}
+	// 跳过微信流程
+
+	order.PayStatus = REFUND
+	order.Status = CANCELLED
+	order.CancelReason = dto.CancelReason
+	order.EstimatedDeliveryTime = MYSQL_MIN_TIME
+	order.DeliveryTime = MYSQL_MIN_TIME
+	order.CancelTime = time.Now()
+	err = svc.orderRepo.UpdateStatus(ctx, order)
+
+	return err
+}
+
+func (svc *OrderService) Delivery(ctx context.Context, orderId int64) error {
+	// 根据id查询订单
+	order, err := svc.orderRepo.FindById(ctx, orderId)
+
+	// 校验订单是否存在
+	if err != nil || order == nil {
+		return err
+	}
+
+	order.Status = DELIVERY_IN_PROGRESS
+	if order.DeliveryStatus == 1 {
+		order.DeliveryTime = time.Now()
+	} else {
+		order.DeliveryTime = order.EstimatedDeliveryTime
+	}
+	err = svc.orderRepo.UpdateStatus(ctx, order)
+
+	return err
+}
+
+func (svc *OrderService) Complete(ctx context.Context, orderId int64) error {
 	// 根据id查询订单
 	order, err := svc.orderRepo.FindById(ctx, orderId)
 
@@ -224,28 +379,29 @@ func (svc *OrderService) Cancel(ctx context.Context, orderId int64) error {
 		return err
 	}
 	// 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
-	if order.Status > 2 {
-		return errors.New("无法取消订单")
+	if order.Status != DELIVERY_IN_PROGRESS {
+		return errors.New("无法完成")
 	}
 
-	// 跳过微信流程
-	if order.Status == 2 {
-		order.PayStatus = REFUND
-		err = svc.orderRepo.UpdateStatus(ctx, order)
-		if err != nil {
-			return err
-		}
-	}
-
-	order.Status = CANCELLED
-	order.CancelReason = "用户取消"
-	order.CancelTime = time.Now()
+	order.Status = COMPLETED
+	order.DeliveryTime = time.Now()
 	err = svc.orderRepo.UpdateStatus(ctx, order)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
+}
+
+func (svc *OrderService) GetStatistics(ctx context.Context) (StatisticsVO, error) {
+
+	confirmed, deliveryInProgress, toBeConfirmed, err := svc.orderRepo.GetTotalByStatus(ctx)
+
+	if err != nil {
+		return StatisticsVO{}, err
+	}
+	return StatisticsVO{
+		Confirmed:          confirmed,
+		DeliveryInProgress: deliveryInProgress,
+		ToBeConfirmed:      toBeConfirmed,
+	}, nil
 }
 
 func NewOrderService(

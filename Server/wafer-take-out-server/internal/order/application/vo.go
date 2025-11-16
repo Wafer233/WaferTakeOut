@@ -83,3 +83,42 @@ type OrderDetail struct {
 	OrderId    int64   `json:"orderId"`
 	SetMealId  int64   `json:"setmealId"`
 }
+
+type AdminOrderVO struct {
+	Id                    int64   `json:"id"`
+	Number                string  `json:"number"`
+	Status                int     `json:"status"`
+	UserId                int64   `json:"userId"`
+	AddressBookId         int64   `json:"addressBookId"`
+	OrderTime             string  `json:"orderTime"`
+	CheckoutTime          string  `json:"checkoutTime"`
+	PayMethod             int     `json:"payMethod"`
+	PayStatus             int     `json:"payStatus"`
+	Amount                float64 `json:"amount"`
+	Remark                string  `json:"remark"`
+	Phone                 string  `json:"phone"`
+	Address               string  `json:"address"`
+	UserName              string  `json:"userName"`
+	Consignee             string  `json:"consignee"`
+	CancelReason          string  `json:"cancelReason"`
+	RejectionReason       string  `json:"rejectionReason"`
+	CancelTime            string  `json:"cancelTime"`
+	EstimatedDeliveryTime string  `json:"estimatedDeliveryTime"`
+	DeliveryStatus        int     `json:"deliveryStatus"`
+	DeliveryTime          string  `json:"deliveryTime"`
+	PackAmount            int     `json:"packAmount"`
+	TableWareNumber       int     `json:"tablewareNumber"`
+	TableWareStatus       int     `json:"tablewareStatus"`
+	OrderDishes           string  `json:"orderDishes"`
+}
+
+type ListAdminOrderVO struct {
+	Total  int64          `json:"total"`
+	Orders []AdminOrderVO `json:"records"`
+}
+
+type StatisticsVO struct {
+	Confirmed          int64 `json:"confirmed"`
+	DeliveryInProgress int64 `json:"deliveryInProgress"`
+	ToBeConfirmed      int64 `json:"toBeConfirmed"`
+}
