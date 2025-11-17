@@ -21,7 +21,7 @@ func NewRouter(r *gin.Engine, h *OrderHandler) *gin.Engine {
 	admin.Use(middleware.EmployeeAuthMiddleware())
 	admin.GET("/conditionSearch", h.ListAdminPage)
 	admin.GET("/statistics", h.GetStatistics)
-	//admin.GET("/details/:id", h.Complete)
+	admin.GET("/details/:id", h.GetOrder)
 	admin.PUT("/confirm", h.Confirm)
 	admin.PUT("/rejection", h.Rejection)
 	admin.PUT("/cancel", h.Cancel)

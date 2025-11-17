@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/application"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/order/domain"
 	"gorm.io/gorm"
 )
@@ -19,19 +18,19 @@ func (repo *DefaultOrderRepository) GetTotalByStatus(ctx context.Context) (int64
 
 	tx := repo.db.WithContext(ctx).Model(&domain.Order{})
 
-	if err := tx.Where("status = ?", application.CONFIRMED).
+	if err := tx.Where("status = ?", domain.CONFIRMED).
 		Count(&confirmed).Error; err != nil {
 		tx.Rollback()
 		return 0, 0, 0, nil
 	}
 
-	if err := tx.Where("status = ?", application.DELIVERY_IN_PROGRESS).
+	if err := tx.Where("status = ?", domain.DELIVERY_IN_PROGRESS).
 		Count(&deliveryInProgress).Error; err != nil {
 		tx.Rollback()
 		return 0, 0, 0, nil
 	}
 
-	if err := tx.Where("status = ?", application.TO_BE_CONFIRMED).
+	if err := tx.Where("status = ?", domain.TO_BE_CONFIRMED).
 		Count(&toBeConfirmed).Error; err != nil {
 		tx.Rollback()
 		return 0, 0, 0, nil
@@ -82,7 +81,7 @@ func (repo *DefaultOrderRepository) FindDetailByOrderId(ctx context.Context,
 
 	var details []*domain.OrderDetail
 	err := repo.db.WithContext(ctx).Model(&domain.OrderDetail{}).
-		Where("id = ?", id).Find(&details).Error
+		Where("order_id = ?", id).Find(&details).Error
 	if err != nil {
 		return nil, err
 	}
@@ -147,13 +146,58 @@ func (repo *DefaultOrderRepository) FindPage(ctx context.Context, page int,
 
 func (repo *DefaultOrderRepository) UpdateStatus(ctx context.Context, order *domain.Order) error {
 
-	err := repo.db.WithContext(ctx).
+	tx := repo.db.WithContext(ctx).
 		Model(order).
 		Where("id = ?", order.Id).
-		Select("status", "pay_status", "checkout_time").
-		Updates(order).Error
+		Begin()
 
-	return err
+	if order.OrderTime != nil {
+		err := tx.Update("order_time", order.OrderTime).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if order.CheckoutTime != nil {
+		err := tx.Update("checkout_time", order.CheckoutTime).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if order.CancelTime != nil {
+		err := tx.Update("cancel_time = ?", order.CancelTime).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if order.EstimatedDeliveryTime != nil {
+		err := tx.Update("estimated_delivery_time = ?", order.EstimatedDeliveryTime).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if order.DeliveryTime != nil {
+		err := tx.Update("delivery_time = ?", order.DeliveryTime).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if err := tx.Select("status", "pay_status", "cancel_reason", "rejection_reason").
+		Updates(order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }
 
 func (repo *DefaultOrderRepository) FindByNumber(ctx context.Context, number string) (*domain.Order, error) {
@@ -178,12 +222,10 @@ func (repo *DefaultOrderRepository) FindByNumber(ctx context.Context, number str
 
 func (repo *DefaultOrderRepository) Create(ctx context.Context, order *domain.Order) error {
 
-	if err := repo.db.WithContext(ctx).
-		Model(&domain.Order{}).
-		Create(order).Error; err != nil {
-		return err
-	}
-	return nil
+	err := repo.db.WithContext(ctx).
+		Model(&domain.Order{}).Create(order).Error
+
+	return err
 }
 
 func (repo *DefaultOrderRepository) CreateDetail(ctx context.Context, details []*domain.OrderDetail) error {

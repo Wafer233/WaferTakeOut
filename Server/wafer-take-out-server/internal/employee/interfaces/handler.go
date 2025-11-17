@@ -56,6 +56,7 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 		false,
 	)
 	vo.Token = token
+
 	c.JSON(http.StatusOK, result.SuccessData(vo))
 }
 

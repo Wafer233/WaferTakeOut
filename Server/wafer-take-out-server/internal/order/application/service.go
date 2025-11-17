@@ -16,6 +16,7 @@ type OrderService struct {
 	orderRepo orde.OrderRepository
 	cartRepo  cart.ShoppingCartRepository
 	addrRepo  addr.AddressRepository
+	domainSvc *orde.OrderDomainService
 }
 
 func (svc *OrderService) Submit(ctx context.Context, dto *SubmitDTO, curId int64) (SubmitVO, error) {
@@ -32,16 +33,17 @@ func (svc *OrderService) Submit(ctx context.Context, dto *SubmitDTO, curId int64
 
 	// 插入1条数据
 	estimateTime, _ := time.Parse("2006-01-02 15:04:05", dto.EstimatedDeliveryTime)
+	now := time.Now()
 	orderEntity := &orde.Order{
 		Id:                    0,
 		Number:                random.GenerateOrderID(),
-		Status:                1,
+		Status:                orde.PENDING_PAYMENT,
 		UserId:                curId,
 		AddressBookId:         dto.AddressBookId,
-		OrderTime:             time.Now(),
-		CheckoutTime:          MYSQL_MIN_TIME,
+		OrderTime:             &now,
+		CheckoutTime:          nil,
 		PayMethod:             dto.PayMethod,
-		PayStatus:             0,
+		PayStatus:             orde.UN_PAID,
 		Amount:                dto.Amount,
 		Remark:                dto.Remark,
 		Phone:                 address.Phone,
@@ -50,10 +52,10 @@ func (svc *OrderService) Submit(ctx context.Context, dto *SubmitDTO, curId int64
 		Consignee:             address.Consignee,
 		CancelReason:          "",
 		RejectionReason:       "",
-		CancelTime:            MYSQL_MIN_TIME,
-		EstimatedDeliveryTime: estimateTime,
+		CancelTime:            nil,
+		EstimatedDeliveryTime: &estimateTime,
 		DeliveryStatus:        dto.DeliveryStatus,
-		DeliveryTime:          MYSQL_MIN_TIME,
+		DeliveryTime:          nil,
 		PackAmount:            dto.PackAmount,
 		TableWareNumber:       dto.TablewareNumber,
 		TableWareStatus:       dto.TablewareStatus,
@@ -104,17 +106,20 @@ func (svc *OrderService) Payment(ctx context.Context, dto *PaymentDTO) (PaymentV
 	}
 
 	// 根据订单id更新订单的状态、支付方式、支付状态、结账时间
-	order.Status = TO_BE_CONFIRMED
-	order.PayStatus = PAID
-	order.CheckoutTime = time.Now()
+	now := time.Now()
+	order.Status = orde.TO_BE_CONFIRMED
+	order.PayStatus = orde.PAID
+	order.CheckoutTime = &now
 	err = svc.orderRepo.UpdateStatus(ctx, order)
 
-	if err != nil {
+	if err != nil || order.EstimatedDeliveryTime == nil {
 		return PaymentVO{}, err
 	}
 
+	estimateStr := order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05")
+
 	return PaymentVO{
-		EstimatedDeliveryTime: order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05"),
+		EstimatedDeliveryTime: estimateStr,
 	}, nil
 
 }
@@ -142,11 +147,11 @@ func (svc *OrderService) Page(ctx context.Context, dto *UserPageDTO,
 	for index, order := range records {
 		tmpVO := UserOrderVO{}
 		_ = copier.Copy(&tmpVO, &order)
-		tmpVO.OrderTime = order.OrderTime.Format("2006-01-02 15:04:05")
-		tmpVO.CheckoutTime = order.CheckoutTime.Format("2006-01-02 15:04:05")
-		tmpVO.CancelTime = order.CancelTime.Format("2006-01-02 15:04:05")
-		tmpVO.EstimatedDeliveryTime = order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05")
-		tmpVO.DeliveryTime = order.DeliveryTime.Format("2006-01-02 15:04:05")
+		tmpVO.OrderTime = svc.domainSvc.ParseTime(order.OrderTime)
+		tmpVO.CheckoutTime = svc.domainSvc.ParseTime(order.CheckoutTime)
+		tmpVO.CancelTime = svc.domainSvc.ParseTime(order.CancelTime)
+		tmpVO.EstimatedDeliveryTime = svc.domainSvc.ParseTime(order.EstimatedDeliveryTime)
+		tmpVO.DeliveryTime = svc.domainSvc.ParseTime(order.DeliveryTime)
 
 		//组装特定的vo
 		var detailVO []OrderDetail
@@ -194,12 +199,12 @@ func (svc *OrderService) FindPageAdmin(ctx context.Context, dto *AdminPageDTO) (
 	for index, order := range records {
 		tmpVO := AdminOrderVO{}
 		_ = copier.Copy(&tmpVO, &order)
-		curLayout := "2006-01-02 15:04"
-		tmpVO.OrderTime = order.OrderTime.Format(curLayout)
-		tmpVO.CheckoutTime = order.CheckoutTime.Format(curLayout)
-		tmpVO.CancelTime = order.CancelTime.Format(curLayout)
-		tmpVO.EstimatedDeliveryTime = order.EstimatedDeliveryTime.Format(curLayout)
-		tmpVO.DeliveryTime = order.DeliveryTime.Format(curLayout)
+
+		tmpVO.OrderTime = svc.domainSvc.ParseTime(order.OrderTime)
+		tmpVO.CheckoutTime = svc.domainSvc.ParseTime(order.CheckoutTime)
+		tmpVO.CancelTime = svc.domainSvc.ParseTime(order.CancelTime)
+		tmpVO.EstimatedDeliveryTime = svc.domainSvc.ParseTime(order.EstimatedDeliveryTime)
+		tmpVO.DeliveryTime = svc.domainSvc.ParseTime(order.DeliveryTime)
 		vo[index] = tmpVO
 
 		////组装特定的vo
@@ -234,11 +239,12 @@ func (svc *OrderService) GetOrder(ctx context.Context, orderId int64) (UserOrder
 
 	var vo UserOrderVO
 	_ = copier.Copy(&vo, &order)
-	vo.OrderTime = order.OrderTime.Format("2006-01-02 15:04:05")
-	vo.CheckoutTime = order.CheckoutTime.Format("2006-01-02 15:04:05")
-	vo.CancelTime = order.CancelTime.Format("2006-01-02 15:04:05")
-	vo.EstimatedDeliveryTime = order.EstimatedDeliveryTime.Format("2006-01-02 15:04:05")
-	vo.DeliveryTime = order.DeliveryTime.Format("2006-01-02 15:04:05")
+
+	vo.OrderTime = svc.domainSvc.ParseTime(order.OrderTime)
+	vo.CheckoutTime = svc.domainSvc.ParseTime(order.CheckoutTime)
+	vo.CancelTime = svc.domainSvc.ParseTime(order.CancelTime)
+	vo.EstimatedDeliveryTime = svc.domainSvc.ParseTime(order.EstimatedDeliveryTime)
+	vo.DeliveryTime = svc.domainSvc.ParseTime(order.DeliveryTime)
 	vo.OrderDetails = detailVO
 
 	return vo, nil
@@ -253,17 +259,19 @@ func (svc *OrderService) UserCancel(ctx context.Context, orderId int64) error {
 	if err != nil || order == nil {
 		return err
 	}
-	// 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
-	if order.Status > 2 {
+	//// 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+	if order.Status > 3 {
 		return errors.New("无法取消")
 	}
 
-	if order.Status != PENDING_PAYMENT {
-		order.PayStatus = REFUND
+	if order.Status != orde.PENDING_PAYMENT {
+		order.PayStatus = orde.REFUND
 	}
 
-	order.CancelTime = time.Now()
+	now := time.Now()
+	order.CancelTime = &now
 	order.CancelReason = "用户取消"
+	order.Status = orde.CANCELLED
 	err = svc.orderRepo.UpdateStatus(ctx, order)
 
 	return err
@@ -302,7 +310,7 @@ func (svc *OrderService) Confirm(ctx context.Context, orderId int64) error {
 		return err
 	}
 
-	order.Status = CONFIRMED
+	order.Status = orde.CONFIRMED
 	err = svc.orderRepo.UpdateStatus(ctx, order)
 
 	return err
@@ -318,10 +326,11 @@ func (svc *OrderService) Rejection(ctx context.Context, dto *RejectionDTO) error
 	}
 
 	// 跳过微信流程
-	order.PayStatus = REFUND
-	order.Status = CANCELLED
+	order.PayStatus = orde.REFUND
+	order.Status = orde.CANCELLED
 	order.RejectionReason = dto.RejectionReason
-	order.CancelTime = time.Now()
+	now := time.Now()
+	order.CancelTime = &now
 	err = svc.orderRepo.UpdateStatus(ctx, order)
 
 	return err
@@ -339,12 +348,11 @@ func (svc *OrderService) Cancel(ctx context.Context, dto *CancelDTO) error {
 	}
 	// 跳过微信流程
 
-	order.PayStatus = REFUND
-	order.Status = CANCELLED
+	order.PayStatus = orde.REFUND
+	order.Status = orde.CANCELLED
 	order.CancelReason = dto.CancelReason
-	order.EstimatedDeliveryTime = MYSQL_MIN_TIME
-	order.DeliveryTime = MYSQL_MIN_TIME
-	order.CancelTime = time.Now()
+	now := time.Now()
+	order.CancelTime = &now
 	err = svc.orderRepo.UpdateStatus(ctx, order)
 
 	return err
@@ -359,9 +367,10 @@ func (svc *OrderService) Delivery(ctx context.Context, orderId int64) error {
 		return err
 	}
 
-	order.Status = DELIVERY_IN_PROGRESS
+	order.Status = orde.DELIVERY_IN_PROGRESS
 	if order.DeliveryStatus == 1 {
-		order.DeliveryTime = time.Now()
+		now := time.Now()
+		order.DeliveryTime = &now
 	} else {
 		order.DeliveryTime = order.EstimatedDeliveryTime
 	}
@@ -379,12 +388,10 @@ func (svc *OrderService) Complete(ctx context.Context, orderId int64) error {
 		return err
 	}
 	// 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
-	if order.Status != DELIVERY_IN_PROGRESS {
-		return errors.New("无法完成")
-	}
 
-	order.Status = COMPLETED
-	order.DeliveryTime = time.Now()
+	order.Status = orde.COMPLETED
+	now := time.Now()
+	order.DeliveryTime = &now
 	err = svc.orderRepo.UpdateStatus(ctx, order)
 
 	return err

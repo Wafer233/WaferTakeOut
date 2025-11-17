@@ -1,6 +1,4 @@
-package application
-
-import "time"
+package domain
 
 const (
 	PENDING_PAYMENT      = 1
@@ -16,5 +14,3 @@ const (
 	PAID    = 1
 	REFUND  = 2
 )
-
-var MYSQL_MIN_TIME = time.Date(1000, 1, 1, 0, 0, 0, 0, time.Local)

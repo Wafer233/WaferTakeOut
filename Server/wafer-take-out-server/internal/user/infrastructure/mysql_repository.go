@@ -26,6 +26,10 @@ func (repo *DefaultUserRepository) Upsert(ctx context.Context,
 			DoUpdates: clause.AssignmentColumns([]string{"name", "phone", "sex", "id_number", "avatar"}),
 		}).Create(user).Error
 
+	err = repo.db.WithContext(ctx).
+		Where("openid = ?", user.OpenId).
+		First(user).Error
+
 	return err
 
 }
