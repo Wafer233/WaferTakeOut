@@ -1,11 +1,11 @@
-package interfaces
+package rest
 
 import (
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/middleware"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interface/rest/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
+func NewCategoryRouter(r *gin.Engine, h *CategoryHandler) *gin.Engine {
 
 	admin := r.Group("/admin/category")
 	admin.Use(middleware.EmployeeAuthMiddleware())

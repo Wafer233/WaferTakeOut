@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/category-service/internal/infrastructure/database"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/category-service/internal/infrastructure/persistence"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/category-service/internal/interfaces/rpc"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/proto"
+	categorypb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/category-service/proto"
 	"google.golang.org/grpc"
 )
 
@@ -19,14 +19,14 @@ func main() {
 	svc := application.NewCategoryService(repo)
 	handler := rpc.NewCategoryHandler(svc)
 
-	lis, err := net.Listen("tcp", "localhost:50051")
+	lis, err := net.Listen("tcp", "localhost:50052")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Employee gRPC service listening on localhost:50051")
+	fmt.Println("Category gRPC service listening on localhost:50052")
 
 	server := grpc.NewServer()
-	proto.RegisterEmployeeServiceServer(server, handler)
+	categorypb.RegisterCategoryServiceServer(server, handler)
 
 	err = server.Serve(lis)
 	if err != nil {

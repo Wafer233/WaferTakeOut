@@ -1,4 +1,4 @@
-package interfaces
+package rest
 
 import (
 	"context"
@@ -6,23 +6,24 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/application"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
+	categoryApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/application/category"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
 type CategoryHandler struct {
-	svc *application.CategoryAppService
+	svc *rpc.CategoryService
 }
 
-func NewCategoryHandler(svc *application.CategoryAppService) *CategoryHandler {
+func NewCategoryHandler(svc *rpc.CategoryService) *CategoryHandler {
 	return &CategoryHandler{
 		svc: svc,
 	}
 }
 func (h *CategoryHandler) Create(c *gin.Context) {
 
-	var dto application.AddCategoryDTO
+	var dto categoryApp.CategoryDTO
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("绑定JSON错误"))
@@ -67,7 +68,7 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 
 func (h *CategoryHandler) Update(c *gin.Context) {
 
-	dto := application.EditCategoryDTO{}
+	dto := categoryApp.CategoryDTO{}
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("绑定请求失败"))
@@ -124,7 +125,7 @@ func (h *CategoryHandler) UpdateStatus(c *gin.Context) {
 
 func (h *CategoryHandler) ListPage(c *gin.Context) {
 
-	dto := application.PageDTO{}
+	dto := categoryApp.PageDTO{}
 
 	err := c.ShouldBindQuery(&dto)
 	if err != nil {

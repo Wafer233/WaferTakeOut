@@ -18,7 +18,7 @@ func NewCategoryService(repo domain.CategoryRepository) *CategoryAppService {
 }
 
 // Create
-func (svc *CategoryAppService) Create(ctx context.Context, dto *AddCategoryDTO, curId int64) error {
+func (svc *CategoryAppService) Create(ctx context.Context, dto *CategoryDTO, curId int64) error {
 
 	entity := domain.Category{
 		ID:         dto.ID,
@@ -41,7 +41,7 @@ func (svc *CategoryAppService) Delete(ctx context.Context, id int64) error {
 	return err
 }
 
-func (svc *CategoryAppService) Update(ctx context.Context, dto *EditCategoryDTO, curId int64) error {
+func (svc *CategoryAppService) Update(ctx context.Context, dto *CategoryDTO, curId int64) error {
 
 	entity := domain.Category{
 		ID:         dto.ID,

@@ -1,4 +1,4 @@
-package application
+package categoryApp
 
 // 这里我都要骂人了，json绑定一直失败，前端文档说传进来的是int实际上是string！！
 type CategoryDTO struct {

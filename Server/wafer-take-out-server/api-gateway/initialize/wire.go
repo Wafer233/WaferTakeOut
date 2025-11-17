@@ -17,10 +17,13 @@ func Init() (*gin.Engine, error) {
 	wire.Build(
 
 		rpc.NewEmployeeServiceClient,
+		rpc.NewCategoryServiceClient,
 
 		rpc.NewEmployeeService,
+		rpc.NewCategoryService,
 
 		rest.NewEmployeeHandler,
+		rest.NewCategoryHandler,
 
 		NewRouter,
 	)

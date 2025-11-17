@@ -5,11 +5,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(emp *rest.EmployeeHandler) *gin.Engine {
+func NewRouter(
+	emp *rest.EmployeeHandler,
+	cat *rest.CategoryHandler,
+) *gin.Engine {
 
 	r := gin.Default()
 
 	rest.NewEmployeeRouter(r, emp)
+	rest.NewCategoryRouter(r, cat)
 
 	return r
 
