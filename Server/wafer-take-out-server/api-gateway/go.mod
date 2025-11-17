@@ -1,4 +1,4 @@
-module github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server
+module github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway
 
 go 1.24.4
 
