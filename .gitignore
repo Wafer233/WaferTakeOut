@@ -2,6 +2,9 @@
 .idea
 Uploads
 
+Server/wafer-take-out-server/dish-service/pkg/ai/secret.go
+
+
 
 olds/pkg/pkg/wechat/secret.go
 olds/pkg/pkg/ai/secret.go
