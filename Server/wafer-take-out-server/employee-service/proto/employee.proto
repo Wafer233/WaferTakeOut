@@ -1,7 +1,6 @@
 syntax = "proto3";
 
-package employee.v1;
-option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/services/employee-service/proto";
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/proto;employeepb";
 
 
 service EmployeeService {

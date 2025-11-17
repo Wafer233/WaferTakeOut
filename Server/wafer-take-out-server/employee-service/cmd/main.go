@@ -8,7 +8,8 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/internal/infrastructure/database"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/internal/infrastructure/persistence"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/internal/interfaces/rpc"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/proto"
+	employeepb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/employee-service/proto"
+
 	"google.golang.org/grpc"
 )
 
@@ -26,7 +27,7 @@ func main() {
 	fmt.Println("Employee gRPC service listening on localhost:50051")
 
 	server := grpc.NewServer()
-	proto.RegisterEmployeeServiceServer(server, handler)
+	employeepb.RegisterEmployeeServiceServer(server, handler)
 
 	err = server.Serve(lis)
 	if err != nil {

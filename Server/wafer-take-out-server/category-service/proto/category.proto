@@ -1,0 +1,4 @@
+syntax = "proto3";
+
+package category.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/services/employee-service/proto";
