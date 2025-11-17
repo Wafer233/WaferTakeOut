@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package employee.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/services/employee-service/proto;employeepb";
+
+
+service EmployeeService {
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+  rpc ListPage(PageRequest) returns (PageResponse) {}
+  rpc FindById(IdRequest) returns (Employee) {}
+  rpc UpdateStatus(UpdateStatusRequest) returns (EmptyResponse) {}
+  rpc Update(AddEmployeeRequest) returns (EmptyResponse) {}
+  rpc Create(AddEmployeeRequest) returns  (EmptyResponse) {}
+  rpc UpdatePassword(PasswordRequest) returns (EmptyResponse) {}
+
+}
+
+message LoginRequest {
+  string password = 1;
+  string username = 2;
+}
+
+message LoginResponse {
+  int64 id = 1;
+  string userName = 2;
+  string name = 3;
+  string token = 4;
+}
+
+message PageRequest {
+  string name = 1 ;
+  int32 page = 2;
+  int32 pageSize = 3;
+}
+
+message PageResponse {
+  int64 total = 1;
+  repeated Employee employees = 2;
+}
+
+message Employee {
+  int64  id = 1;
+  string name = 2;
+  string username = 3;
+  string password = 4;
+  string phone = 5;
+  string sex = 6;
+  string idNumber = 7;
+  int32   status = 8;
+  string createTime = 9;
+  string updateTime = 10;
+  int64  createUser = 11;
+  int64  updateUser = 12;
+}
+
+message IdRequest {
+  int64 id = 1;
+}
+
+message EmptyResponse{
+}
+
+message UpdateStatusRequest {
+  int32 status = 1;
+  int64 id = 2;
+  int64 curId = 3;
+}
+
+message AddEmployeeRequest {
+  int64 id = 1;
+  string idNumber = 2;
+  string name = 3;
+  string phone = 4;
+  string sex = 5;
+  string username = 6;
+  int64 curId = 7;
+}
+
+message PasswordRequest {
+  string id = 1;
+  string newPassword = 2;
+  string oldPassword = 3;
+  int64 curId = 4;
+}
+

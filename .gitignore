@@ -1,6 +1,6 @@
-Client
 *.iml
 .idea
 Uploads
-Server/wafer-take-out-server/pkg/wechat/secret.go
-Server/wafer-take-out-server/pkg/ai/secret.go
+olds/pkg/pkg/wechat/secret.go
+olds/pkg/pkg/ai/secret.go
+olds/pkg/ai/secret.go
