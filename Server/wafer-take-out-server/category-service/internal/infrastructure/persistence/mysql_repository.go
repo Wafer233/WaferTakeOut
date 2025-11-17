@@ -111,7 +111,7 @@ func (repo *DefaultCategoryRepository) FindByType(ctx context.Context, curType i
 	return entity, nil
 }
 
-func (repo *DefaultCategoryRepository) FindById(ctx context.Context, id int64) (*domain.Category, error) {
+func (repo *DefaultCategoryRepository) FindNameById(ctx context.Context, id int64) (string, error) {
 	entity := domain.Category{}
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).
@@ -119,7 +119,7 @@ func (repo *DefaultCategoryRepository) FindById(ctx context.Context, id int64) (
 		First(&entity)
 	err := db.Error
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return &entity, nil
+	return entity.Name, nil
 }

@@ -1,4 +1,4 @@
-package interfaces
+package rest
 
 import (
 	"context"
@@ -7,22 +7,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/application"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
+	dishApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/application/dish"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
 type DishHandler struct {
-	svc *application.DishService
+	svc *rpc.DishService
 }
 
-func NewDishHandler(svc *application.DishService) *DishHandler {
+func NewDishHandler(svc *rpc.DishService) *DishHandler {
 	return &DishHandler{svc: svc}
 }
 
 func (h *DishHandler) Page(c *gin.Context) {
 
-	dto := application.PageDTO{}
+	dto := dishApp.PageDTO{}
 	err := c.ShouldBindQuery(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("输入错误"))
@@ -117,7 +118,7 @@ func (h *DishHandler) UpdateStatus(c *gin.Context) {
 
 func (h *DishHandler) Update(c *gin.Context) {
 
-	dto := application.DishDTO{}
+	dto := dishApp.DishDTO{}
 
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
@@ -172,7 +173,7 @@ func (h *DishHandler) Delete(c *gin.Context) {
 
 func (h *DishHandler) Create(c *gin.Context) {
 
-	dto := application.DishDTO{}
+	dto := dishApp.DishDTO{}
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("输入错误"))

@@ -10,7 +10,7 @@ service CategoryService {
   rpc UpdateStatus(UpdateStatusRequest) returns (EmptyResponse) {}
   rpc FindPage(PageRequest) returns (PageResponse) {}
   rpc FindByType(FindTypeRequest) returns (FindTypeResponse) {}
-
+  rpc FindNameById(IdRequest) returns (NameResponse){}
 }
 
 message EmptyResponse {
@@ -64,4 +64,9 @@ message FindTypeRequest {
 
 message FindTypeResponse {
   repeated Record records = 1;
+}
+
+
+message NameResponse {
+  string name = 1;
 }

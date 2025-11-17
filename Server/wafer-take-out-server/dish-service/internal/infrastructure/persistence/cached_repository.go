@@ -1,4 +1,4 @@
-package infrastructure
+package persistence
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/internal/domain"
 	"github.com/redis/go-redis/v9"
 )
 

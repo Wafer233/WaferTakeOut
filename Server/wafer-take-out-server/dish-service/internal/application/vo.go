@@ -6,7 +6,7 @@ type PageVO struct {
 }
 
 type Record struct {
-	ID           int64   `json:"id"`
+	Id           int64   `json:"id"`
 	Name         string  `json:"name"`
 	CategoryId   int64   `json:"categoryId"`
 	Price        float64 `json:"price"`

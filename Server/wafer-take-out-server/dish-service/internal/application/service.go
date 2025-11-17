@@ -5,22 +5,22 @@ import (
 	"strconv"
 	"time"
 
-	cate "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
-	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/ai"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/internal/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/internal/infrastructure/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/pkg/ai"
+
 	"github.com/jinzhu/copier"
 )
 
 type DishService struct {
-	repo     dish.DishRepository
-	cateRepo cate.CategoryRepository
+	repo domain.DishRepository
+	svc  *rpc.CategoryService
 }
 
-func NewDishService(dishRepo dish.DishRepository, cateRepo cate.CategoryRepository) *DishService {
+func NewDishService(dishRepo domain.DishRepository, svc *rpc.CategoryService) *DishService {
 	return &DishService{
-		repo:     dishRepo,
-		cateRepo: cateRepo,
+		repo: dishRepo,
+		svc:  svc,
 	}
 }
 
@@ -112,16 +112,16 @@ func (svc *DishService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, err
 
 	categoryNames := make([]string, 0)
 	for index, _ := range dishes {
-		category, er := svc.cateRepo.FindById(ctx, dishes[index].CategoryId)
+		curName, er := svc.svc.FindNameById(ctx, dishes[index].CategoryId)
 		if er != nil {
 			return PageVO{}, er
 		}
-		categoryNames = append(categoryNames, category.Name)
+		categoryNames = append(categoryNames, curName)
 	}
 
 	records := make([]Record, len(dishes))
 	for index, record := range records {
-		record.ID = dishes[index].Id
+		record.Id = dishes[index].Id
 		record.Name = dishes[index].Name
 		record.CategoryId = dishes[index].CategoryId
 		record.Price = dishes[index].Price
@@ -152,14 +152,14 @@ func (svc *DishService) FindByCategoryId(ctx context.Context, cid int64) ([]Reco
 
 	records := make([]Record, len(dishes))
 
-	category, err := svc.cateRepo.FindById(ctx, dishes[0].CategoryId)
+	curName, err := svc.svc.FindNameById(ctx, dishes[0].CategoryId)
 	if err != nil {
 		return nil, err
 	}
 
 	for index, d := range dishes {
 		records[index] = Record{
-			ID:           d.Id,
+			Id:           d.Id,
 			Name:         d.Name,
 			CategoryId:   d.CategoryId,
 			Price:        d.Price,
@@ -167,7 +167,7 @@ func (svc *DishService) FindByCategoryId(ctx context.Context, cid int64) ([]Reco
 			Description:  d.Description,
 			Status:       d.Status,
 			UpdateTime:   d.UpdateTime.Format("2006-01-02 15:04"),
-			CategoryName: category.Name,
+			CategoryName: curName,
 		}
 	}
 	return records, nil
@@ -190,14 +190,14 @@ func (svc *DishService) FindById(ctx context.Context, id int64) (DishVO, error) 
 		}
 	}
 
-	category, err := svc.cateRepo.FindById(ctx, dishEntity.CategoryId)
+	curName, err := svc.svc.FindNameById(ctx, dishEntity.CategoryId)
 	if err != nil {
 		return DishVO{}, err
 	}
 
 	vo := DishVO{
 		CategoryId:   dishEntity.CategoryId,
-		CategoryName: category.Name,
+		CategoryName: curName,
 		Description:  dishEntity.Description,
 		Flavors:      flavorVOs,
 		ID:           dishEntity.Id,
@@ -210,7 +210,8 @@ func (svc *DishService) FindById(ctx context.Context, id int64) (DishVO, error) 
 	return vo, nil
 }
 
-func (svc *DishService) UpdateStatus(ctx context.Context, id int64, status int, curId int64) error {
+func (svc *DishService) UpdateStatus(ctx context.Context,
+	id int64, status int, curId int64) error {
 
 	entity := &domain.Dish{
 		Id:         id,
@@ -235,7 +236,8 @@ func (svc *DishService) Delete(ctx context.Context, idArr []int64) error {
 	return nil
 }
 
-func (svc *DishService) FindByCategoryIdFlavor(ctx context.Context, categoryId int64) ([]DishVO, error) {
+func (svc *DishService) FindByCategoryIdFlavor(ctx context.Context,
+	categoryId int64) ([]DishVO, error) {
 
 	dishes, mapping, err := svc.repo.FindByCategoryIdFlavor(ctx, categoryId)
 	if err != nil {
@@ -255,7 +257,7 @@ func (svc *DishService) FindByCategoryIdFlavor(ctx context.Context, categoryId i
 		return []DishVO{}, err
 	}
 
-	category, err := svc.cateRepo.FindById(ctx, dishes[0].CategoryId)
+	curName, err := svc.svc.FindNameById(ctx, dishes[0].CategoryId)
 	if err != nil {
 		return []DishVO{}, err
 	}
@@ -263,7 +265,7 @@ func (svc *DishService) FindByCategoryIdFlavor(ctx context.Context, categoryId i
 	for index, d := range dishes {
 		records[index] = DishVO{
 			CategoryId:   d.CategoryId,
-			CategoryName: category.Name,
+			CategoryName: curName,
 			Description:  d.Description,
 			Flavors:      mappingVO[d.Id],
 			ID:           d.Id,

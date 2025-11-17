@@ -1,10 +1,10 @@
-package infrastructure
+package persistence
 
 import (
 	"context"
 	"errors"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/internal/domain"
 	"gorm.io/gorm"
 )
 

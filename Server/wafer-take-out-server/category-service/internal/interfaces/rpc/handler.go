@@ -10,10 +10,10 @@ import (
 
 type CategoryHandler struct {
 	categorypb.UnimplementedCategoryServiceServer
-	svc *application.CategoryAppService
+	svc *application.CategoryService
 }
 
-func NewCategoryHandler(svc *application.CategoryAppService) *CategoryHandler {
+func NewCategoryHandler(svc *application.CategoryService) *CategoryHandler {
 	return &CategoryHandler{svc: svc}
 }
 
@@ -86,5 +86,19 @@ func (h *CategoryHandler) FindByType(ctx context.Context,
 	}
 	resp := &categorypb.FindTypeResponse{}
 	_ = copier.Copy(resp, &vo)
+	return resp, nil
+}
+
+// 这个是给dish用的
+func (h *CategoryHandler) FindNameById(ctx context.Context,
+	req *categorypb.IdRequest) (*categorypb.NameResponse, error) {
+
+	name, err := h.svc.FindNameById(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	resp := &categorypb.NameResponse{
+		Name: name,
+	}
 	return resp, nil
 }

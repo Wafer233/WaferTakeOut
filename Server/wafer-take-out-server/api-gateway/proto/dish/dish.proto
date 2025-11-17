@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package dish.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/proto;dishpb";
+
+service DishService {
+  rpc Create(DishRequest) returns(EmptyResponse) {}
+  rpc Update(DishRequest) returns(EmptyResponse) {}
+  rpc FindByPage(PageRequest) returns(PageResponse) {}
+  rpc FindByCategoryId(IDMessage) returns(RecordsResponse) {}
+  rpc FindById(IDMessage) returns(DishResponse) {}
+  rpc UpdateStatus(UpdateRequest) returns(EmptyResponse) {}
+  rpc Delete(IdsMessage) returns(EmptyResponse) {}
+  rpc FindByCategoryIdFlavor(IDMessage) returns (DishesResponse) {}
+}
+
+message EmptyResponse {
+}
+
+message IDMessage{
+  int64 id = 1;
+}
+
+message IdsMessage{
+  repeated int64 ids = 1;
+}
+
+
+message DishRequest {
+  int64 categoryId = 1;
+  string description = 2;
+  repeated Flavor flavors = 3;
+  int64 id = 4;
+  string image = 5;
+  string name = 6;
+  float price = 7;
+  int32 status = 8;
+  int64 curId = 9;
+}
+
+message Flavor {
+  int64 dishId = 1;
+  int64 id = 2;
+  string name = 3;
+  string value = 4;
+}
+
+message PageRequest {
+  int64 categoryId = 1;
+  string name = 2;
+  int32 page = 3;
+  int32 pageSize = 4;
+  string status = 5;
+}
+
+message PageResponse{
+  int64 total = 1;
+  repeated Record records = 2;
+}
+
+message Record {
+  int64 id = 1;
+  string name = 2;
+  int64 categoryId = 3;
+  float price = 4;
+  string image = 5;
+  string description = 6;
+  int32 status = 7;
+  string updateTime = 8;
+  string categoryName = 9;
+}
+
+message RecordsResponse{
+  repeated Record records = 1;
+}
+
+message DishResponse {
+  int64 categoryId = 1;
+  string categoryName = 2;
+  string description = 3;
+  repeated Flavor flavors = 4;
+  int64  id = 5;
+  string image = 6;
+  string name = 7;
+  float price = 8;
+  int32 status = 9;
+  string updateTime = 10;
+}
+
+message DishesResponse {
+  repeated DishResponse dishes = 1;
+}
+
+message UpdateRequest {
+  int64 id = 1;
+  int32 status = 2;
+  int64 curId = 3;
+}

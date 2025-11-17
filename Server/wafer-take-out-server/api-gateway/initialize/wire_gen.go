@@ -21,7 +21,10 @@ func Init() (*gin.Engine, error) {
 	categoryServiceClient := rpc.NewCategoryServiceClient()
 	categoryService := rpc.NewCategoryService(categoryServiceClient)
 	categoryHandler := rest.NewCategoryHandler(categoryService)
-	engine := NewRouter(employeeHandler, categoryHandler)
+	dishServiceClient := rpc.NewDishServiceClient()
+	dishService := rpc.NewDishService(dishServiceClient)
+	dishHandler := rest.NewDishHandler(dishService)
+	engine := NewRouter(employeeHandler, categoryHandler, dishHandler)
 	return engine, nil
 }
 

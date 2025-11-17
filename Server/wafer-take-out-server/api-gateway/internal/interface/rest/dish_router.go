@@ -1,11 +1,11 @@
-package interfaces
+package rest
 
 import (
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/middleware"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interface/rest/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(r *gin.Engine, h *DishHandler) *gin.Engine {
+func NewDishRouter(r *gin.Engine, h *DishHandler) *gin.Engine {
 
 	admin := r.Group("/admin/dish")
 

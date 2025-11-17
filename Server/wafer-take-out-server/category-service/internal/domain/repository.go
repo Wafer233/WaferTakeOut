@@ -11,5 +11,5 @@ type CategoryRepository interface {
 	UpdateStatus(context.Context, *Category) error
 	Delete(context.Context, int64) error
 	FindByType(context.Context, int) ([]*Category, error)
-	FindById(context.Context, int64) (*Category, error)
+	FindNameById(context.Context, int64) (string, error)
 }
