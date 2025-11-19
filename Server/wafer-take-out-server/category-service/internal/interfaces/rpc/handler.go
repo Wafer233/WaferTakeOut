@@ -84,8 +84,12 @@ func (h *CategoryHandler) FindByType(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	resp := &categorypb.FindTypeResponse{}
-	_ = copier.Copy(resp, &vo)
+
+	record := make([]*categorypb.Record, len(vo))
+	_ = copier.Copy(&record, &vo)
+	resp := &categorypb.FindTypeResponse{
+		Records: record,
+	}
 	return resp, nil
 }
 

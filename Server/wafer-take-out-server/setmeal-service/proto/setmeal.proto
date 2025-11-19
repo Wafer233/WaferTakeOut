@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package setmeal.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/setmeal-service/proto;setmealpb";
+
+service SetmealService {
+  rpc Create(SetMealRequest) returns (EmptyRequest) {}
+  rpc Deletes(IdsMessage) returns (EmptyRequest) {}
+  rpc Update(SetMealRequest) returns (EmptyRequest) {}
+  rpc UpdateStatus(StatusRequest) returns (EmptyRequest) {}
+  rpc FindById(IdMessage) returns (SetMealResponse) {}
+  rpc FindPage(PageRequest) returns (PageResponse) {}
+  rpc FindByCategoryId(IdMessage) returns (FindByCategoryResponse) {}
+  rpc FindDishById(IdMessage) returns (FindDishByIdResponse) {}
+}
+
+message IdMessage {
+  int64 id = 1;
+}
+
+message IdsMessage {
+  repeated int64 ids = 1;
+}
+
+message EmptyRequest {
+}
+
+message SetMealRequest {
+  int64 categoryId = 1;
+  string description = 2;
+  int64 id = 3;
+  string image = 4;
+  string name = 5;
+  float price = 6;
+  repeated SetMealDish setMealDishes = 7;
+  int32 status = 8;
+  int64 curId = 9;
+}
+
+message SetMealDish {
+  int32 copies = 1;
+  int64 dishId = 2;
+  int64 id = 3;
+  string name = 4;
+  float price = 5;
+  int64 setmealId = 6;
+}
+
+message StatusRequest{
+  int64 id = 1;
+  int64 curId = 2;
+  int32 status = 3;
+}
+
+message SetMealResponse {
+  int64 categoryId = 1;
+  string description = 2;
+  int64 id = 3;
+  string image = 4;
+  string name = 5;
+  float price = 6;
+  repeated SetMealDish setMealDishes = 7;
+  int32 status = 8;
+  string categoryName = 9;
+  string updateTime = 10;
+}
+
+message PageRequest {
+  int64 categoryId = 1;
+  string name = 2;
+  int32 page = 3;
+  int32 pageSize = 4;
+  string status = 5;
+}
+
+message PageResponse{
+  int64 total = 1;
+  repeated Record records = 2;
+
+}
+
+message  Record {
+  int64 id = 1;
+  int64 categoryId = 2;
+  string name = 3;
+  float price = 4;
+  string status = 5;
+  string description = 6;
+  string image = 7;
+  string  updateTime = 8;
+  string categoryName = 9;
+}
+
+message FindDishByIdResponse{
+  repeated DishMessage dishes = 1;
+}
+
+message DishMessage{
+  int32 copies = 1;
+  string description = 2;
+  string image = 3;
+  string name = 4;
+}
+
+message FindByCategoryResponse{
+  repeated SetMealMessage setmeals = 1;
+}
+
+message SetMealMessage{
+  int64 categoryId = 1;
+  string createTime = 2;
+  int64 createUser = 3;
+  string description = 4;
+  int64 id = 5;
+  string image = 6;
+  string name = 7;
+  float price = 8;
+  int32 status = 9;
+  string updateTime = 10;
+  int64 updateUser = 11;
+}
+
+
+
+

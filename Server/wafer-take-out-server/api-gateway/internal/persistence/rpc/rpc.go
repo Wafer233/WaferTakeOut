@@ -4,6 +4,7 @@ import (
 	categorypb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/category"
 	dishpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/dish"
 	employeepb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/employee"
+	setmealpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/setmeal"
 	"google.golang.org/grpc"
 )
 
@@ -30,4 +31,12 @@ func NewDishServiceClient() dishpb.DishServiceClient {
 		panic(err)
 	}
 	return dishpb.NewDishServiceClient(conn)
+}
+
+func NewSetmealServiceClient() setmealpb.SetmealServiceClient {
+	conn, err := grpc.Dial("localhost:50054", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	return setmealpb.NewSetmealServiceClient(conn)
 }

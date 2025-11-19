@@ -1,9 +1,9 @@
-package infrastructure
+package persistence
 
 import (
 	"context"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/setmeal-service/internal/domain"
 	"gorm.io/gorm"
 )
 
@@ -39,6 +39,11 @@ func (repo *DefaultSetMealRepository) FindPage(ctx context.Context, categoryID i
 	if err := tx.Count(&total).Error; err != nil {
 		tx.Rollback()
 		return nil, 0, err
+	}
+
+	if total == 0 {
+		tx.Rollback()
+		return records, 0, nil
 	}
 
 	// record一定要给指针啊

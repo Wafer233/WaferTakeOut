@@ -12,6 +12,8 @@ service DishService {
   rpc UpdateStatus(UpdateRequest) returns(EmptyResponse) {}
   rpc Delete(IdsMessage) returns(EmptyResponse) {}
   rpc FindByCategoryIdFlavor(IDMessage) returns (DishesResponse) {}
+
+  rpc FindDescriptionById(IDMessage) returns (DescriptionResponse) {}
 }
 
 message EmptyResponse {
@@ -19,6 +21,11 @@ message EmptyResponse {
 
 message IDMessage{
   int64 id = 1;
+}
+
+message DescriptionResponse{
+  string description = 1;
+  string image = 2;
 }
 
 message IdsMessage{

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package dish.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/dish-service/proto;dishpb";
+
+service DishService {
+  rpc FindDescriptionById(IDMessage) returns (DescriptionResponse) {}
+}
+
+
+message IDMessage{
+  int64 id = 1;
+}
+
+message DescriptionResponse{
+  string description = 1;
+  string image = 2;
+}

@@ -9,6 +9,7 @@ func NewRouter(
 	emp *rest.EmployeeHandler,
 	cat *rest.CategoryHandler,
 	dis *rest.DishHandler,
+	sem *rest.SetMealHandler,
 ) *gin.Engine {
 
 	r := gin.Default()
@@ -16,6 +17,7 @@ func NewRouter(
 	rest.NewEmployeeRouter(r, emp)
 	rest.NewCategoryRouter(r, cat)
 	rest.NewDishRouter(r, dis)
+	rest.NewSetmealRouter(r, sem)
 
 	return r
 

@@ -1,6 +1,6 @@
 package application
 
-type AddSetMealDTO struct {
+type SetMealDTO struct {
 	CategoryId    int64         `json:"categoryId"`
 	Description   string        `json:"description"`
 	Id            int64         `json:"id"`

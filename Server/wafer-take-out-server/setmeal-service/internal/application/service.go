@@ -5,30 +5,31 @@ import (
 	"strconv"
 	"time"
 
-	category "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/category/domain"
-	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
-	setmeal "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/ai"
+	setmeal "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/setmeal-service/internal/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/setmeal-service/internal/infrastructure/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/setmeal-service/pkg/ai"
+	"github.com/jinzhu/copier"
 )
 
 type SetMealService struct {
-	setRepo  setmeal.SetMealRepository
-	cateRepo category.CategoryRepository
-	dishRepo dish.DishRepository
+	repo        setmeal.SetMealRepository
+	categorySvc *rpc.CategoryService
+	dishSvc     *rpc.DishService
 }
 
 func NewSetMealService(
-	setRepo setmeal.SetMealRepository,
-	cateRepo category.CategoryRepository,
-	dishRepo dish.DishRepository) *SetMealService {
+	repo setmeal.SetMealRepository,
+	categorySvc *rpc.CategoryService,
+	dishSvc *rpc.DishService,
+) *SetMealService {
 	return &SetMealService{
-		setRepo:  setRepo,
-		cateRepo: cateRepo,
-		dishRepo: dishRepo,
+		repo:        repo,
+		categorySvc: categorySvc,
+		dishSvc:     dishSvc,
 	}
 }
 
-func (svc *SetMealService) Create(ctx context.Context, dto *AddSetMealDTO, curId int64) error {
+func (svc *SetMealService) Create(ctx context.Context, dto *SetMealDTO, curId int64) error {
 
 	setEntity := &setmeal.SetMeal{
 		Id:          dto.Id, // 现在还不知道
@@ -62,21 +63,21 @@ func (svc *SetMealService) Create(ctx context.Context, dto *AddSetMealDTO, curId
 		}
 	}
 
-	err := svc.setRepo.Create(ctx, setEntity, dishEntities)
+	err := svc.repo.Create(ctx, setEntity, dishEntities)
 
 	return err
 }
 
 func (svc *SetMealService) Deletes(ctx context.Context, ids []int64) error {
 
-	err := svc.setRepo.Delete(ctx, ids)
+	err := svc.repo.Delete(ctx, ids)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *SetMealService) Update(ctx context.Context, dto *AddSetMealDTO, curId int64) error {
+func (svc *SetMealService) Update(ctx context.Context, dto *SetMealDTO, curId int64) error {
 
 	set := &setmeal.SetMeal{
 		Id:          dto.Id,
@@ -106,7 +107,7 @@ func (svc *SetMealService) Update(ctx context.Context, dto *AddSetMealDTO, curId
 		}
 	}
 
-	err := svc.setRepo.Update(ctx, set, dishes)
+	err := svc.repo.Update(ctx, set, dishes)
 
 	return err
 }
@@ -120,7 +121,7 @@ func (svc *SetMealService) UpdateStatus(ctx context.Context, id int64,
 		UpdateUser: curId,
 		UpdateTime: time.Now(),
 	}
-	err := svc.setRepo.UpdateStatus(ctx, entity)
+	err := svc.repo.UpdateStatus(ctx, entity)
 	if err != nil {
 		return err
 	}
@@ -128,11 +129,11 @@ func (svc *SetMealService) UpdateStatus(ctx context.Context, id int64,
 	return nil
 }
 
-func (svc *SetMealService) FindById(ctx context.Context, id int64) (GetSetMealVO, error) {
+func (svc *SetMealService) FindById(ctx context.Context, id int64) (SetMealVO, error) {
 
-	set, dishes, err := svc.setRepo.FindById(ctx, id)
+	set, dishes, err := svc.repo.FindById(ctx, id)
 	if err != nil {
-		return GetSetMealVO{}, err
+		return SetMealVO{}, err
 	}
 
 	dishVOs := make([]SetMealDish, len(dishes))
@@ -148,14 +149,14 @@ func (svc *SetMealService) FindById(ctx context.Context, id int64) (GetSetMealVO
 		}
 	}
 
-	cate, err := svc.cateRepo.FindById(ctx, set.CategoryId)
+	curName, err := svc.categorySvc.FindNameById(ctx, set.CategoryId)
 	if err != nil {
-		return GetSetMealVO{}, err
+		return SetMealVO{}, err
 	}
 
-	vo := GetSetMealVO{
+	vo := SetMealVO{
 		CategoryId:    set.CategoryId,
-		CategoryName:  cate.Name,
+		CategoryName:  curName,
 		Description:   set.Description,
 		Id:            set.Id,
 		Image:         set.Image,
@@ -180,33 +181,21 @@ func (svc *SetMealService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, 
 	if dto.Status == "" {
 		status = -1
 	}
-	records, total, err := svc.setRepo.FindPage(ctx, categoryId, name, page, pageSize, status)
-	if err != nil {
+	records, total, err := svc.repo.FindPage(ctx, categoryId, name, page, pageSize, status)
+	if err != nil || len(records) == 0 {
 		return PageVO{}, err
 	}
+	recordVOs := make([]Record, len(records))
+	_ = copier.Copy(&recordVOs, &records)
 
-	catNames := make([]string, len(records))
-	for index, value := range records {
-		cat, er := svc.cateRepo.FindById(ctx, value.CategoryId)
+	for index, _ := range records {
+		curName, er := svc.categorySvc.FindNameById(ctx, records[index].CategoryId)
 		if er != nil {
 			return PageVO{}, er
 		}
-		catNames[index] = cat.Name
-	}
-
-	recordVOs := make([]Record, len(records))
-	for index, value := range records {
-		recordVOs[index] = Record{
-			Id:           value.Id,
-			CategoryId:   value.CategoryId,
-			Name:         value.Name,
-			Price:        value.Price,
-			Status:       strconv.Itoa(value.Status),
-			Description:  value.Description,
-			Image:        value.Image,
-			UpdateTime:   value.UpdateTime.Format("2006-01-02 15:04"),
-			CategoryName: catNames[index],
-		}
+		recordVOs[index].Status = strconv.Itoa(records[index].Status)
+		recordVOs[index].UpdateTime = records[index].UpdateTime.Format("2006-01-02 15:04")
+		recordVOs[index].CategoryName = curName
 	}
 
 	vo := PageVO{
@@ -219,7 +208,7 @@ func (svc *SetMealService) FindPage(ctx context.Context, dto *PageDTO) (PageVO, 
 
 func (svc *SetMealService) FindByCategoryId(ctx context.Context, cid int64) ([]FindByCategoryVO, error) {
 
-	setmealEntity, err := svc.setRepo.FindByCategoryId(ctx, cid)
+	setmealEntity, err := svc.repo.FindByCategoryId(ctx, cid)
 	if err != nil {
 		return []FindByCategoryVO{}, err
 	}
@@ -246,29 +235,22 @@ func (svc *SetMealService) FindByCategoryId(ctx context.Context, cid int64) ([]F
 
 func (svc *SetMealService) FindDishById(ctx context.Context, setId int64) ([]DishVO, error) {
 
-	dishes, err := svc.setRepo.FindDishById(ctx, setId)
+	dishes, err := svc.repo.FindDishById(ctx, setId)
 	if err != nil {
-		return []DishVO{}, err
-	}
-
-	var ids []int64
-	for _, value := range dishes {
-		//这个地方是dishid
-		ids = append(ids, value.DishId)
-	}
-
-	descriptions, images, err := svc.dishRepo.FindByIds(ctx, ids)
-	if err != nil || len(descriptions) != len(dishes) {
 		return []DishVO{}, err
 	}
 
 	dishVOs := make([]DishVO, len(dishes))
 	for index, d := range dishes {
+		des, img, er := svc.dishSvc.FindDescriptionById(ctx, d.DishId)
+		if er != nil {
+			return []DishVO{}, err
+		}
 		dishVOs[index] = DishVO{
 			Copies: d.Copies,
 			// 这两个都是dishid
-			Description: descriptions[d.DishId],
-			Image:       images[d.DishId],
+			Description: des,
+			Image:       img,
 			Name:        d.Name,
 		}
 	}

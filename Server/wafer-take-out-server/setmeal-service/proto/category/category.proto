@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package category.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/category-service/proto;categorypb";
+
+service CategoryService {
+  rpc FindNameById(IdRequest) returns (NameResponse){}
+}
+
+message IdRequest {
+  int64 id = 1;
+}
+
+message NameResponse {
+  string name = 1;
+}

@@ -116,9 +116,9 @@ func (repo *DefaultCategoryRepository) FindNameById(ctx context.Context, id int6
 	db := repo.db.WithContext(ctx).
 		Model(&domain.Category{}).
 		Where("id = ?", id).
-		First(&entity)
+		Find(&entity)
 	err := db.Error
-	if err != nil {
+	if err != nil || entity.Name == "" {
 		return "", err
 	}
 	return entity.Name, nil

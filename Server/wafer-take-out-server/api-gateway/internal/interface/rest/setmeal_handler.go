@@ -1,4 +1,4 @@
-package interfaces
+package rest
 
 import (
 	"context"
@@ -7,29 +7,30 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/application"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
+	setmealApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/application/setmeal"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
 type SetMealHandler struct {
-	svc *application.SetMealService
+	svc *rpc.SetMealService
 }
 
-func NewSetMealHandler(svc *application.SetMealService) *SetMealHandler {
+func NewSetMealHandler(svc *rpc.SetMealService) *SetMealHandler {
 	return &SetMealHandler{
 		svc: svc,
 	}
 }
 
 func (h *SetMealHandler) ListPage(c *gin.Context) {
-	dto := application.PageDTO{}
+	dto := setmealApp.PageDTO{}
 	err := c.ShouldBindQuery(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("输入有误"))
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10000*time.Second)
 	defer cancel()
 
 	vo, err := h.svc.FindPage(ctx, &dto)
@@ -103,7 +104,7 @@ func (h *SetMealHandler) UpdateStatus(c *gin.Context) {
 
 func (h *SetMealHandler) Update(c *gin.Context) {
 
-	dto := application.AddSetMealDTO{}
+	dto := setmealApp.SetMealDTO{}
 
 	if err := c.ShouldBind(&dto); err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("输入错误"))
@@ -155,7 +156,7 @@ func (h *SetMealHandler) Delete(c *gin.Context) {
 
 func (h *SetMealHandler) Create(c *gin.Context) {
 
-	dto := application.AddSetMealDTO{}
+	dto := setmealApp.SetMealDTO{}
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("错误请求"))

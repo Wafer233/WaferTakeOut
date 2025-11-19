@@ -118,3 +118,19 @@ func (h *DishHandler) FindByCategoryIdFlavor(ctx context.Context,
 		Dishes: dishes,
 	}, nil
 }
+
+// 给setmeal用的
+func (h *DishHandler) FindDescriptionById(ctx context.Context,
+	req *dishpb.IDMessage) (*dishpb.DescriptionResponse, error) {
+
+	des, img, err := h.svc.FindDescriptionById(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := dishpb.DescriptionResponse{
+		Description: des,
+		Image:       img,
+	}
+	return &resp, nil
+}

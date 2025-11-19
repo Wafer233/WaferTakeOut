@@ -279,3 +279,13 @@ func (svc *DishService) FindByCategoryIdFlavor(ctx context.Context,
 
 	return records, nil
 }
+
+func (svc *DishService) FindDescriptionById(ctx context.Context,
+	id int64) (string, string, error) {
+
+	des, img, err := svc.repo.FindDescriptionById(ctx, id)
+	if err != nil {
+		return "", "", err
+	}
+	return des, img, nil
+}

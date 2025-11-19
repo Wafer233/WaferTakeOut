@@ -12,4 +12,5 @@ type DishRepository interface {
 	Update(context.Context, *Dish, []*Flavor) error
 	FindByIds(context.Context, []int64) (map[int64]string, map[int64]string, error)
 	FindByCategoryIdFlavor(context.Context, int64) ([]*Dish, map[int64][]*Flavor, error)
+	FindDescriptionById(context.Context, int64) (string, string, error)
 }

@@ -1,6 +1,6 @@
-package application
+package setmealApp
 
-type GetSetMealVO struct {
+type SetMealVO struct {
 	CategoryId    int64         `json:"categoryId"`
 	CategoryName  string        `json:"categoryName"`
 	Description   string        `json:"description"`

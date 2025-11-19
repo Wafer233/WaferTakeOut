@@ -18,6 +18,17 @@ type CachedDishRepository struct {
 	cache *redis.Client
 }
 
+func (c *CachedDishRepository) FindDescriptionById(ctx context.Context,
+	id int64) (string, string, error) {
+
+	des, img, err := c.repo.FindDescriptionById(ctx, id)
+	if err != nil {
+		return "", "", err
+	}
+	return des, img, nil
+
+}
+
 func (c *CachedDishRepository) FindByCategoryIdFlavor(ctx context.Context, categoryId int64) ([]*domain.Dish,
 	map[int64][]*domain.Flavor, error) {
 	type Cache struct {
