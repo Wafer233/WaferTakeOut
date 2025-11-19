@@ -134,3 +134,19 @@ func (h *DishHandler) FindDescriptionById(ctx context.Context,
 	}
 	return &resp, nil
 }
+
+// 给shoppingcart用的
+func (h *DishHandler) FindDetailById(ctx context.Context,
+	req *dishpb.IDMessage) (*dishpb.ShoppingCartResponse, error) {
+
+	name, img, price, err := h.svc.FindDetailById(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	resp := dishpb.ShoppingCartResponse{
+		Name:  name,
+		Image: img,
+		Price: float32(price),
+	}
+	return &resp, nil
+}

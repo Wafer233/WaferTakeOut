@@ -4,25 +4,25 @@ import (
 	"context"
 	"time"
 
-	dish "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/dish/domain"
-	setm "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/setmeal/domain"
-	cart "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shoppingcart-service/internal/domain"
+	rpcClient "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shoppingcart-service/internal/infrastructure/rpc"
 )
 
 type ShoppingCartService struct {
-	cartRepo cart.ShoppingCartRepository
-	dishRepo dish.DishRepository
-	setRepo  setm.SetMealRepository
+	repo       domain.ShoppingCartRepository
+	setMealSvc *rpcClient.SetMealService
+	dishSvc    *rpcClient.DishService
 }
 
-func NewShoppingCartService(cartRepo cart.ShoppingCartRepository,
-	dishRepo dish.DishRepository,
-	setRepo setm.SetMealRepository,
+func NewShoppingCartService(
+	repo domain.ShoppingCartRepository,
+	setMealSvc *rpcClient.SetMealService,
+	dishSvc *rpcClient.DishService,
 ) *ShoppingCartService {
 	return &ShoppingCartService{
-		cartRepo: cartRepo,
-		dishRepo: dishRepo,
-		setRepo:  setRepo,
+		repo:       repo,
+		setMealSvc: setMealSvc,
+		dishSvc:    dishSvc,
 	}
 }
 
@@ -31,14 +31,14 @@ func (svc *ShoppingCartService) Add(ctx context.Context, dto *CartDTO, curId int
 	dishId := dto.DishId
 	setId := dto.SetMealId
 
-	curCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
+	curCart, err := svc.repo.Find(ctx, curId, dishId, setId)
 	if err != nil {
 		return err
 	}
 
 	if curCart != nil && len(curCart) > 0 {
 		num := curCart[0].Number + 1
-		err = svc.cartRepo.UpdateNumber(ctx, curCart[0].Id, num)
+		err = svc.repo.UpdateNumber(ctx, curCart[0].Id, num)
 		if err != nil {
 			return err
 		}
@@ -50,48 +50,49 @@ func (svc *ShoppingCartService) Add(ctx context.Context, dto *CartDTO, curId int
 	// dish
 
 	if dishId != 0 {
-		dishEntity, _, er := svc.dishRepo.FindById(ctx, dishId)
+		img, name, price, er := svc.dishSvc.FindDetailById(ctx, dishId)
 		if er != nil {
 			return er
 		}
-		item := &cart.ShoppingCart{
-			Name:       dishEntity.Name,
-			Image:      dishEntity.Image,
+		item := &domain.ShoppingCart{
+			Name:       name,
+			Image:      img,
 			UserId:     curId,
 			DishId:     dishId,
 			SetmealId:  setId,
 			DishFlavor: dto.DishFlavor,
 			Number:     1,
-			Amount:     dishEntity.Price,
+			Amount:     price,
 			CreateTime: time.Now(),
 		}
-		err = svc.cartRepo.Create(ctx, item)
+		err = svc.repo.Create(ctx, item)
 		return err
 
 	} else {
-		setEntity, _, er := svc.setRepo.FindById(ctx, setId)
+
+		img, name, price, er := svc.setMealSvc.FindDetailById(ctx, setId)
 		if er != nil {
 			return er
 		}
-		item := &cart.ShoppingCart{
-			Name:       setEntity.Name,
-			Image:      setEntity.Image,
+		item := &domain.ShoppingCart{
+			Name:       name,
+			Image:      img,
 			UserId:     curId,
 			SetmealId:  setId,
 			DishId:     dishId,
 			DishFlavor: dto.DishFlavor,
 			Number:     1,
-			Amount:     setEntity.Price,
+			Amount:     price,
 			CreateTime: time.Now(),
 		}
-		err = svc.cartRepo.Create(ctx, item)
+		err = svc.repo.Create(ctx, item)
 		return err
 	}
 }
 
 func (svc *ShoppingCartService) FindByUserId(ctx context.Context, userId int64) ([]RecordVO, error) {
 
-	records, err := svc.cartRepo.Find(ctx, userId, 0, 0)
+	records, err := svc.repo.Find(ctx, userId, 0, 0)
 
 	vos := make([]RecordVO, len(records))
 	for i, r := range records {
@@ -118,14 +119,14 @@ func (svc *ShoppingCartService) Sub(ctx context.Context, dto *CartDTO, curId int
 	setId := dto.SetMealId
 	dishId := dto.DishId
 
-	curCart, err := svc.cartRepo.Find(ctx, curId, dishId, setId)
+	curCart, err := svc.repo.Find(ctx, curId, dishId, setId)
 	if err != nil {
 		return err
 	}
 
 	num := curCart[0].Number - 1
 
-	err = svc.cartRepo.UpdateNumber(ctx, curCart[0].Id, num)
+	err = svc.repo.UpdateNumber(ctx, curCart[0].Id, num)
 
 	return err
 
@@ -133,7 +134,7 @@ func (svc *ShoppingCartService) Sub(ctx context.Context, dto *CartDTO, curId int
 
 func (svc *ShoppingCartService) Delete(ctx context.Context, curId int64) error {
 
-	err := svc.cartRepo.Delete(ctx, curId)
+	err := svc.repo.Delete(ctx, curId)
 	return err
 
 }

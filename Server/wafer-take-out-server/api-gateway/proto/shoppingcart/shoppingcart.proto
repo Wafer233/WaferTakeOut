@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package shoppingcart.v1;
+
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shoppingcart-service/proto;shoppingcartpb";
+
+service ShoppingCartService {
+  rpc Add(CartRequest) returns (EmptyMessage) {}
+  rpc FindByUserId(IdMessage) returns (CartResponse) {}
+  rpc Sub(CartRequest) returns (EmptyMessage) {}
+  rpc Delete(IdMessage) returns (EmptyMessage) {}
+}
+
+
+
+
+message CartRequest {
+  string dishFlavor = 1;
+  int64 dishId = 2;
+  int64 setMealId = 3;
+  int64 curId = 4;
+}
+
+message IdMessage{
+  int64 id = 1;
+}
+
+message EmptyMessage{
+}
+
+
+message CartResponse{
+  repeated CartMessage records = 1;
+}
+
+message CartMessage {
+  float  amount = 1;
+  string createTime = 2;
+  string dishFlavor = 3;
+  int64 dishId = 4;
+  int64 id = 5;
+  string image = 6;
+  string name = 7;
+  int32 number = 8;
+  int64 setMealId = 9;
+  int64 userID = 10;
+}

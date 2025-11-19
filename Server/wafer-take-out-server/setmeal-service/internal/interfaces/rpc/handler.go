@@ -121,3 +121,18 @@ func (h *SetMealHandler) FindDishById(ctx context.Context,
 	}
 	return &resp, nil
 }
+
+func (h *SetMealHandler) FindDetailById(ctx context.Context,
+	req *setmealpb.IdMessage) (*setmealpb.ShoppingCartResponse, error) {
+
+	name, img, price, err := h.svc.FindDetailById(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	resp := setmealpb.ShoppingCartResponse{
+		Name:  name,
+		Image: img,
+		Price: float32(price),
+	}
+	return &resp, nil
+}

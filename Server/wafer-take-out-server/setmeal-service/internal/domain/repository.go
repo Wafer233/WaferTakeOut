@@ -11,4 +11,7 @@ type SetMealRepository interface {
 	Update(context.Context, *SetMeal, []*SetMealDish) error
 	FindByCategoryId(context.Context, int64) ([]*SetMeal, error)
 	FindDishById(context.Context, int64) ([]*SetMealDish, error)
+
+	//shoppingcart
+	FindDetailById(context.Context, int64) (string, string, float64, error)
 }

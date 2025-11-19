@@ -253,6 +253,21 @@ func (repo *DefaultDishRepository) FindDescriptionById(ctx context.Context,
 
 }
 
+func (repo *DefaultDishRepository) FindDetailById(ctx context.Context,
+	id int64) (string, string, float64, error) {
+
+	dish := &domain.Dish{}
+
+	err := repo.db.WithContext(ctx).
+		Model(&domain.Dish{}).
+		Where("id = ?", id).
+		Find(dish).Error
+	if err != nil {
+		return "", "", 0, err
+	}
+	return dish.Name, dish.Image, dish.Price, nil
+}
+
 func NewDefaultDishRepository(db *gorm.DB) *DefaultDishRepository {
 	return &DefaultDishRepository{
 		db: db,

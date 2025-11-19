@@ -289,3 +289,9 @@ func (svc *DishService) FindDescriptionById(ctx context.Context,
 	}
 	return des, img, nil
 }
+
+// 给shoppingcart用的
+func (svc *DishService) FindDetailById(ctx context.Context, id int64) (string, string, float64, error) {
+
+	return svc.repo.FindDetailById(ctx, id)
+}

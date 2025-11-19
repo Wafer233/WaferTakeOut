@@ -209,3 +209,17 @@ func (repo *DefaultSetMealRepository) FindDishById(ctx context.Context, setmealI
 	}
 	return dishes, nil
 }
+
+func (repo *DefaultSetMealRepository) FindDetailById(ctx context.Context, id int64) (string, string, float64, error) {
+
+	var set domain.SetMeal
+
+	err := repo.db.WithContext(ctx).
+		Model(&domain.SetMeal{}).
+		Where("id = ?", id).
+		Find(&set).Error
+	if err != nil {
+		return "", "", 0, err
+	}
+	return set.Name, set.Image, set.Price, nil
+}

@@ -13,6 +13,7 @@ func NewRouter(
 	com *rest.CommonHandler,
 	use *rest.UserHandler,
 	sho *rest.ShopHandler,
+	car *rest.ShoppingCartHandler,
 ) *gin.Engine {
 
 	r := gin.Default()
@@ -24,6 +25,7 @@ func NewRouter(
 	rest.NewCommonRouter(r, com)
 	rest.NewUserRouter(r, use)
 	rest.NewShopRouter(r, sho)
+	rest.NewShoppingCartRouter(r, car)
 
 	return r
 

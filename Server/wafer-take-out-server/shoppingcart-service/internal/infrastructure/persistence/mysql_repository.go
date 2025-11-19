@@ -1,9 +1,9 @@
-package infrastructure
+package persistence
 
 import (
 	"context"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/domain"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shoppingcart-service/internal/domain"
 	"gorm.io/gorm"
 )
 

@@ -256,3 +256,7 @@ func (svc *SetMealService) FindDishById(ctx context.Context, setId int64) ([]Dis
 	}
 	return dishVOs, err
 }
+
+func (svc *SetMealService) FindDetailById(ctx context.Context, id int64) (string, string, float64, error) {
+	return svc.repo.FindDetailById(ctx, id)
+}

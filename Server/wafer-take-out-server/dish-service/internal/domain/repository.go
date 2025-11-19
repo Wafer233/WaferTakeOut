@@ -13,4 +13,7 @@ type DishRepository interface {
 	FindByIds(context.Context, []int64) (map[int64]string, map[int64]string, error)
 	FindByCategoryIdFlavor(context.Context, int64) ([]*Dish, map[int64][]*Flavor, error)
 	FindDescriptionById(context.Context, int64) (string, string, error)
+
+	//shoppingcart 用的
+	FindDetailById(context.Context, int64) (string, string, float64, error)
 }

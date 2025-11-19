@@ -1,20 +1,21 @@
-package interfaces
+package rest
 
 import (
 	"context"
 	"net/http"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shopping_cart/application"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
+	shoppingcartApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/application/shoppingcart"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
 type ShoppingCartHandler struct {
-	svc *application.ShoppingCartService
+	svc *rpc.ShoppingCartService
 }
 
-func NewShoppingCartHandler(svc *application.ShoppingCartService) *ShoppingCartHandler {
+func NewShoppingCartHandler(svc *rpc.ShoppingCartService) *ShoppingCartHandler {
 	return &ShoppingCartHandler{
 		svc: svc,
 	}
@@ -23,7 +24,7 @@ func NewShoppingCartHandler(svc *application.ShoppingCartService) *ShoppingCartH
 // Add
 // 如果从购物车界面添加的话，前端不回有preload
 func (h *ShoppingCartHandler) Add(c *gin.Context) {
-	dto := application.CartDTO{}
+	dto := shoppingcartApp.CartDTO{}
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("请求信息有误"))
@@ -70,7 +71,7 @@ func (h *ShoppingCartHandler) List(c *gin.Context) {
 
 func (h *ShoppingCartHandler) Sub(c *gin.Context) {
 
-	dto := application.CartDTO{}
+	dto := shoppingcartApp.CartDTO{}
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("错误请求"))

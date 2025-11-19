@@ -34,7 +34,10 @@ func Init() (*gin.Engine, error) {
 	shopServiceClient := rpc.NewShopServiceClient()
 	shopService := rpc.NewShopService(shopServiceClient)
 	shopHandler := rest.NewShopHandler(shopService)
-	engine := NewRouter(employeeHandler, categoryHandler, dishHandler, setMealHandler, commonHandler, userHandler, shopHandler)
+	shoppingCartServiceClient := rpc.NewShoppingCartServiceClient()
+	shoppingCartService := rpc.NewShoppingCartService(shoppingCartServiceClient)
+	shoppingCartHandler := rest.NewShoppingCartHandler(shoppingCartService)
+	engine := NewRouter(employeeHandler, categoryHandler, dishHandler, setMealHandler, commonHandler, userHandler, shopHandler, shoppingCartHandler)
 	return engine, nil
 }
 

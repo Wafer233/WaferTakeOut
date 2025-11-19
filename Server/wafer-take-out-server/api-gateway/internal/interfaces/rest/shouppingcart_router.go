@@ -1,11 +1,11 @@
-package interfaces
+package rest
 
 import (
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/middleware"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interfaces/rest/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(r *gin.Engine, h *ShoppingCartHandler) *gin.Engine {
+func NewShoppingCartRouter(r *gin.Engine, h *ShoppingCartHandler) *gin.Engine {
 
 	// 要小心pattern会不会多一个空格这样
 	user := r.Group("/user/shoppingCart/")
