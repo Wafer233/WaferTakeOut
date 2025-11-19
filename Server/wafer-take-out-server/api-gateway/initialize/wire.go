@@ -20,17 +20,20 @@ func Init() (*gin.Engine, error) {
 		rpc.NewCategoryServiceClient,
 		rpc.NewDishServiceClient,
 		rpc.NewSetmealServiceClient,
+		rpc.NewUserServiceClient,
 
 		rpc.NewEmployeeService,
 		rpc.NewCategoryService,
 		rpc.NewDishService,
 		rpc.NewSetMealService,
+		rpc.NewUserService,
 
 		rest.NewEmployeeHandler,
 		rest.NewCategoryHandler,
 		rest.NewDishHandler,
 		rest.NewSetMealHandler,
 		rest.NewCommonHandler,
+		rest.NewUserHandler,
 
 		NewRouter,
 	)

@@ -4,6 +4,8 @@ Uploads
 
 Server/wafer-take-out-server/dish-service/pkg/ai/secret.go
 Server/wafer-take-out-server/setmeal-service/pkg/ai/secret.go
+Server/wafer-take-out-server/user-service/pkg/wechat/secret.go
+
 
 
 

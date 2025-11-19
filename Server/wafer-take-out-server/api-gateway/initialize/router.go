@@ -11,6 +11,7 @@ func NewRouter(
 	dis *rest.DishHandler,
 	sem *rest.SetMealHandler,
 	com *rest.CommonHandler,
+	use *rest.UserHandler,
 ) *gin.Engine {
 
 	r := gin.Default()
@@ -20,6 +21,7 @@ func NewRouter(
 	rest.NewDishRouter(r, dis)
 	rest.NewSetmealRouter(r, sem)
 	rest.NewCommonRouter(r, com)
+	rest.NewUserRouter(r, use)
 
 	return r
 
