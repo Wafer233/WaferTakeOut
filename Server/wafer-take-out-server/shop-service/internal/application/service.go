@@ -3,7 +3,7 @@ package application
 import (
 	"context"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/domian"
+	domian "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shop-service/internal/domain"
 )
 
 type ShopService struct {

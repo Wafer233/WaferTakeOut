@@ -181,7 +181,7 @@ func (UnimplementedSetmealServiceServer) mustEmbedUnimplementedSetmealServiceSer
 func (UnimplementedSetmealServiceServer) testEmbeddedByValue()                        {}
 
 // UnsafeSetmealServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SetmealServiceServer will
+// Use of this interfaces is not recommended, as added methods to SetmealServiceServer will
 // result in compilation errors.
 type UnsafeSetmealServiceServer interface {
 	mustEmbedUnimplementedSetmealServiceServer()

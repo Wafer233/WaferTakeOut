@@ -1,11 +1,11 @@
-package interfaces
+package rest
 
 import (
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/middleware"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interfaces/rest/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(r *gin.Engine, h *ShopHandler) *gin.Engine {
+func NewShopRouter(r *gin.Engine, h *ShopHandler) *gin.Engine {
 
 	admin := r.Group("/admin/shop")
 
@@ -14,7 +14,6 @@ func NewRouter(r *gin.Engine, h *ShopHandler) *gin.Engine {
 	admin.GET("status", h.Get)
 
 	user := r.Group("/user/shop")
-	user.Use(middleware.UserAuthMiddleware())
 
 	user.GET("status", h.Get)
 	return r

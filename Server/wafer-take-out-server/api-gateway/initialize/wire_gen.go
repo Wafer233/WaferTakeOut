@@ -7,7 +7,7 @@
 package initialize
 
 import (
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interface/rest"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interfaces/rest"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +31,10 @@ func Init() (*gin.Engine, error) {
 	userServiceClient := rpc.NewUserServiceClient()
 	userService := rpc.NewUserService(userServiceClient)
 	userHandler := rest.NewUserHandler(userService)
-	engine := NewRouter(employeeHandler, categoryHandler, dishHandler, setMealHandler, commonHandler, userHandler)
+	shopServiceClient := rpc.NewShopServiceClient()
+	shopService := rpc.NewShopService(shopServiceClient)
+	shopHandler := rest.NewShopHandler(shopService)
+	engine := NewRouter(employeeHandler, categoryHandler, dishHandler, setMealHandler, commonHandler, userHandler, shopHandler)
 	return engine, nil
 }
 

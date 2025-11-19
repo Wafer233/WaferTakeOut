@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package shop.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shop-service/proto;shoppb";
+
+service ShopService{
+  rpc UpdateStatus(StatusMessage) returns(EmptyMessage) {}
+  rpc FindStatus(EmptyMessage) returns(StatusMessage) {}
+}
+
+message EmptyMessage{
+
+}
+
+message StatusMessage{
+  int32 status = 1;
+}

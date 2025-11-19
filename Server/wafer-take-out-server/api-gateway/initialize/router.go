@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interface/rest"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/interfaces/rest"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +12,7 @@ func NewRouter(
 	sem *rest.SetMealHandler,
 	com *rest.CommonHandler,
 	use *rest.UserHandler,
+	sho *rest.ShopHandler,
 ) *gin.Engine {
 
 	r := gin.Default()
@@ -22,6 +23,7 @@ func NewRouter(
 	rest.NewSetmealRouter(r, sem)
 	rest.NewCommonRouter(r, com)
 	rest.NewUserRouter(r, use)
+	rest.NewShopRouter(r, sho)
 
 	return r
 

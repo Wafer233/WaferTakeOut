@@ -69,7 +69,7 @@ func (UnimplementedCategoryServiceServer) mustEmbedUnimplementedCategoryServiceS
 func (UnimplementedCategoryServiceServer) testEmbeddedByValue()                         {}
 
 // UnsafeCategoryServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to CategoryServiceServer will
+// Use of this interfaces is not recommended, as added methods to CategoryServiceServer will
 // result in compilation errors.
 type UnsafeCategoryServiceServer interface {
 	mustEmbedUnimplementedCategoryServiceServer()

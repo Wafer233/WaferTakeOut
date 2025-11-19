@@ -1,4 +1,4 @@
-package interfaces
+package rest
 
 import (
 	"context"
@@ -6,16 +6,16 @@ import (
 	"strconv"
 	"time"
 
-	shopApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/application"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
 type ShopHandler struct {
-	svc *shopApp.ShopService
+	svc *rpc.ShopService
 }
 
-func NewShopHandler(svc *shopApp.ShopService) *ShopHandler {
+func NewShopHandler(svc *rpc.ShopService) *ShopHandler {
 	return &ShopHandler{svc: svc}
 }
 

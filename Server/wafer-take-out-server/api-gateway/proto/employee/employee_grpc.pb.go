@@ -165,7 +165,7 @@ func (UnimplementedEmployeeServiceServer) mustEmbedUnimplementedEmployeeServiceS
 func (UnimplementedEmployeeServiceServer) testEmbeddedByValue()                         {}
 
 // UnsafeEmployeeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to EmployeeServiceServer will
+// Use of this interfaces is not recommended, as added methods to EmployeeServiceServer will
 // result in compilation errors.
 type UnsafeEmployeeServiceServer interface {
 	mustEmbedUnimplementedEmployeeServiceServer()

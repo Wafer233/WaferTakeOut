@@ -1,11 +1,11 @@
-package infrastructure
+package persistence
 
 import (
 	"context"
 	"strconv"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/internal/shop/domian"
+	domian "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/shop-service/internal/domain"
 	"github.com/redis/go-redis/v9"
 )
 
