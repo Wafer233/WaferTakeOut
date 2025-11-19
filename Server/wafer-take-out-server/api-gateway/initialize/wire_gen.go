@@ -27,7 +27,8 @@ func Init() (*gin.Engine, error) {
 	setmealServiceClient := rpc.NewSetmealServiceClient()
 	setMealService := rpc.NewSetMealService(setmealServiceClient)
 	setMealHandler := rest.NewSetMealHandler(setMealService)
-	engine := NewRouter(employeeHandler, categoryHandler, dishHandler, setMealHandler)
+	commonHandler := rest.NewCommonHandler()
+	engine := NewRouter(employeeHandler, categoryHandler, dishHandler, setMealHandler, commonHandler)
 	return engine, nil
 }
 

@@ -30,6 +30,7 @@ func Init() (*gin.Engine, error) {
 		rest.NewCategoryHandler,
 		rest.NewDishHandler,
 		rest.NewSetMealHandler,
+		rest.NewCommonHandler,
 
 		NewRouter,
 	)

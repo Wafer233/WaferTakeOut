@@ -1,4 +1,4 @@
-package interfaces
+package rest
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/pkg/result"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 )
 
