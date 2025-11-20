@@ -41,7 +41,7 @@ func (svc *OrderService) Payment(ctx context.Context,
 		return orderApp.PaymentVO{}, err
 	}
 	vo := orderApp.PaymentVO{}
-	err = copier.Copy(&vo, resp)
+	_ = copier.Copy(&vo, resp)
 	return vo, err
 }
 

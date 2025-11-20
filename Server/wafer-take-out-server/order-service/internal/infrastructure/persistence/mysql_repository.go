@@ -168,7 +168,7 @@ func (repo *DefaultOrderRepository) UpdateStatus(ctx context.Context, order *dom
 	}
 
 	if order.CancelTime != nil {
-		err := tx.Update("cancel_time = ?", order.CancelTime).Error
+		err := tx.Update("cancel_time", order.CancelTime).Error
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -176,7 +176,7 @@ func (repo *DefaultOrderRepository) UpdateStatus(ctx context.Context, order *dom
 	}
 
 	if order.EstimatedDeliveryTime != nil {
-		err := tx.Update("estimated_delivery_time = ?", order.EstimatedDeliveryTime).Error
+		err := tx.Update("estimated_delivery_time", order.EstimatedDeliveryTime).Error
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -184,7 +184,7 @@ func (repo *DefaultOrderRepository) UpdateStatus(ctx context.Context, order *dom
 	}
 
 	if order.DeliveryTime != nil {
-		err := tx.Update("delivery_time = ?", order.DeliveryTime).Error
+		err := tx.Update("delivery_time", order.DeliveryTime).Error
 		if err != nil {
 			tx.Rollback()
 			return err

@@ -40,7 +40,7 @@ const (
 type OrderServiceClient interface {
 	Submit(ctx context.Context, in *SubmitRequest, opts ...grpc.CallOption) (*SubmitResponse, error)
 	Payment(ctx context.Context, in *PaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
-	Page(ctx context.Context, in *UserPageRequest, opts ...grpc.CallOption) (*UserOrderResponse, error)
+	Page(ctx context.Context, in *UserPageRequest, opts ...grpc.CallOption) (*UserPageResponse, error)
 	FindPageAdmin(ctx context.Context, in *AdminPageRequest, opts ...grpc.CallOption) (*AdminPageResponse, error)
 	GetOrder(ctx context.Context, in *IdMessage, opts ...grpc.CallOption) (*UserOrderResponse, error)
 	UserCancel(ctx context.Context, in *IdMessage, opts ...grpc.CallOption) (*EmptyMessage, error)
@@ -81,9 +81,9 @@ func (c *orderServiceClient) Payment(ctx context.Context, in *PaymentRequest, op
 	return out, nil
 }
 
-func (c *orderServiceClient) Page(ctx context.Context, in *UserPageRequest, opts ...grpc.CallOption) (*UserOrderResponse, error) {
+func (c *orderServiceClient) Page(ctx context.Context, in *UserPageRequest, opts ...grpc.CallOption) (*UserPageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserOrderResponse)
+	out := new(UserPageResponse)
 	err := c.cc.Invoke(ctx, OrderService_Page_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -197,7 +197,7 @@ func (c *orderServiceClient) GetStatistics(ctx context.Context, in *EmptyMessage
 type OrderServiceServer interface {
 	Submit(context.Context, *SubmitRequest) (*SubmitResponse, error)
 	Payment(context.Context, *PaymentRequest) (*PaymentResponse, error)
-	Page(context.Context, *UserPageRequest) (*UserOrderResponse, error)
+	Page(context.Context, *UserPageRequest) (*UserPageResponse, error)
 	FindPageAdmin(context.Context, *AdminPageRequest) (*AdminPageResponse, error)
 	GetOrder(context.Context, *IdMessage) (*UserOrderResponse, error)
 	UserCancel(context.Context, *IdMessage) (*EmptyMessage, error)
@@ -224,7 +224,7 @@ func (UnimplementedOrderServiceServer) Submit(context.Context, *SubmitRequest) (
 func (UnimplementedOrderServiceServer) Payment(context.Context, *PaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Payment not implemented")
 }
-func (UnimplementedOrderServiceServer) Page(context.Context, *UserPageRequest) (*UserOrderResponse, error) {
+func (UnimplementedOrderServiceServer) Page(context.Context, *UserPageRequest) (*UserPageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Page not implemented")
 }
 func (UnimplementedOrderServiceServer) FindPageAdmin(context.Context, *AdminPageRequest) (*AdminPageResponse, error) {

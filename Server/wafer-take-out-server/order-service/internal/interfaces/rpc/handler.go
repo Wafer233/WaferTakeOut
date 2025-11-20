@@ -47,7 +47,7 @@ func (h *OrderHandler) Payment(ctx context.Context,
 }
 
 func (h *OrderHandler) Page(ctx context.Context,
-	req *orderpb.UserPageRequest) (*orderpb.UserOrderResponse, error) {
+	req *orderpb.UserPageRequest) (*orderpb.UserPageResponse, error) {
 
 	dto := application.UserPageDTO{}
 	_ = copier.Copy(&dto, req)
@@ -55,7 +55,7 @@ func (h *OrderHandler) Page(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	resp := &orderpb.UserOrderResponse{}
+	resp := &orderpb.UserPageResponse{}
 	_ = copier.Copy(&resp, &vo)
 	return resp, nil
 }

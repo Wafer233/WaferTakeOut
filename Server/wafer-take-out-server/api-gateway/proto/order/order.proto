@@ -6,7 +6,7 @@ option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-serv
 service OrderService {
   rpc Submit(SubmitRequest) returns (SubmitResponse) {}
   rpc Payment(PaymentRequest) returns (PaymentResponse) {}
-  rpc Page(UserPageRequest) returns (UserOrderResponse) {}
+  rpc Page(UserPageRequest) returns (UserPageResponse) {}
   rpc FindPageAdmin(AdminPageRequest) returns (AdminPageResponse) {}
   rpc GetOrder(IdMessage) returns (UserOrderResponse) {}
   rpc UserCancel(IdMessage)  returns (EmptyMessage) {}

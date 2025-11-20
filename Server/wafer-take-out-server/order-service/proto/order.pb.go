@@ -1578,11 +1578,11 @@ const file_order_proto_rawDesc = "" +
 	"\x12StatisticsResponse\x12\x1c\n" +
 	"\tconfirmed\x18\x01 \x01(\x03R\tconfirmed\x12.\n" +
 	"\x12deliveryInProgress\x18\x02 \x01(\x03R\x12deliveryInProgress\x12$\n" +
-	"\rToBeConfirmed\x18\x03 \x01(\x03R\rToBeConfirmed2\xd8\x06\n" +
+	"\rToBeConfirmed\x18\x03 \x01(\x03R\rToBeConfirmed2\xd7\x06\n" +
 	"\fOrderService\x12=\n" +
 	"\x06Submit\x12\x17.order.v1.SubmitRequest\x1a\x18.order.v1.SubmitResponse\"\x00\x12@\n" +
-	"\aPayment\x12\x18.order.v1.PaymentRequest\x1a\x19.order.v1.PaymentResponse\"\x00\x12@\n" +
-	"\x04Page\x12\x19.order.v1.UserPageRequest\x1a\x1b.order.v1.UserOrderResponse\"\x00\x12J\n" +
+	"\aPayment\x12\x18.order.v1.PaymentRequest\x1a\x19.order.v1.PaymentResponse\"\x00\x12?\n" +
+	"\x04Page\x12\x19.order.v1.UserPageRequest\x1a\x1a.order.v1.UserPageResponse\"\x00\x12J\n" +
 	"\rFindPageAdmin\x12\x1a.order.v1.AdminPageRequest\x1a\x1b.order.v1.AdminPageResponse\"\x00\x12>\n" +
 	"\bGetOrder\x12\x13.order.v1.IdMessage\x1a\x1b.order.v1.UserOrderResponse\"\x00\x12;\n" +
 	"\n" +
@@ -1647,7 +1647,7 @@ var file_order_proto_depIdxs = []int32{
 	1,  // 15: order.v1.OrderService.GetStatistics:input_type -> order.v1.EmptyMessage
 	4,  // 16: order.v1.OrderService.Submit:output_type -> order.v1.SubmitResponse
 	6,  // 17: order.v1.OrderService.Payment:output_type -> order.v1.PaymentResponse
-	10, // 18: order.v1.OrderService.Page:output_type -> order.v1.UserOrderResponse
+	8,  // 18: order.v1.OrderService.Page:output_type -> order.v1.UserPageResponse
 	9,  // 19: order.v1.OrderService.FindPageAdmin:output_type -> order.v1.AdminPageResponse
 	10, // 20: order.v1.OrderService.GetOrder:output_type -> order.v1.UserOrderResponse
 	1,  // 21: order.v1.OrderService.UserCancel:output_type -> order.v1.EmptyMessage
