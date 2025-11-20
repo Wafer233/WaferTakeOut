@@ -90,13 +90,13 @@ func (svc *ShoppingCartService) Add(ctx context.Context, dto *CartDTO, curId int
 	}
 }
 
-func (svc *ShoppingCartService) FindByUserId(ctx context.Context, userId int64) ([]RecordVO, error) {
+func (svc *ShoppingCartService) FindByUserId(ctx context.Context, userId int64) ([]CartVO, error) {
 
 	records, err := svc.repo.Find(ctx, userId, 0, 0)
 
-	vos := make([]RecordVO, len(records))
+	vos := make([]CartVO, len(records))
 	for i, r := range records {
-		vos[i] = RecordVO{
+		vos[i] = CartVO{
 			Amount:     r.Amount,
 			CreateTime: r.CreateTime.Format("2006-01-02 15:04"),
 			DishFlavor: r.DishFlavor,

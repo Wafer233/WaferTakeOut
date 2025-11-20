@@ -1,6 +1,6 @@
 package application
 
-type RecordVO struct {
+type CartVO struct {
 	Amount     float64 `json:"amount"`
 	CreateTime string  `json:"createTime"`
 	DishFlavor string  `json:"dishFlavor"`

@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package order.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/order-service/proto;orderpb";
+
+service OrderService {
+  rpc Submit(SubmitRequest) returns (SubmitResponse) {}
+  rpc Payment(PaymentRequest) returns (PaymentResponse) {}
+  rpc Page(UserPageRequest) returns (UserOrderResponse) {}
+  rpc FindPageAdmin(AdminPageRequest) returns (AdminPageResponse) {}
+  rpc GetOrder(IdMessage) returns (UserOrderResponse) {}
+  rpc UserCancel(IdMessage)  returns (EmptyMessage) {}
+  rpc CreateSame(CreateSameRequest) returns (EmptyMessage) {}
+  rpc Confirm(IdMessage) returns (EmptyMessage) {}
+  rpc Rejection(RejectionRequest) returns (EmptyMessage) {}
+  rpc Cancel(CancelRequest) returns (EmptyMessage) {}
+  rpc  Delivery(IdMessage) returns (EmptyMessage) {}
+  rpc Complete(IdMessage) returns (EmptyMessage) {}
+  rpc GetStatistics(EmptyMessage)returns (StatisticsResponse)  {}
+
+}
+
+message IdMessage{
+  int64 id = 1;
+}
+message EmptyMessage {
+}
+
+message CreateSameRequest{
+  int64 orderId = 1;
+  int64 curId = 2;
+}
+
+message SubmitRequest {
+  int64 addressBookId = 1;
+  double amount = 2;
+  int32 deliveryStatus = 3;
+  string estimatedDeliveryTime = 4;
+  int32  packAmount = 5;
+  int32 payMethod = 6;
+  string remark = 7;
+  int32 tablewareNumber = 8;
+  int32 tablewareStatus = 9;
+  int64 curId = 10;
+}
+
+message SubmitResponse{
+  int64 id = 1;
+  double orderAmount = 2;
+  string orderNumber = 3;
+  string  orderTime = 4;
+}
+
+message PaymentRequest{
+  string   orderNumber = 1;
+  int32    payMethod = 2;
+}
+message PaymentResponse  {
+  string estimatedDeliveryTime = 1;
+}
+
+message UserPageRequest {
+  int32 pageSize = 1;
+  int32 page = 2;
+  int32 status = 3;
+  int64 curId = 4;
+}
+message UserPageResponse{
+  int64 total = 1;
+  repeated UserOrderResponse records = 2;
+}
+
+message AdminPageResponse{
+  int64 total = 1;
+  repeated AdminOrderResponse records = 2;
+}
+
+message UserOrderResponse {
+  int64 id = 1;
+  string number = 2;
+  int32  status = 3;
+  int64 userId = 4;
+  int64 addressBookId = 5;
+  string orderTime = 6;
+  string checkoutTime = 7;
+  int32 payMethod = 8;
+  int32 payStatus = 9;
+  double amount = 10;
+  string remark = 11;
+  string phone = 12;
+  string address = 13;
+  string userName = 14;
+  string consignee = 15;
+  string cancelReason = 16;
+  string rejectionReason = 17   ;
+  string cancelTime = 18;
+  string estimatedDeliveryTime = 19;
+  int32 deliveryStatus = 20;
+  string deliveryTime = 21;
+  int32 packAmount = 22;
+  int32 tableWareNumber = 23;
+  int32 tableWareStatus = 24;
+  repeated OrderDetail orderDetails = 25;
+}
+
+message OrderDetail {
+  double amount = 1;
+  string  dishFlavor = 2;
+  int64 dishId = 3;
+  int64 id = 4;
+  string image = 5;
+  string name = 6;
+  int32 number = 7;
+  int64  orderId = 8;
+  int64 setMealId = 9;
+}
+
+message AdminOrderResponse {
+  int64 id = 1;
+  string number = 2;
+  int32  status = 3;
+  int64 userId = 4;
+  int64 addressBookId = 5;
+  string orderTime = 6;
+  string checkoutTime = 7;
+  int32 payMethod = 8;
+  int32 payStatus = 9;
+  double amount = 10;
+  string remark = 11;
+  string phone = 12;
+  string address = 13;
+  string userName = 14;
+  string consignee = 15;
+  string cancelReason = 16;
+  string rejectionReason = 17   ;
+  string cancelTime = 18;
+  string estimatedDeliveryTime = 19;
+  int32 deliveryStatus = 20;
+  string deliveryTime = 21;
+  int32 packAmount = 22;
+  int32 tableWareNumber = 23;
+  int32 tableWareStatus = 24;
+  string orderDishes = 25;
+}
+
+message AdminPageRequest {
+  string beginTime = 1;
+  string endTime = 2;
+  string number = 3;
+  int32 pageSize = 4;
+  int32 page = 5;
+  string phone = 6;
+  int32 status = 7;
+}
+
+message RejectionRequest{
+  string   rejectionReason = 1;
+  int64 id = 2;
+}
+
+message CancelRequest{
+  string cancelReason = 1;
+  int64 id = 2;
+}
+
+message StatisticsResponse  {
+  int64 confirmed = 1;
+  int64 deliveryInProgress = 2;
+  int64 ToBeConfirmed = 3;
+}

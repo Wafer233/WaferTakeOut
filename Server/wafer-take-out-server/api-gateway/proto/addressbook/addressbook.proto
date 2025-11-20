@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package addressbook.v1;
+option go_package = "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/addressbook-service/proto;addressbookpb";
+
+service AddressBookService{
+  rpc Create(AddressBookRequest) returns (EmptyMessage) {}
+  rpc FindByUserId(IdMessage) returns (AddressBookListResponse) {}
+  rpc FindDefault(IdMessage) returns (AddressBookResponse) {}
+  rpc UpdateDefault(UpdateDefaultRequest) returns (EmptyMessage) {}
+  rpc  FindById(IdMessage) returns (AddressBookResponse) {}
+  rpc DeleteById(IdMessage) returns (EmptyMessage) {}
+  rpc Update(AddressBookRequest) returns (EmptyMessage) {}
+}
+
+message IdMessage {
+  int64  id = 1;
+}
+
+message EmptyMessage{
+
+}
+
+message AddressBookRequest {
+  string cityCode = 1;
+  string cityName = 2;
+  string consignee = 3;
+  string detail = 4;
+  string districtCode = 5;
+  string districtName = 6;
+  int64 id = 7;
+  int32 isDefault = 8;
+  int32 label = 9;
+  string phone = 10;
+  string provinceCode = 11;
+  string provinceName = 12;
+  string sex = 13;
+  int64 userId = 14;
+  int64 curId = 15;
+}
+
+message AddressBookListResponse{
+  repeated AddressBookResponse addressBooks = 1;
+}
+
+message AddressBookResponse {
+  int64 id = 1;
+  int64 userId = 2;
+  string consignee = 3;
+  string sex = 4;
+  string phone = 5;
+  string provinceCode = 6;
+  string provinceName = 7;
+  string cityCode = 8;
+  string cityName = 9;
+  string districtCode = 10;
+  string districtName = 11;
+  string detail = 12;
+  string label = 13;
+  int32 isDefault = 14;
+}
+
+message UpdateDefaultRequest {
+  int64  id = 1;
+  int64 userId = 2;
+}

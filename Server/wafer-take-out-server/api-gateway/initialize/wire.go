@@ -23,6 +23,8 @@ func Init() (*gin.Engine, error) {
 		rpc.NewUserServiceClient,
 		rpc.NewShopServiceClient,
 		rpc.NewShoppingCartServiceClient,
+		rpc.NewAddressBookServiceClient,
+		rpc.NewOrderServiceClient,
 
 		rpc.NewEmployeeService,
 		rpc.NewCategoryService,
@@ -31,6 +33,8 @@ func Init() (*gin.Engine, error) {
 		rpc.NewUserService,
 		rpc.NewShopService,
 		rpc.NewShoppingCartService,
+		rpc.NewAddressBookService,
+		rpc.NewOrderService,
 
 		rest.NewEmployeeHandler,
 		rest.NewCategoryHandler,
@@ -40,6 +44,8 @@ func Init() (*gin.Engine, error) {
 		rest.NewUserHandler,
 		rest.NewShopHandler,
 		rest.NewShoppingCartHandler,
+		rest.NewAddressHandler,
+		rest.NewOrderHandler,
 
 		NewRouter,
 	)

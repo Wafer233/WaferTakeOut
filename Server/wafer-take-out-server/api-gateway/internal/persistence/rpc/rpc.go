@@ -1,9 +1,11 @@
 package rpc
 
 import (
+	addressbookpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/addressbook"
 	categorypb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/category"
 	dishpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/dish"
 	employeepb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/employee"
+	orderpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/order"
 	setmealpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/setmeal"
 	shoppb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/shop"
 	shoppingcartpb "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/proto/shoppingcart"
@@ -66,4 +68,20 @@ func NewShoppingCartServiceClient() shoppingcartpb.ShoppingCartServiceClient {
 		panic(err)
 	}
 	return shoppingcartpb.NewShoppingCartServiceClient(conn)
+}
+
+func NewAddressBookServiceClient() addressbookpb.AddressBookServiceClient {
+	conn, err := grpc.Dial("localhost:50058", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	return addressbookpb.NewAddressBookServiceClient(conn)
+}
+
+func NewOrderServiceClient() orderpb.OrderServiceClient {
+	conn, err := grpc.Dial("localhost:50059", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	return orderpb.NewOrderServiceClient(conn)
 }
