@@ -10,6 +10,7 @@ import (
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type AddressHandler struct {
@@ -26,12 +27,14 @@ func (h *AddressHandler) Create(c *gin.Context) {
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("绑定错误"))
+		zap.L().Error("DTO绑定失败")
 		return
 	}
 
 	userId, exist := c.Get("CurID")
 	if !exist {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		zap.L().Error("未授权")
 		return
 	}
 
@@ -41,8 +44,10 @@ func (h *AddressHandler) Create(c *gin.Context) {
 	err = h.svc.Create(ctx, &dto, userId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		zap.L().Error("调用内部服务错误")
 		return
 	}
+	zap.L().Info("启用Create成功")
 	c.JSON(http.StatusOK, result.Success())
 }
 
@@ -51,6 +56,7 @@ func (h *AddressHandler) List(c *gin.Context) {
 	userId, exist := c.Get("CurID")
 	if !exist {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		zap.L().Error("未授权")
 		return
 	}
 
@@ -60,6 +66,7 @@ func (h *AddressHandler) List(c *gin.Context) {
 	vo, err := h.svc.FindByUserId(ctx, userId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		zap.L().Error("调用内部服务错误")
 		return
 	}
 	c.JSON(http.StatusOK, result.SuccessData(vo))
@@ -69,6 +76,7 @@ func (h *AddressHandler) GetDefault(c *gin.Context) {
 	userId, exist := c.Get("CurID")
 	if !exist {
 		c.JSON(http.StatusUnauthorized, result.Error("未授权"))
+		zap.L().Error("未授权")
 		return
 	}
 
@@ -78,6 +86,7 @@ func (h *AddressHandler) GetDefault(c *gin.Context) {
 	vo, err := h.svc.FindDefault(ctx, userId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
+		zap.L().Error("调用内部服务错误")
 		return
 	}
 	c.JSON(http.StatusOK, result.SuccessData(vo))
