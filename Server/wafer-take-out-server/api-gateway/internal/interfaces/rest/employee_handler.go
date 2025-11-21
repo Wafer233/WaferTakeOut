@@ -7,7 +7,8 @@ import (
 	"time"
 
 	emplApp "github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/application/employee"
-	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/persistence/rpc"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/infrastructure/logger"
+	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/internal/infrastructure/rpc"
 	"github.com/Wafer233/WaferTakeOut/Server/wafer-take-out-server/api-gateway/pkg/result"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -30,6 +31,7 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, result.Error("请求错误"))
 		zap.L().Error("错误请求")
+		logger.K().Error("Login请求错误")
 		return
 	}
 
@@ -39,6 +41,7 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 	vo, err := h.client.Login(ctx, &dto)
 	if err != nil {
 		zap.L().Error("调用Login微服务错误")
+		logger.K().Error("Login微服务错误")
 		c.JSON(http.StatusInternalServerError, result.Error("内部服务错误"))
 		return
 	}
@@ -54,6 +57,7 @@ func (h *EmployeeHandler) Login(c *gin.Context) {
 	)
 
 	zap.L().Info("登录成功")
+	logger.K().Info("登录成功")
 	c.JSON(http.StatusOK, result.SuccessData(vo))
 }
 
