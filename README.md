@@ -26,5 +26,7 @@
 
 `zap` 结构化日志的包，b站有很详细的简明教程
 
+`DDD` 领域驱动设计，每个服务内部分`application` `interfaces` `domain` `infrastructure`
+
 
 
